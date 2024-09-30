@@ -20,6 +20,7 @@ class my_dataset(Dataset):
         if self.fix_sample_A > len(in_files_A):
             self.fix_sample_A = len(in_files_A)
         in_files_A = random.sample(in_files_A, self.fix_sample_A)
+        
         self.imgs_in_A = [os.path.join(rootA_in, k) for k in in_files_A]
         self.imgs_gt_A = [os.path.join(rootA_label, k) for k in in_files_A]#gt_imgs
 
@@ -33,8 +34,17 @@ class my_dataset(Dataset):
         if self.fix_sample_B >len(in_files_B):
             self.fix_sample_B = len(in_files_B)
         in_files_B = random.sample(in_files_B, self.fix_sample_B)
-        self.imgs_in_B = [os.path.join(rootB_in, k) for k in in_files_B]
-        self.imgs_gt_B = [os.path.join(rootB_label, k) for k in in_files_B]  # gt_imgs  name keep same
+        
+        self.imgs_in_B=[]
+        self.imgs_gt_B=[]
+        for img_name in in_files_B:
+            oneimg_name = img_name
+            oneimg_name_gt = oneimg_name[:oneimg_name.find("_s")] + ".png"
+            self.imgs_in_B.append(os.path.join(rootB_in,  oneimg_name))
+            self.imgs_gt_B.append(os.path.join(rootB_label,  oneimg_name_gt))
+        # import pdb;pdb.set_trace()
+        # self.imgs_in_B = [os.path.join(rootB_in, k) for k in in_files_B]
+        # self.imgs_gt_B = [os.path.join(rootB_label, k) for k in in_files_B]  # gt_imgs  name keep same
 
         len_imgs_in_B_ori = len(self.imgs_in_B )# 相较于imgs_A所缺的数目 补齐img_B图片
         self.imgs_in_B = self.imgs_in_B * (self.r_l_rate + math.ceil(len_imgs_in_A / len_imgs_in_B_ori))  # 扩展
@@ -47,9 +57,17 @@ class my_dataset(Dataset):
         if self.fix_sample_C > len(in_files_C):
             self.fix_sample_C = len(in_files_C)
         in_files_C = random.sample(in_files_C, self.fix_sample_C)
-        self.imgs_in_C = [os.path.join(rootC_in, k) for k in in_files_C]
-        self.imgs_gt_C = [os.path.join(rootC_label, k) for k in in_files_C]  # gt_imgs  name keep same
-
+        self.imgs_in_C=[]
+        self.imgs_gt_C=[]
+        
+        for img_name in in_files_C:
+            oneimg_name = img_name
+            oneimg_name_gt = oneimg_name[:oneimg_name.find("_")] + "_clean"+".png"
+            self.imgs_in_C.append(os.path.join(rootC_in,  oneimg_name))
+            self.imgs_gt_C.append(os.path.join(rootC_label,  oneimg_name_gt))
+        # self.imgs_in_C = [os.path.join(rootC_in, k) for k in in_files_C]
+        # self.imgs_gt_C = [os.path.join(rootC_label, k) for k in in_files_C]  # gt_imgs  name keep same
+        # import pdb;pdb.set_trace()
         len_imgs_in_C_ori = len(self.imgs_in_C)  # 相较于imgs_A所缺的数目 补齐img_B图片
         self.imgs_in_C = self.imgs_in_C * (self.r_l_rate1 + math.ceil(len_imgs_in_A / len_imgs_in_C_ori))  # 扩展
         self.imgs_in_C = self.imgs_in_C[0: self.r_l_rate1 * len_imgs_in_A]
@@ -68,6 +86,7 @@ class my_dataset(Dataset):
         return data_A, data_B, data_C
 
     def read_imgs_pair(self,in_path, gt_path, transform, crop_size):
+        # import pdb;pdb.set_trace()
         in_img_path_A = in_path  #
         img_name_A = in_img_path_A.split('/')[-1]
 
@@ -138,11 +157,28 @@ class my_dataset_eval(Dataset):
         if self.fix_sample > len(in_files):
             self.fix_sample = len(in_files)
         in_files = random.sample(in_files, self.fix_sample)
-        self.imgs_in = [os.path.join(root_in, k) for k in in_files]
-        #gt_imgs
-        #gt_files = os.listdir(root_label)
-        self.imgs_gt = [os.path.join(root_label, k) for k in in_files]
-
+        # 
+        if 'snow' in root_in:
+            self.imgs_in = [os.path.join(root_in, k) for k in in_files]
+            self.imgs_gt = [os.path.join(root_label, k) for k in in_files]
+        elif 'rain_drop' in root_in:
+            self.imgs_in=[]
+            self.imgs_gt=[]
+            for img_name in in_files:
+                oneimg_name = img_name
+                oneimg_name_gt = oneimg_name[:oneimg_name.find("_")] + "_clean"+".png"
+                self.imgs_in.append(os.path.join(root_in,  oneimg_name))
+                self.imgs_gt.append(os.path.join(root_label,  oneimg_name_gt))
+            # import pdb;pdb.set_trace()
+        elif '/mnt/pipeline_1/set1/rain/' in root_in:
+            self.imgs_in=[]
+            self.imgs_gt=[]
+            for img_name in in_files:
+                oneimg_name = img_name
+                oneimg_name_gt = oneimg_name[:oneimg_name.find("_s")] + ".png"
+                self.imgs_in.append(os.path.join(root_in,oneimg_name))
+                self.imgs_gt.append(os.path.join(root_label, oneimg_name_gt))
+        # import pdb;pdb.set_trace()
         self.transform = transform
     def __getitem__(self, index):
         in_img_path = self.imgs_in[index]

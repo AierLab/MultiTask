@@ -8,7 +8,9 @@ from torch.utils.data import Dataset,DataLoader
 from torch.autograd import Variable
 import torch.optim as optim
 
-from datasets.dataset_pairs_wRandomSample_Triplet import my_dataset,my_dataset_eval
+# from datasets.dataset_pairs_wRandomSample_Triplet_txt import my_dataset,my_dataset_eval
+from datasets.WSG_dataset import my_dataset,my_dataset_eval
+from datasets.dataset_pairs_wRandomSample import my_dataset_eval
 import torchvision.transforms as transforms
 from torch.optim.lr_scheduler import CosineAnnealingLR,CosineAnnealingWarmRestarts
 from networks.Network_Stage1 import UNet
@@ -33,29 +35,29 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_R1400_H500_S100K_PP2") # modify the experiments name-->modify all save path
-parser.add_argument('--unified_path', type=str,default=  '/gdata2/zhuyr/Weather/')
+parser.add_argument('--experiment_name', type=str,default= "training_stage1") # modify the experiments name-->modify all save path
+parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
-parser.add_argument('--training_in_path', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/all_trainingData/synthetic/')
-parser.add_argument('--training_gt_path', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/all_trainingData/gt/')
+parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
+parser.add_argument('--training_gt_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/gt/')
 
-parser.add_argument('--training_in_pathRain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Train/in_0917/')
-parser.add_argument('--training_gt_pathRain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Train/gt_0917/')
+parser.add_argument('--training_in_pathRain', type=str,default= '/mnt/pipeline_1/set1/rain/train/in/')
+parser.add_argument('--training_gt_pathRain', type=str,default= '/mnt/pipeline_1/set1/rain/train/gt/')
 
-parser.add_argument('--training_in_pathRD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/train/train/data/')
-parser.add_argument('--training_gt_pathRD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/train/train/gt/')
+parser.add_argument('--training_in_pathRD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/train/data/')#  RainDrop 1110 pairs
+parser.add_argument('--training_gt_pathRD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/train/gt/')
 
 
-parser.add_argument('--writer_dir', type=str, default= '/ghome/zhuyr/UDC_codes/writer_logs/')
+parser.add_argument('--writer_dir', type=str, default= '/mnt/pipeline_1/MLT/writer_logs/')
 
-parser.add_argument('--eval_in_path_RD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/test_a/test_a/data-re/')
-parser.add_argument('--eval_gt_path_RD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/test_a/test_a/gt-re/')
+parser.add_argument('--eval_in_path_RD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/test_a/data/')
+parser.add_argument('--eval_gt_path_RD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/test_a/gt/')
 
-parser.add_argument('--eval_in_path_L', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/test/Snow100K-L/synthetic/')
-parser.add_argument('--eval_gt_path_L', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/test/Snow100K-L/gt/')
+parser.add_argument('--eval_in_path_L', type=str,default= '/mnt/pipeline_1/set1/snow/media/jdway/GameSSD/overlapping/test/Snow100K-L/synthetic/')
+parser.add_argument('--eval_gt_path_L', type=str,default= '/mnt/pipeline_1/set1/snow/media/jdway/GameSSD/overlapping/test/Snow100K-L/gt/')
 
-parser.add_argument('--eval_in_path_Rain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Test/in/')
-parser.add_argument('--eval_gt_path_Rain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Test/gt_re/')
+parser.add_argument('--eval_in_path_Rain', type=str,default= '/mnt/pipeline_1/set1/rain/train/in/')
+parser.add_argument('--eval_gt_path_Rain', type=str,default= '/mnt/pipeline_1/set1/rain/train/gt/')
 
 
 #training setting
@@ -121,13 +123,13 @@ print("=="*50)
 def check_dataset(in_path, gt_path,name ='RD'):
     print( "Check {} pairs({}) ???: {} ".format(name,len(in_path), os.listdir(in_path)==os.listdir(gt_path)) )
 
-check_dataset(args.eval_in_path_RD,args.eval_gt_path_RD,'val-RD' )
-check_dataset(args.eval_in_path_Rain,args.eval_gt_path_Rain,'val-Rain' )
-check_dataset(args.eval_in_path_L,args.eval_gt_path_L,'val-Snow-L' )
-check_dataset(args.training_in_path,args.training_gt_path,'Train_Snow' )
-check_dataset(args.training_in_pathRain,args.training_gt_pathRain,'Train_Rain' )
-check_dataset(args.training_in_pathRD,args.training_gt_pathRD,'Train_RD' )
-print("=="*50)
+# check_dataset(args.eval_in_path_RD,args.eval_gt_path_RD,'val-RD' )
+# check_dataset(args.eval_in_path_Rain,args.eval_gt_path_Rain,'val-Rain' )
+# check_dataset(args.eval_in_path_L,args.eval_gt_path_L,'val-Snow-L' )
+# check_dataset(args.training_in_path,args.training_gt_path,'Train_Snow' )
+# check_dataset(args.training_in_pathRain,args.training_gt_pathRain,'Train_Rain' )
+# check_dataset(args.training_in_pathRD,args.training_gt_pathRD,'Train_RD' )
+# print("=="*50)
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
@@ -159,12 +161,16 @@ def save_imgs_for_visual(path,inputs,labels,outputs):
 
 def get_training_data(fix_sampleA= fix_sampleA, fix_sampleB= fix_sampleB,fix_sampleC= fix_sampleC, Crop_patches=args.Crop_patches):
     rootA_in = args.training_in_path
+    rootA_txt = '/mnt/pipeline_1/set1/data_txt/train/snow_images.txt'
     rootA_label = args.training_gt_path
     rootB_in = args.training_in_pathRain
+    rootB_txt = '/mnt/pipeline_1/set1/data_txt/train/rain.txt'
     rootB_label = args.training_gt_pathRain
     rootC_in = args.training_in_pathRD
+    rootC_txt = '/mnt/pipeline_1/set1/data_txt/train/raindrop_images.txt'
     rootC_label = args.training_gt_pathRD
-    train_datasets = my_dataset(rootA_in, rootA_label, rootB_in, rootB_label,rootC_in, rootC_label,crop_size =Crop_patches,
+    
+    train_datasets = my_dataset(rootA_in,rootA_label, rootA_txt, rootB_in, rootB_label,rootB_txt,rootC_in,rootC_label, rootC_txt,crop_size =Crop_patches,
                                 fix_sample_A = fix_sampleA, fix_sample_B = fix_sampleB,fix_sample_C = fix_sampleC,regular_aug=args.Aug_regular)
     train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers= 8 ,shuffle=True)
     print('len(train_loader):' ,len(train_loader))
@@ -197,7 +203,7 @@ if __name__ == '__main__':
     #vgg = models.vgg16(pretrained=False)
     # 2
     vgg = models.vgg16(pretrained=False)
-    vgg.load_state_dict(torch.load('/gdata2/zhuyr/VGG/vgg16-397923af.pth'))
+    vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
     vgg_model = vgg_model.to(device)
     for param in vgg_model.parameters():

@@ -1,0 +1,2354 @@
+2024/07/01 17:31:54 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.18 (default, Sep 11 2023, 13:40:15) [GCC 11.2.0]
+    CUDA available: True
+    numpy_random_seed: 963603091
+    GPU 0,1,2,3,4,5: NVIDIA A100 80GB PCIe
+    CUDA_HOME: /usr/local/cuda-12.0
+    NVCC: Cuda compilation tools, release 12.0, V12.0.76
+    GCC: gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-44)
+    PyTorch: 1.13.1+cu117
+    PyTorch compiling details: PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.6.0 (Git Hash 52b5f107dd9cf10910aaa19cb47f3abf9b349815)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.7
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.5
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.13.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+    TorchVision: 0.14.1+cu117
+    OpenCV: 4.9.0
+    MMEngine: 0.8.2
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 963603091
+    Distributed launcher: pytorch
+    Distributed training: True
+    GPU number: 1
+------------------------------------------------------------
+
+2024/07/01 17:31:55 - mmengine - INFO - Config:
+default_scope = 'mmdet'
+default_hooks = dict(
+    timer=dict(type='IterTimerHook'),
+    logger=dict(type='LoggerHook', interval=100),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    checkpoint=dict(
+        type='CheckpointHook',
+        interval=1000,
+        by_epoch=False,
+        max_keep_ckpts=90,
+        save_best='Out_PSNR',
+        rule='greater'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    visualization=dict(type='DetVisualizationHook'))
+env_cfg = dict(
+    cudnn_benchmark=False,
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0),
+    dist_cfg=dict(backend='nccl'))
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    type='DetLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ],
+    name='visualizer')
+log_processor = dict(type='LogProcessor', window_size=50, by_epoch=False)
+log_level = 'INFO'
+load_from = None
+resume = False
+dataset_type = 'WSG_RAIN_TRAIN'
+dataset_eval_type = 'WSG_OUTDOORRAIN'
+max_iters = 40000
+train_dataloader = dict(
+    batch_size=16,
+    num_workers=64,
+    dataset=dict(
+        type='WSG_RAIN_TRAIN',
+        txt_path='/home/4paradigm/set1/data_txt/train/rain.txt',
+        root_path='/home/4paradigm/set1/rain/train/',
+        crop_size=224,
+        fix_sample=9000,
+        regular_aug=True,
+        test_mode=False))
+test_dataloader = dict(
+    batch_size=1,
+    num_workers=8,
+    drop_last=False,
+    dataset=dict(
+        type='WSG_OUTDOORRAIN',
+        txt_path='/home/4paradigm/set1/data_txt/test/raintest1.txt',
+        root_path='/home/4paradigm/set1/rain/train/',
+        fix_sample=500,
+        test_mode=True))
+val_dataloader = dict(
+    batch_size=1,
+    num_workers=8,
+    drop_last=False,
+    dataset=dict(
+        type='WSG_OUTDOORRAIN',
+        txt_path='/home/4paradigm/set1/data_txt/test/raintest1.txt',
+        root_path='/home/4paradigm/set1/rain/train/',
+        fix_sample=500,
+        test_mode=True))
+train_cfg = dict(type='IterBasedTrainLoop', max_iters=40000, val_interval=1000)
+val_cfg = dict(type='ValLoop')
+test_cfg = dict(type='TestLoop')
+optim_wrapper = dict(
+    type='OptimWrapper',
+    optimizer=dict(
+        type='AdamW', lr=0.0006, betas=(
+            0.9,
+            0.999,
+        ), weight_decay=0.02),
+    clip_grad=None)
+param_scheduler = [
+    dict(type='LinearLR', start_factor=0.001, by_epoch=False, begin=0, end=50),
+    dict(
+        type='CosineAnnealingLR',
+        begin=50,
+        end=40000,
+        T_max=40000,
+        by_epoch=False),
+]
+val_evaluator = dict(
+    type='WSGMetric', metric=[
+        'Out_PSNR',
+    ])
+test_evaluator = dict(
+    type='WSGMetric', metric=[
+        'Out_PSNR',
+    ])
+model = dict(
+    type='WSG_Model', backbone=dict(type='UNet', base_channel=18, num_res=6))
+work_dir = './mnt/pipeline_1/MLT'
+launcher = 'pytorch'
+
+2024/07/01 17:31:57 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DetVisualizationHook               
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train:
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DetVisualizationHook               
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2024/07/01 17:31:57 - mmengine - WARNING - Dataset WSG_RAIN_TRAIN has no metainfo. ``dataset_meta`` in visualizer will be None.
+2024/07/01 17:31:59 - mmengine - WARNING - The prefix is not set in metric class WSGMetric.
+2024/07/01 17:31:59 - mmengine - WARNING - Dataset WSG_OUTDOORRAIN has no metainfo. ``dataset_meta`` in evaluator, metric and visualizer will be None.
+Name of parameter - Initialization information
+
+backbone.Encoder.0.layer1.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv0.conv.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv0.conv.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv1.conv.layer.specific_weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv1.conv.layer.channel_score1 - torch.Size([6, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv2.conv.layer.specific_weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv2.conv.layer.channel_score1 - torch.Size([6, 18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.LFF.layer.specific_weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.LFF.layer.channel_score1 - torch.Size([6, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer1.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv0.conv.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv0.conv.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv1.conv.layer.specific_weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv1.conv.layer.channel_score1 - torch.Size([6, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv2.conv.layer.specific_weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv2.conv.layer.channel_score1 - torch.Size([6, 18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.LFF.layer.specific_weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.LFF.layer.channel_score1 - torch.Size([6, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer2.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv0.conv.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv0.conv.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv1.conv.layer.specific_weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv1.conv.layer.channel_score1 - torch.Size([6, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv2.conv.layer.specific_weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv2.conv.layer.channel_score1 - torch.Size([6, 18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.LFF.layer.specific_weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.LFF.layer.channel_score1 - torch.Size([6, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer3.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv0.conv.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv0.conv.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv1.conv.layer.specific_weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv1.conv.layer.channel_score1 - torch.Size([6, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv2.conv.layer.specific_weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv2.conv.layer.channel_score1 - torch.Size([6, 18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.LFF.layer.specific_weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.LFF.layer.channel_score1 - torch.Size([6, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer4.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv0.conv.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv0.conv.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv1.conv.layer.specific_weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv1.conv.layer.channel_score1 - torch.Size([6, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv2.conv.layer.specific_weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv2.conv.layer.channel_score1 - torch.Size([6, 18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.LFF.layer.specific_weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.LFF.layer.channel_score1 - torch.Size([6, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer5.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv0.conv.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv0.conv.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv1.conv.layer.specific_weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv1.conv.layer.channel_score1 - torch.Size([6, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv2.conv.layer.specific_weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv2.conv.layer.channel_score1 - torch.Size([6, 18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.LFF.layer.specific_weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.LFF.layer.channel_score1 - torch.Size([6, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.0.layer6.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv0.conv.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv0.conv.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv1.conv.layer.specific_weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv1.conv.layer.channel_score1 - torch.Size([12, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv2.conv.layer.specific_weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv2.conv.layer.channel_score1 - torch.Size([12, 36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.LFF.layer.specific_weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.LFF.layer.channel_score1 - torch.Size([12, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer1.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv0.conv.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv0.conv.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv1.conv.layer.specific_weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv1.conv.layer.channel_score1 - torch.Size([12, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv2.conv.layer.specific_weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv2.conv.layer.channel_score1 - torch.Size([12, 36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.LFF.layer.specific_weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.LFF.layer.channel_score1 - torch.Size([12, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer2.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv0.conv.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv0.conv.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv1.conv.layer.specific_weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv1.conv.layer.channel_score1 - torch.Size([12, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv2.conv.layer.specific_weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv2.conv.layer.channel_score1 - torch.Size([12, 36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.LFF.layer.specific_weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.LFF.layer.channel_score1 - torch.Size([12, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer3.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv0.conv.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv0.conv.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv1.conv.layer.specific_weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv1.conv.layer.channel_score1 - torch.Size([12, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv2.conv.layer.specific_weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv2.conv.layer.channel_score1 - torch.Size([12, 36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.LFF.layer.specific_weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.LFF.layer.channel_score1 - torch.Size([12, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer4.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv0.conv.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv0.conv.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv1.conv.layer.specific_weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv1.conv.layer.channel_score1 - torch.Size([12, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv2.conv.layer.specific_weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv2.conv.layer.channel_score1 - torch.Size([12, 36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.LFF.layer.specific_weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.LFF.layer.channel_score1 - torch.Size([12, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer5.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv0.conv.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv0.conv.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv1.conv.layer.specific_weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv1.conv.layer.channel_score1 - torch.Size([12, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv2.conv.layer.specific_weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv2.conv.layer.channel_score1 - torch.Size([12, 36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.LFF.layer.specific_weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.LFF.layer.channel_score1 - torch.Size([12, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.1.layer6.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv0.conv.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv0.conv.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv1.conv.layer.specific_weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv1.conv.layer.channel_score1 - torch.Size([24, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv2.conv.layer.specific_weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv2.conv.layer.channel_score1 - torch.Size([24, 72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.LFF.layer.specific_weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.LFF.layer.channel_score1 - torch.Size([24, 96]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer1.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv0.conv.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv0.conv.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv1.conv.layer.specific_weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv1.conv.layer.channel_score1 - torch.Size([24, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv2.conv.layer.specific_weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv2.conv.layer.channel_score1 - torch.Size([24, 72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.LFF.layer.specific_weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.LFF.layer.channel_score1 - torch.Size([24, 96]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer2.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv0.conv.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv0.conv.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv1.conv.layer.specific_weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv1.conv.layer.channel_score1 - torch.Size([24, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv2.conv.layer.specific_weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv2.conv.layer.channel_score1 - torch.Size([24, 72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.LFF.layer.specific_weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.LFF.layer.channel_score1 - torch.Size([24, 96]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer3.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv0.conv.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv0.conv.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv1.conv.layer.specific_weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv1.conv.layer.channel_score1 - torch.Size([24, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv2.conv.layer.specific_weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv2.conv.layer.channel_score1 - torch.Size([24, 72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.LFF.layer.specific_weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.LFF.layer.channel_score1 - torch.Size([24, 96]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer4.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv0.conv.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv0.conv.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv1.conv.layer.specific_weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv1.conv.layer.channel_score1 - torch.Size([24, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv2.conv.layer.specific_weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv2.conv.layer.channel_score1 - torch.Size([24, 72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.LFF.layer.specific_weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.LFF.layer.channel_score1 - torch.Size([24, 96]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer5.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv0.conv.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv0.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv0.conv.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv0.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv1.conv.layer.specific_weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv1.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv1.conv.layer.channel_score1 - torch.Size([24, 48]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv2.conv.layer.specific_weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv2.conv.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv2.conv.layer.channel_score1 - torch.Size([24, 72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.conv2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.LFF.layer.specific_weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.LFF.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.LFF.layer.channel_score1 - torch.Size([24, 96]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Encoder.2.layer6.LFF.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.0.layer.weight - torch.Size([18, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.0.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.0.layer.specific_weight - torch.Size([18, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.0.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.0.layer.channel_score1 - torch.Size([6, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.0.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.1.layer.weight - torch.Size([36, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.1.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.1.layer.specific_weight - torch.Size([36, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.1.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.1.layer.channel_score1 - torch.Size([12, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.1.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.2.layer.weight - torch.Size([72, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.2.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.2.layer.specific_weight - torch.Size([72, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.2.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.2.layer.channel_score1 - torch.Size([24, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.2.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.3.layer.weight - torch.Size([72, 36, 4, 4]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.3.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.4.layer.weight - torch.Size([36, 18, 4, 4]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.4.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.5.layer.weight - torch.Size([3, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.feat_extract.5.layer.bias - torch.Size([3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer1.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer2.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer3.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer4.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer5.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.conv0.conv.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.conv0.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.conv1.conv.layer.weight - torch.Size([72, 144, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.conv1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.conv2.conv.layer.weight - torch.Size([72, 216, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.conv2.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.LFF.layer.weight - torch.Size([72, 288, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.0.layer6.LFF.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer1.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer2.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer3.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer4.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer5.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.conv0.conv.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.conv0.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.conv1.conv.layer.weight - torch.Size([36, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.conv1.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.conv2.conv.layer.weight - torch.Size([36, 108, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.conv2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.LFF.layer.weight - torch.Size([36, 144, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.1.layer6.LFF.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer1.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer2.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer3.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer4.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer5.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.conv0.conv.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.conv0.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.conv1.conv.layer.weight - torch.Size([18, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.conv1.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.conv2.conv.layer.weight - torch.Size([18, 54, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.conv2.conv.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.LFF.layer.weight - torch.Size([18, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Decoder.2.layer6.LFF.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Convs.0.layer.weight - torch.Size([36, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Convs.0.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Convs.1.layer.weight - torch.Size([18, 36, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.Convs.1.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv1.layer.weight - torch.Size([18, 126, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv1.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv1.layer.specific_weight - torch.Size([18, 126, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv1.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv1.layer.channel_score1 - torch.Size([6, 42]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv1.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv2.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv2.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv2.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv2.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv2.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.0.conv2.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv1.layer.weight - torch.Size([36, 126, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv1.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv1.layer.specific_weight - torch.Size([36, 126, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv1.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv1.layer.channel_score1 - torch.Size([12, 42]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv1.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv2.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv2.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv2.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv2.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv2.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.1.conv2.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv1.layer.weight - torch.Size([72, 126, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv1.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv1.layer.specific_weight - torch.Size([72, 126, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv1.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv1.layer.channel_score1 - torch.Size([24, 42]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv1.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv2.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv2.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv2.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv2.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv2.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.AFFs.2.conv2.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM1.merge.layer.weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM1.merge.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM1.merge.layer.specific_weight - torch.Size([72, 72, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM1.merge.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM1.merge.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM1.merge.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer1.layer.weight - torch.Size([18, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer1.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer1.layer.specific_weight - torch.Size([18, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer1.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer1.layer.channel_score1 - torch.Size([6, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer1.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer2.layer.weight - torch.Size([36, 18, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer2.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer2.layer.specific_weight - torch.Size([36, 18, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer2.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer2.layer.channel_score1 - torch.Size([12, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer2.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer3.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer3.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer3.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer3.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer3.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer3.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer4.layer.weight - torch.Size([69, 36, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer4.layer.bias - torch.Size([69]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer4.layer.specific_weight - torch.Size([69, 36, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer4.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer4.layer.channel_score1 - torch.Size([23, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.layer4.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.conv.layer.weight - torch.Size([72, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.conv.layer.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.conv.layer.specific_weight - torch.Size([72, 72, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.conv.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.conv.layer.channel_score1 - torch.Size([24, 24]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM1.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM2.merge.layer.weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM2.merge.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM2.merge.layer.specific_weight - torch.Size([36, 36, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM2.merge.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM2.merge.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.FAM2.merge.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer1.layer.weight - torch.Size([9, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer1.layer.bias - torch.Size([9]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer1.layer.specific_weight - torch.Size([9, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer1.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer1.layer.channel_score1 - torch.Size([3, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer1.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer2.layer.weight - torch.Size([18, 9, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer2.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer2.layer.specific_weight - torch.Size([18, 9, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer2.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer2.layer.channel_score1 - torch.Size([6, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer2.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer3.layer.weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer3.layer.bias - torch.Size([18]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer3.layer.specific_weight - torch.Size([18, 18, 3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer3.layer.space_score - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer3.layer.channel_score1 - torch.Size([6, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer3.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer4.layer.weight - torch.Size([33, 18, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer4.layer.bias - torch.Size([33]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer4.layer.specific_weight - torch.Size([33, 18, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer4.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer4.layer.channel_score1 - torch.Size([11, 6]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.layer4.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.conv.layer.weight - torch.Size([36, 36, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.conv.layer.bias - torch.Size([36]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.conv.layer.specific_weight - torch.Size([36, 36, 1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.conv.layer.space_score - torch.Size([1, 1]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.conv.layer.channel_score1 - torch.Size([12, 12]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+
+backbone.SCM2.conv.layer.channel_score2 - torch.Size([3, 3]): 
+The value is the same before and after calling `init_weights` of WSG_Model  
+2024/07/01 17:32:00 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2024/07/01 17:32:00 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2024/07/01 17:32:00 - mmengine - INFO - Checkpoints will be saved to /home/4paradigm/WGWS-Net/mnt/pipeline_1/MLT.

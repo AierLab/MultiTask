@@ -29,42 +29,192 @@ class BinarizeIndictator(autograd.Function):
     def backward(ctx, g):
         # send the gradient g straight-through on the backward pass.
         return g, None
+    
+class BinarizerFn(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx,inputs,threshold):
+        outputs = (inputs>=threshold).float()
+        return outputs
+    @staticmethod
+    def backward(ctx,gradoutput):
+        return gradoutput, None
+
+binarizer_fn = BinarizerFn.apply
+
+# class Conv2d_share_element(nn.Conv2d):
+#     def __init__(self, in_channels, out_channels, kernel_size, share_type=None,
+#                  stride=1, padding=0, dilation=1, groups=1, bias=True,
+#                  padding_mode='zeros'):
+#         super().__init__(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode
+#                         )
+#         self.share_type = 'channel_wise'
+#         self.register_parameter('specific_weight', nn.Parameter(self.weight.clone()))
+#         # if self.bias is not None:
+#         #     self.register_parameter('specific_bias', nn.Parameter(self.bias.clone()))
+#         self.scale = 3
+        
+
+#         self.space_score = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
+#         if self.weight.shape[0] >= 3 and self.weight.shape[1] >= 3:
+#             self.channel_score1 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
+#             self.channel_score2 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
+#             self.channel_score = None
+#         else:
+#             self.channel_score = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
+
+#     def forward(self, input):
+#         # import pdb;pdb.set_trace()
+#         # print(f'the  weight is {self.weight}')
+#         if self.channel_score == None:
+#             channel_score = torch.einsum("ab,cd->acbd", self.channel_score1, self.channel_score2).reshape(
+#                     self.weight.shape[0], self.weight.shape[1])
+#             score = channel_score[:, :, None, None] * self.space_score[None, None, :, :]
+#         else:
+#             score = self.channel_score[:, :, None, None] * self.space_score[None, None, :, :]
+#         mean_score = score.mean().item()
+#         std_score = score.std().item()
+#         threshold = mean_score + 0.5 * std_score  # 选择合适的 k 值
+        
+#         score = binarizer_fn(score, threshold)
+#         weight = score * self.weight + (1 - score) * self.specific_weight
+#         return self._conv_forward(input, weight,self.bias)
+
+
+
+
+
+
 
 class freeze_conv(nn.Conv2d):
     def __init__(self ,*args, **kwargs):
         super().__init__(*args, **kwargs)
         weight_shape = self.weight.shape
         c1, c2, _, _ = weight_shape
+        # self.register_parameter('specific_weight', nn.Parameter(self.weight.clone()))
+        # if self.bias is not None:
+        #     self.register_parameter('specific_bias', nn.Parameter(self.bias.clone()))
+        self.scale = 3
+        
 
-        self.register_parameter(name = 'B1_residual', param = torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
-        self.register_parameter(name = 'B1_indicator', param = torch.nn.Parameter(torch.ones([1])*.15))
+        self.space_score_1 = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
+        if self.weight.shape[0] >= 8 and self.weight.shape[1] >= 8:
+            self.channel_score1_1 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
+            self.channel_score2_1 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
+            self.channel_score_1 = None
+        else:
+            self.channel_score_1 = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
 
-        self.register_parameter(name = 'B2_residual', param = torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
-        self.register_parameter(name = 'B2_indicator', param = torch.nn.Parameter(torch.ones([1])*.15))
+        self.space_score_2 = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
+        if self.weight.shape[0] >= 3 and self.weight.shape[1] >= 3:
+            self.channel_score1_2 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
+            self.channel_score2_2 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
+            self.channel_score_2 = None
+        else:
+            self.channel_score_2 = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
 
-        self.register_parameter(name='B3_residual', param=torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
-        self.register_parameter(name='B3_indicator', param=torch.nn.Parameter(torch.ones([1]) * .15))
+        self.space_score_3 = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
+        if self.weight.shape[0] >= 3 and self.weight.shape[1] >= 3:
+            self.channel_score1_3 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
+            self.channel_score2_3 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
+            self.channel_score_3 = None
+        else:
+            self.channel_score_3 = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
 
+
+
+
+
+
+        # self.register_parameter('specific_weight', nn.Parameter(self.weight.clone()))
+        self.register_parameter(name = 'B1_residual', param = nn.Parameter(self.weight.clone()))
+        # self.register_parameter(name = 'B1_residual', param = torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
+        # self.register_parameter(name = 'B1_indicator', param = torch.nn.Parameter(torch.ones([1])*.15))
+
+        # self.register_parameter(name = 'B2_residual', param = torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
+        self.register_parameter(name = 'B2_residual', param = nn.Parameter(self.weight.clone()))
+        # self.register_parameter(name = 'B2_indicator', param = torch.nn.Parameter(torch.ones([1])*.15))
+
+        # self.register_parameter(name='B3_residual', param=torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
+        self.register_parameter(name = 'B3_residual', param = nn.Parameter(self.weight.clone()))
+        # self.register_parameter(name='B3_indicator', param=torch.nn.Parameter(torch.ones([1]) * .15))
+        # import pdb;pdb.set_trace()
+        
+        # import pdb;pdb.set_trace()
+        if self.channel_score_1 == None:
+            channel_score_1 = torch.einsum("ab,cd->acbd", self.channel_score1_1, self.channel_score2_1).reshape(
+                    self.weight.shape[0], self.weight.shape[1])
+            score_1 = channel_score_1[:, :, None, None] * self.space_score_1[None, None, :, :]
+        else:
+            score_1 = self.channel_score_1[:, :, None, None] * self.space_score_1[None, None, :, :]
+        mean_score_1 = score_1.mean().item()
+        std_score_1 = score_1.std().item()
+        threshold_1 = mean_score_1 + 0.5 * std_score_1  # 选择合适的 k 值
+        
+        if self.channel_score_2 == None:
+            channel_score_2 = torch.einsum("ab,cd->acbd", self.channel_score1_2, self.channel_score2_2).reshape(
+            self.weight.shape[0], self.weight.shape[1])
+            score_2 = channel_score_2[:, :, None, None] * self.space_score_2[None, None, :, :]
+        else:
+            score_2 = self.channel_score_2[:, :, None, None] * self.space_score_2[None, None, :, :]
+        mean_score_2 = score_2.mean().item()
+        std_score_2 = score_2.std().item()
+        threshold_2 = mean_score_2 + 0.5 * std_score_2  # 选择合适的 k 值
+        
+        
+        if self.channel_score_3 == None:
+            channel_score_3 = torch.einsum("ab,cd->acbd", self.channel_score1_3, self.channel_score2_3).reshape(
+            self.weight.shape[0], self.weight.shape[1])
+            score_3 = channel_score_3[:, :, None, None] * self.space_score_3[None, None, :, :]
+        else:
+            score_3 = self.channel_score_3[:, :, None, None] * self.space_score_3[None, None, :, :]
+        mean_score_3 = score_3.mean().item()
+        std_score_3 = score_3.std().item()
+        threshold_3 = mean_score_3 + 0.5 * std_score_3  # 选择合适的 k 值
+        # self.B1_indicator = nn.Parameter(torch.tensor([0.0]))
+        # self.B2_indicator = nn.Parameter(torch.tensor([0.0]))
+        # self.B3_indicator = nn.Parameter(torch.tensor([0.0]))
+        
+        
+        self.score_1 = binarizer_fn(score_1, threshold_1)
+        self.score_2 = binarizer_fn(score_2, threshold_2)
+        self.score_3 = binarizer_fn(score_3, threshold_3)
+        # self.B1_indicator.data = score_1
+        # self.B2_indicator.data= score_2
+        # self.B3_indicator.data = score_3
+        # import pdb;pdb.set_trace()
+        # self.register_parameter(name = 'B1_indicator',  param=torch.nn.Parameter(torch.ones([1]) * score_1))
+        # self.register_parameter(name = 'B2_indicator', param = torch.nn.Parameter(torch.ones([1]) * score_2))
+        # self.register_parameter(name = 'B3_indicator', param = torch.nn.Parameter(torch.ones([1]) * score_3))
+        
+        
+        
         self.weight.requires_grad = False
         self.weight.grad = None
     def forward(self, x ,flag = [1,0,0]):
         #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = self.B1_residual.device
+        flag_tensor = flag#torch.tensor(np.array(flag))#,device=device
+        
+        # self.B1_residual=self.B1_residual.to(device)
+        self.score_1=self.score_1.to(device)
+        self.score_2=self.score_2.to(device)
+        self.score_3=self.score_3.to(device)
 
-        flag_tensor = flag #torch.tensor(np.array(flag))#,device=device
-
-
-        I1 = BinarizeIndictator.apply(self.B1_indicator)
-        I2 = BinarizeIndictator.apply(self.B2_indicator)
-        I3 = BinarizeIndictator.apply(self.B3_indicator)
-
+        self.weight = self.weight.to(device)
         w = self.weight
-        x_ = F.conv2d(x, w,self.bias,self.stride,self.padding,self.dilation,self.groups)
+        # import pdb;pdb.set_trace()
+        # x_ = F.conv2d(x, w,self.bias,self.stride,self.padding,self.dilation,self.groups)
             #+ I1 * self.B1_residual + I2 * self.B2_residual + I3* self.B3_residual
-
-        x1 = flag_tensor[0] * I1 *  F.conv2d(x, self.B1_residual ,self.bias,self.stride)
-        x2 = flag_tensor[1] * I2 *  F.conv2d(x, self.B2_residual, self.bias, self.stride)
-        x3 = flag_tensor[2] * I3 *  F.conv2d(x, self.B3_residual, self.bias, self.stride)
-        x = x_ + x1 + x2+ x3
+        # import pdb;pdb.set_trace()
+        weight1 =  self.score_1 * self.weight + (1 -  self.score_1) * self.B1_residual
+        weight2 = self.score_2 * self.weight + (1 - self.score_2) * self.B2_residual
+        weight3 = self.score_3 * self.weight + (1 - self.score_3) * self.B3_residual
+        x1 = flag_tensor[0] * F.conv2d(x, weight1 ,self.bias,self.stride,self.padding)
+        x2 = flag_tensor[1] * F.conv2d(x, weight2, self.bias, self.stride,self.padding)
+        x3 = flag_tensor[2] * F.conv2d(x, weight3, self.bias, self.stride,self.padding)
+        # import pdb;pdb.set_trace()
+        # x = x_ + x1 + x2+ x3
+        x = x1 + x2+ x3
 
         return x
 
@@ -281,9 +431,11 @@ class UNet(nn.Module):
 
     def getIndicators_B2(self):
         indicators = []
+        
         for i in self.named_parameters():
             if 'B2_indicator' in i[0]:
                 indicators.append(i[1])
+        # import pdb;pdb.set_trace()
         return indicators
     def getIndicators_B3(self):
         indicators = []
@@ -296,8 +448,10 @@ class UNet(nn.Module):
         #if self.training:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         flag = torch.tensor(np.array(flag),device=device)
+        # flag = torch.tensor(np.array(flag))
         x_2 = F.interpolate(x, scale_factor=0.5)
         x_4 = F.interpolate(x_2, scale_factor=0.5)
+        
         z2 = self.SCM2(x_2,flag = flag)
         z4 = self.SCM1(x_4,flag = flag)
 
@@ -324,14 +478,14 @@ class UNet(nn.Module):
         res2 = self.AFFs[1](z12, res2, z42 , flag = flag)
         res1 = self.AFFs[0](res1, z21, z41 , flag = flag)
         # -----------------------------inter-------------------#
-
+        
         z = self.Decoder[0](z, flag = flag)
         z = self.feat_extract[3](z, flag = flag)
         z = torch.cat([z, res2], dim=1)
         z = self.Convs[0](z, flag = flag)
         z = self.Decoder[1](z, flag = flag)
         z = self.feat_extract[4](z, flag = flag)
-
+        
         z = torch.cat([z, res1], dim=1)
         z = self.Convs[1](z, flag = flag)
         z = self.Decoder[2](z, flag = flag)
@@ -414,4 +568,5 @@ if __name__ == "__main__":
 
 
     print_indictor(indictor)
+
 

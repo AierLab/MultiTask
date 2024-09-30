@@ -244,7 +244,7 @@ class depth_loss(nn.Module):
         self.criterion = nn.L1Loss()
 
         self.encoder = networks.ResnetEncoder(18, False)
-        encoder_path = '/ghome/zhuyr/UDC_codes/other_methods/ADDS-DepthNet-main/pretrained_model/encoder.pth'
+        encoder_path = '/mnt/pipeline_1/weight/encoder.pth'
         loaded_dict_enc = torch.load(encoder_path, map_location=device)
 
         # extract the height and width of image that this model was trained with
@@ -258,7 +258,7 @@ class depth_loss(nn.Module):
         #print("   Loading pretrained decoder")
         self.depth_decoder = networks.DepthDecoder(num_ch_enc=self.encoder.num_ch_enc,
                                                    scales=range(4))
-        depth_decoder_path = '/ghome/zhuyr/UDC_codes/other_methods/ADDS-DepthNet-main/pretrained_model/depth.pth'
+        depth_decoder_path = '/mnt/pipeline_1/weight/depth.pth'
         loaded_dict = torch.load(depth_decoder_path, map_location=device)
         self.depth_decoder.load_state_dict(loaded_dict)
         self.depth_decoder.to(device)

@@ -66,9 +66,28 @@ class my_dataset(Dataset):
 
         self.crop_size = crop_size
     def __getitem__(self, index):
+        # A:snow100     B:outdoor_rain      C:raindrop
         data_IN_A, data_GT_A, img_name_A, gt_name_A = self.read_imgs_pair(self.imgs_in_A[index], self.imgs_gt_A[index], self.train_transform, self.crop_size)
-        data_IN_B, data_GT_B, img_name_B, gt_name_B = self.read_imgs_pair(self.imgs_in_B[index], self.imgs_gt_B[index], self.train_transform, self.crop_size)
-        data_IN_C, data_GT_C, img_name_C, gt_name_C = self.read_imgs_pair(self.imgs_in_C[index], self.imgs_gt_C[index], self.train_transform, self.crop_size)
+        
+        # ----------------------------------------outdoor_rain----------------------------------------
+        img_name = self.imgs_in_B[index]
+        root = img_name[:img_name.rfind("/")].rsplit("/", 1)[0]
+        oneimg_name = img_name[img_name.rfind("/")+1:img_name.rfind("\n")]
+        oneimg_name_gt = oneimg_name[:oneimg_name.find("_s")] + ".png"
+        imgs_gt_B_current = root + '/gt/' + oneimg_name_gt
+        data_IN_B, data_GT_B, img_name_B, gt_name_B = self.read_imgs_pair(self.imgs_in_B[index], imgs_gt_B_current, self.train_transform, self.crop_size)
+        
+        # ----------------------------------------raindrop----------------------------------------
+        img_name = self.imgs_in_C[index]
+        root = img_name[:img_name.rfind("/")].rsplit("/", 1)[0]
+        oneimg_name = img_name[img_name.rfind("/")+1:img_name.rfind("\n")]
+        oneimg_name_gt = oneimg_name[:oneimg_name.find("_")] + "_clean"+".png"
+        imgs_gt_C_current = root + '/gt/' + oneimg_name_gt
+        data_IN_C, data_GT_C, img_name_C, gt_name_C = self.read_imgs_pair(self.imgs_in_C[index], imgs_gt_C_current, self.train_transform, self.crop_size)
+        
+        
+        # data_IN_B, data_GT_B, img_name_B, gt_name_B = self.read_imgs_pair(self.imgs_in_B[index], self.imgs_gt_B[index], self.train_transform, self.crop_size)
+        # data_IN_C, data_GT_C, img_name_C, gt_name_C = self.read_imgs_pair(self.imgs_in_C[index], self.imgs_gt_C[index], self.train_transform, self.crop_size)
 
         data_A = [data_IN_A, data_GT_A, img_name_A, gt_name_A]
         data_B = [data_IN_B, data_GT_B, img_name_B, gt_name_B]
@@ -87,6 +106,7 @@ class my_dataset(Dataset):
         data_IN_A, data_GT_A = transform(in_img_A, gt_img_A, crop_size)
 
         return data_IN_A, data_GT_A, img_name_A, gt_name_A
+    
     def augment_img(self, img, mode=0):
         """图片随机旋转"""
         if mode == 0:

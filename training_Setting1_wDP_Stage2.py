@@ -53,30 +53,30 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_R1K_H500_S2k_JointPre_PP_Tri") # modify the experiments name-->modify all save path
-parser.add_argument('--unified_path', type=str,default=  '/gdata2/zhuyr/Weather/')
+parser.add_argument('--experiment_name', type=str,default= "training_try") # modify the experiments name-->modify all save path
+parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
-parser.add_argument('--training_in_path', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/all_trainingData/synthetic/')
-parser.add_argument('--training_gt_path', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/all_trainingData/gt/')
+parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
+parser.add_argument('--training_gt_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/gt/')
 
-parser.add_argument('--training_in_pathRain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Train/in_0917/')
-parser.add_argument('--training_gt_pathRain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Train/gt_0917/')
+parser.add_argument('--training_in_pathRain', type=str,default= '/mnt/pipeline_1/set1/rain/train/in/')
+parser.add_argument('--training_gt_pathRain', type=str,default= '/mnt/pipeline_1/set1/rain/train/gt/')
 
-parser.add_argument('--training_in_pathRD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/train/train/data/')#  RainDrop 1110 pairs
-parser.add_argument('--training_gt_pathRD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/train/train/gt/')
+parser.add_argument('--training_in_pathRD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/train/data/')#  RainDrop 1110 pairs
+parser.add_argument('--training_gt_pathRD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/train/gt/')
 
 
-parser.add_argument('--writer_dir', type=str, default= '/ghome/zhuyr/UDC_codes/writer_logs/')
-parser.add_argument('--logging_path', type=str, default= '/ghome/zhuyr/UDC_codes/logging/')
+parser.add_argument('--writer_dir', type=str, default= '/mnt/pipeline_1/MLT/writer_logs/')
+parser.add_argument('--logging_path', type=str, default= '/mnt/pipeline_1/MLT/logging/')
 
-parser.add_argument('--eval_in_path_RD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/test_a/test_a/data-re/')
-parser.add_argument('--eval_gt_path_RD', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDrop/test_a/test_a/gt-re/')
+parser.add_argument('--eval_in_path_RD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/test_a/data/')
+parser.add_argument('--eval_gt_path_RD', type=str,default= '/mnt/pipeline_1/set1/rain_drop/test_a/gt/')
 
-parser.add_argument('--eval_in_path_L', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/test/Snow100K-L/synthetic/')
-parser.add_argument('--eval_gt_path_L', type=str,default= '/gdata2/zhuyr/Weather/Data/Snow/test/Snow100K-L/gt/')
+parser.add_argument('--eval_in_path_L', type=str,default= '/mnt/pipeline_1/set1/snow/media/jdway/GameSSD/overlapping/test/Snow100K-L/synthetic/')
+parser.add_argument('--eval_gt_path_L', type=str,default= '/mnt/pipeline_1/set1/snow/media/jdway/GameSSD/overlapping/test/Snow100K-L/gt/')
 
-parser.add_argument('--eval_in_path_Rain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Test/in/')
-parser.add_argument('--eval_gt_path_Rain', type=str,default= '/gdata2/zhuyr/Weather/Data/Rain/HeavyRain/Test/gt_re/')
+parser.add_argument('--eval_in_path_Rain', type=str,default= '/mnt/pipeline_1/set1/rain/train/in/')
+parser.add_argument('--eval_gt_path_Rain', type=str,default= '/mnt/pipeline_1/set1/rain/train/gt/')
 #training setting
 parser.add_argument('--EPOCH', type=int, default= 180)
 parser.add_argument('--T_period', type=int, default= 60)  # CosineAnnealingWarmRestarts
@@ -93,7 +93,7 @@ parser.add_argument('--VGG_lamda', type=float, default= 0.1)
 parser.add_argument('--debug', type=bool, default= False)
 parser.add_argument('--lam', type=float, default= 0.1)
 parser.add_argument('--flag', type=str, default= 'K1')
-parser.add_argument('--pre_model', type=str,default= '/gdata2/zhuyr/Weather/training_Setting1_PP1004-2/net_epoch_88.pth')
+parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weather/training_stage1/net_epoch_99.pth')
 
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
@@ -209,6 +209,7 @@ def print_param_number(net):
 
 if __name__ == '__main__':
     if args.flag == 'K1':
+        # from networks.Network_Stage2_K1_Flag import UNet
         from networks.Network_Stage2_K1_Flag import UNet
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
@@ -241,7 +242,7 @@ if __name__ == '__main__':
     loss_char= losses.CharbonnierLoss()
 
     vgg = models.vgg16(pretrained=False)
-    vgg.load_state_dict(torch.load('/gdata2/zhuyr/VGG/vgg16-397923af.pth'))
+    vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
     vgg_model = vgg_model.to(device)
     for param in vgg_model.parameters():
@@ -304,7 +305,7 @@ if __name__ == '__main__':
             # ============================== data A  ============================== #
             net.module.zero_grad()
             optimizerG_B1.module.zero_grad()
-
+            # import pdb;pdb.set_trace()
             train_output_A = net(inputs_A, flag = [1,0,0])
             input_PSNR_A = compute_psnr(inputs_A, labels_A)
             trian_PSNR_A = compute_psnr(train_output_A, labels_A)
@@ -316,7 +317,7 @@ if __name__ == '__main__':
             input_PSNR_all_A += input_PSNR_A
             train_PSNR_all_A += trian_PSNR_A
 
-            g_lossA.backward()
+            g_lossA.backward(retain_graph=True)
             optimizerG_B1.module.step()
 
             # ============================== data B  ============================== #
@@ -336,7 +337,7 @@ if __name__ == '__main__':
             input_PSNR_all_B += input_PSNR_B
             train_PSNR_all_B += trian_PSNR_B
 
-            g_lossB.backward()
+            g_lossB.backward(retain_graph=True)
             optimizerG_B1.module.step()
             # ============================== data C  ============================== #
             net.module.zero_grad()
