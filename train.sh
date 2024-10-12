@@ -10,7 +10,7 @@ export MASTER_ADDR='localhost'  # 或者替换为主节点的 IP 地址
 export CUDA_VISIBLE_DEVICES=2,3,4,5
 
 # 运行Python训练脚本
-python /home/4paradigm/WGWS-Net/train_share.py \
+python /home/4paradigm/WGWS-Net/train_mult.py \
 
     --lam 0.008 \
     --VGG_lamda 0.2 \
