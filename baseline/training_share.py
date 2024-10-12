@@ -2,7 +2,7 @@ import os,cv2,time,torchvision,argparse,logging,sys,os,gc
 import torch,math,random
 import numpy as np
 from tqdm import tqdm
-import torch.distributed as dist
+
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset,DataLoader
@@ -54,7 +54,7 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_try_stage2_share") # modify the experiments name-->modify all save path
+parser.add_argument('--experiment_name', type=str,default= "training_try_stage2") # modify the experiments name-->modify all save path
 parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
@@ -99,8 +99,6 @@ parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weathe
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
 parser.add_argument('--num_block', type=int, default= 6)
-parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
-parser.add_argument('--rank', type=int, help='rank of distributed processes')
 args = parser.parse_args()
 
 
@@ -134,6 +132,16 @@ trans_eval = transforms.Compose(
         ])
 logging.info(f'begin testing! ')
 print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+# print("=="*50)
+# def check_dataset(in_path, gt_path,name ='RD'):
+#     print( "Check {} pairs({}) ???: {} ".format(name,len(in_path), os.listdir(in_path)==os.listdir(gt_path)) )
+# check_dataset(args.eval_in_path_RD,args.eval_gt_path_RD,'val-RD' )
+# check_dataset(args.eval_in_path_Rain,args.eval_gt_path_Rain,'val-Rain' )
+# check_dataset(args.eval_in_path_L,args.eval_gt_path_L,'val-Snow-L' )
+# check_dataset(args.training_in_path,args.training_gt_path,'Train_Snow' )
+# check_dataset(args.training_in_pathRain,args.training_gt_pathRain,'Train_Rain' )
+# check_dataset(args.training_in_pathRD,args.training_gt_pathRD,'Train_RD' )
+# print("=="*50)
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
@@ -169,17 +177,13 @@ def save_imgs_for_visual(path,inputs,labels,outputs):
     torchvision.utils.save_image([inputs.cpu()[0], labels.cpu()[0], outputs.cpu()[0]], path,nrow=3, padding=0)
 
 def get_training_data(fix_sample=fix_sample, Crop_patches=args.Crop_patches):
-    # A:snow100     B:outdoor_rain      C:raindrop
     rootA_in = args.training_in_path
     rootA_label = args.training_gt_path
-    rootA_txt = '/mnt/pipeline_1/set1/data_txt/train/snow_images.txt'
     rootB_in = args.training_in_pathRain
     rootB_label = args.training_gt_pathRain
-    rootB_txt = '/mnt/pipeline_1/set1/data_txt/train/rain.txt'
     rootC_in = args.training_in_pathRD
     rootC_label = args.training_gt_pathRD
-    rootC_txt = '/mnt/pipeline_1/set1/data_txt/train/raindrop_images.txt'
-    train_datasets = my_dataset(rootA_in, rootA_label,rootA_txt,rootB_in, rootB_label,rootB_txt,rootC_in, rootC_label,rootC_txt,crop_size =Crop_patches,
+    train_datasets = my_dataset(rootA_in, rootA_label,rootA_txt,rootB_in, rootB_label,rootC_in, rootC_label,crop_size =Crop_patches,
                                 fix_sample_A = fix_sample, fix_sample_B = fix_sample,fix_sample_C = fix_sample)
     train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers= 6 ,shuffle=True)
     print('len(train_loader):' ,len(train_loader))
@@ -205,17 +209,6 @@ def print_param_number(net):
 
 
 if __name__ == '__main__':
-    os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "29500"
-    rank = int(os.environ.get("RANK", 0))
-    world_size = 4
-    # import pdb;pdb.set_trace()
-    # 初始化分布式进程组
-    dist.init_process_group(backend="nccl", rank=rank, world_size=world_size)
-    print('process_group is ok!')
-    # dist.init_process_group(backend='nccl', init_method='tcp://localhost:29502', rank=rank, world_size=world_size)
-
-
     if args.flag == 'K1':
         # from networks.Network_Stage2_K1_Flag import UNet
         from networks.Network_Stage2_share import UNet
@@ -227,14 +220,8 @@ if __name__ == '__main__':
     pretrained_model = torch.load(args.pre_model)
     net.load_state_dict(pretrained_model, strict=False)
 
-    # net = nn.DataParallel(net, device_ids= device_ids)
+    net = nn.DataParallel(net, device_ids= device_ids)
     net.to(device)
-    num_gpus = torch.cuda.device_count()
-    if num_gpus > 1:
-       net = nn.parallel.DistributedDataParallel(net, device_ids=[args.local_rank],
-                                                output_device=args.local_rank)
-    # net = nn.parallel.DistributedDataParallel(net)
-    # net.to(device)
     print_param_number(net)
 
     train_loader = get_training_data()
@@ -250,8 +237,8 @@ if __name__ == '__main__':
     optimizerG_B1 = optim.Adam(net.parameters(), lr=args.learning_rate,betas=(0.9,0.999))
     scheduler_B1 = CosineAnnealingWarmRestarts(optimizerG_B1, T_0=args.T_period,  T_mult=1) #MultiStepLR(optimizerG_B1, milestones=[5,20,40,60,80], gamma=0.5)# args.milestep   [5,20,40,60,80]
     #
-    # optimizerG_B1 = nn.DataParallel(optimizerG_B1, device_ids=device_ids)
-    # scheduler_B1 = nn.DataParallel(scheduler_B1, device_ids=device_ids)
+    optimizerG_B1 = nn.DataParallel(optimizerG_B1, device_ids=device_ids)
+    scheduler_B1 = nn.DataParallel(scheduler_B1, device_ids=device_ids)
 
     loss_char= losses.CharbonnierLoss()
 
@@ -298,10 +285,10 @@ if __name__ == '__main__':
         for i,train_data in enumerate(train_loader,0):#   (data_in, label)  ----- train_data
             #data_A, data_B = train_data
             data_A, data_B, data_C = train_data
-            # if i ==0:
-            #     print("data_A.size(),in_GT:",data_A[0].size(), data_A[1].size())  # Snow
-            #     print("data_B.size(),in_GT:", data_B[0].size(), data_B[1].size()) # Rain
-            #     print("data_C.size(),in_GT:", data_C[0].size(), data_C[1].size()) # RD
+            if i ==0:
+                print("data_A.size(),in_GT:",data_A[0].size(), data_A[1].size())  # Snow
+                print("data_B.size(),in_GT:", data_B[0].size(), data_B[1].size()) # Rain
+                print("data_C.size(),in_GT:", data_C[0].size(), data_C[1].size()) # RD
 
             iter_nums +=1
             net.train()
@@ -323,7 +310,6 @@ if __name__ == '__main__':
             train_output_A = net(inputs_A, flag = [1,0,0])
             input_PSNR_A = compute_psnr(inputs_A, labels_A)
             trian_PSNR_A = compute_psnr(train_output_A, labels_A)
-            # import pdb;pdb.set_trace()
 
             loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)
             loss2 = args.lam * sum([abs(i) for i in net.module.getIndicators_B1()]) /1000
@@ -384,6 +370,17 @@ if __name__ == '__main__':
             total_loss5 += loss5.item()
             # total_loss6 += loss6.item()
 
+            # Percent_B1 = torch.mean((torch.tensor(net.module.getIndicators_B1()) >= .1).float())
+            # Percent_B2 = torch.mean((torch.tensor(net.module.getIndicators_B2()) >= .1).float())
+            # Percent_B3 = torch.mean((torch.tensor(net.module.getIndicators_B3()) >= .1).float())
+            
+            # Percent_B1_1 = torch.mean((torch.tensor(net.module.getIndicators_B1()) >= .2).float())
+            # Percent_B2_1 = torch.mean((torch.tensor(net.module.getIndicators_B2()) >= .2).float())
+            # Percent_B3_1 = torch.mean((torch.tensor(net.module.getIndicators_B3()) >= .2).float())
+            
+            # Percent_B1_2 = torch.mean((torch.tensor(net.module.getIndicators_B1()) >= .4).float())
+            # Percent_B2_2 = torch.mean((torch.tensor(net.module.getIndicators_B2()) >= .4).float())
+            # Percent_B3_2 = torch.mean((torch.tensor(net.module.getIndicators_B3()) >= .4).float())
 
 
             if (i+1) % args.print_frequency ==0 and i >1:

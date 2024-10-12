@@ -13,14 +13,15 @@ from datasets.dataset_pairs_wRandomSample import my_dataset_eval
 # from datasets.dataset_pairs_wRandomSample import my_dataset,my_dataset_eval
 import torchvision.transforms as transforms
 from torch.optim.lr_scheduler import CosineAnnealingLR,CosineAnnealingWarmRestarts,MultiStepLR
-
+import torch.distributed as dist
+import torch.multiprocessing as mp
 
 from utils.UTILS import compute_psnr
 import loss.losses as losses
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import models
 from loss.perceptual import LossNetwork
-
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 sys.path.append(os.getcwd())
 def setup_seed(seed):
@@ -100,7 +101,7 @@ parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weathe
 parser.add_argument('--base_channel', type = int, default= 20)
 parser.add_argument('--num_block', type=int, default= 6)
 parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
-parser.add_argument('--rank', type=int, help='rank of distributed processes')
+# parser.add_argument('--rank', type=int, help='rank of distributed processes')
 args = parser.parse_args()
 
 
@@ -204,50 +205,28 @@ def print_param_number(net):
     print(f'Trainable params: {Trainable_params}')
 
 
-if __name__ == '__main__':
-    os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "29500"
-    rank = int(os.environ.get("RANK", 0))
-    world_size = 4
-    # import pdb;pdb.set_trace()
-    # 初始化分布式进程组
-    dist.init_process_group(backend="nccl", rank=rank, world_size=world_size)
-    print('process_group is ok!')
-    # dist.init_process_group(backend='nccl', init_method='tcp://localhost:29502', rank=rank, world_size=world_size)
-
-
+def example(rank, world_size):
+    
+    #初始化
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
     if args.flag == 'K1':
-        # from networks.Network_Stage2_K1_Flag import UNet
+            # from networks.Network_Stage2_K1_Flag import UNet
         from networks.Network_Stage2_share import UNet
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
-
-    net = UNet(base_channel=base_channel, num_res=num_res)
-    net_eval = UNet(base_channel=base_channel, num_res=num_res)
+    net = UNet(base_channel=base_channel, num_res=num_res).to(rank)
+    net_eval = UNet(base_channel=base_channel, num_res=num_res).to(rank)
     pretrained_model = torch.load(args.pre_model)
     net.load_state_dict(pretrained_model, strict=False)
-
-    # net = nn.DataParallel(net, device_ids= device_ids)
-    net.to(device)
-    num_gpus = torch.cuda.device_count()
-    if num_gpus > 1:
-       net = nn.parallel.DistributedDataParallel(net, device_ids=[args.local_rank],
-                                                output_device=args.local_rank)
-    # net = nn.parallel.DistributedDataParallel(net)
-    # net.to(device)
-    print_param_number(net)
-
+    ddp_model = DDP(net, device_ids=[rank])
+    
+    #数据加载
     train_loader = get_training_data()
     eval_loader_RD = get_eval_data(val_in_path=args.eval_in_path_RD,val_gt_path =args.eval_gt_path_RD)
     eval_loader_Rain = get_eval_data(val_in_path=args.eval_in_path_Rain, val_gt_path=args.eval_gt_path_Rain)
     eval_loader_L = get_eval_data(val_in_path=args.eval_in_path_L, val_gt_path =args.eval_gt_path_L)
-
-
-    for name, param in net.named_parameters():
-        if "B1" not in name and "B2" not in name and "B3" not in name:
-            param.requires_grad = False
-
-    optimizerG_B1 = optim.Adam(net.parameters(), lr=args.learning_rate,betas=(0.9,0.999))
+       
+    optimizerG_B1 = optim.Adam(ddp_model.parameters(), lr=args.learning_rate,betas=(0.9,0.999))
     scheduler_B1 = CosineAnnealingWarmRestarts(optimizerG_B1, T_0=args.T_period,  T_mult=1) #MultiStepLR(optimizerG_B1, milestones=[5,20,40,60,80], gamma=0.5)# args.milestep   [5,20,40,60,80]
     #
     # optimizerG_B1 = nn.DataParallel(optimizerG_B1, device_ids=device_ids)
@@ -258,13 +237,12 @@ if __name__ == '__main__':
     vgg = models.vgg16(pretrained=False)
     vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
-    vgg_model = vgg_model.to(device)
+    vgg_model = vgg_model.to(rank)
     for param in vgg_model.parameters():
         param.requires_grad = False
     loss_network = LossNetwork(vgg_model)
     loss_network.eval()
-
-
+    
     step =0
     max_psnr_val_L = args.max_psnr
     max_psnr_val_Rain = args.max_psnr
@@ -291,34 +269,37 @@ if __name__ == '__main__':
     Frequncy_eval_save = len(train_loader)
 
     iter_nums = 0
+    # torch.autograd.set_detect_anomaly(True)
     for epoch in range(args.EPOCH):
-        scheduler_B1.module.step(epoch)
+        # scheduler_B1.module.step(epoch)
+        # optimizerG_B1.step()
+        scheduler_B1.step(epoch)
 
         st = time.time()
         for i,train_data in enumerate(train_loader,0):#   (data_in, label)  ----- train_data
             #data_A, data_B = train_data
             data_A, data_B, data_C = train_data
-            # if i ==0:
-            #     print("data_A.size(),in_GT:",data_A[0].size(), data_A[1].size())  # Snow
-            #     print("data_B.size(),in_GT:", data_B[0].size(), data_B[1].size()) # Rain
-            #     print("data_C.size(),in_GT:", data_C[0].size(), data_C[1].size()) # RD
+            if i ==0:
+                print("data_A.size(),in_GT:",data_A[0].size(), data_A[1].size())  # Snow
+                print("data_B.size(),in_GT:", data_B[0].size(), data_B[1].size()) # Rain
+                print("data_C.size(),in_GT:", data_C[0].size(), data_C[1].size()) # RD
 
-            iter_nums +=1
+            iter_nums = iter_nums + 1
             net.train()
 
 
-            inputs_A = Variable(data_A[0]).to(device)
-            labels_A = Variable(data_A[1]).to(device)
-            inputs_B = Variable(data_B[0]).to(device)
-            labels_B = Variable(data_B[1]).to(device)
-            inputs_C = Variable(data_C[0]).to(device)
-            labels_C = Variable(data_C[1]).to(device)
+            inputs_A = Variable(data_A[0]).to(rank)
+            labels_A = Variable(data_A[1]).to(rank)
+            inputs_B = Variable(data_B[0]).to(rank)
+            labels_B = Variable(data_B[1]).to(rank)
+            inputs_C = Variable(data_C[0]).to(rank)
+            labels_C = Variable(data_C[1]).to(rank)
             #--------------------------------------------optimizerG_B1---------------------------------------------#
 
 
             # ============================== data A  ============================== #
-            net.module.zero_grad()
-            optimizerG_B1.module.zero_grad()
+            net.zero_grad()
+            optimizerG_B1.zero_grad()
             # import pdb;pdb.set_trace()
             train_output_A = net(inputs_A, flag = [1,0,0])
             input_PSNR_A = compute_psnr(inputs_A, labels_A)
@@ -326,13 +307,13 @@ if __name__ == '__main__':
             # import pdb;pdb.set_trace()
 
             loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)
-            loss2 = args.lam * sum([abs(i) for i in net.module.getIndicators_B1()]) /1000
-            g_lossA = loss1 + loss2
-            total_lossA += g_lossA.item()
-            input_PSNR_all_A += input_PSNR_A
-            train_PSNR_all_A += trian_PSNR_A
 
-            g_lossA.backward(retain_graph=True)
+            g_lossA = loss1
+            total_lossA = total_lossA + g_lossA.item()
+            input_PSNR_all_A = input_PSNR_all_A + input_PSNR_A
+            train_PSNR_all_A = train_PSNR_all_A + trian_PSNR_A
+
+            g_lossA.backward()
             optimizerG_B1.module.step()
 
             # ============================== data B  ============================== #
@@ -344,15 +325,14 @@ if __name__ == '__main__':
             trian_PSNR_B = compute_psnr(train_output_B, labels_B)
 
             loss3 = F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B)
-            loss4 = args.lam * sum([abs(i) for i in net.module.getIndicators_B2()]) / 1000
 
-            g_lossB = loss3 + loss4
-            total_lossB += g_lossB.item()
+            g_lossB = loss3
+            total_lossB = total_lossB + g_lossB.item()
 
-            input_PSNR_all_B += input_PSNR_B
-            train_PSNR_all_B += trian_PSNR_B
+            input_PSNR_all_B = input_PSNR_all_B + input_PSNR_B
+            train_PSNR_all_B = train_PSNR_all_B + trian_PSNR_B
 
-            g_lossB.backward(retain_graph=True)
+            g_lossB.backward()
             optimizerG_B1.module.step()
             # ============================== data C  ============================== #
             net.module.zero_grad()
@@ -363,42 +343,30 @@ if __name__ == '__main__':
             trian_PSNR_C = compute_psnr(train_output_C, labels_C)
 
             loss5 = F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C)
-            loss6 = args.lam * sum([abs(i) for i in net.module.getIndicators_B3()]) /1000
 
-            g_lossC =  loss5 + loss6
-            total_lossC += g_lossC.item()
-            input_PSNR_all_C += input_PSNR_C
-            train_PSNR_all_C += trian_PSNR_C
 
-            g_lossC.backward(retain_graph=True)
+            g_lossC =  loss5
+            total_lossC  = total_lossC +  g_lossC.item()
+            input_PSNR_all_C = input_PSNR_all_C + input_PSNR_C
+            train_PSNR_all_C = train_PSNR_all_C + trian_PSNR_C
+
+            g_lossC.backward()
             optimizerG_B1.module.step()
 
             g_loss = g_lossA + g_lossB + g_lossC
 
             #-----------------------------------------------------------------------------------------#
-            total_loss += g_loss.item()
-            total_loss1 += loss1.item()
+            total_loss = total_loss + g_loss.item()
+            total_loss1 = total_loss1 + loss1.item()
             # total_loss2 += loss2.item()
-            total_loss3 += loss3.item()
+            total_loss3 = total_loss3 + loss3.item()
             # total_loss4 += loss4.item()
-            total_loss5 += loss5.item()
+            total_loss5 = total_loss5 + loss5.item()
             # total_loss6 += loss6.item()
 
 
 
             if (i+1) % args.print_frequency ==0 and i >1:
-                writer.add_scalars(exper_name +'/training_PSNR' ,{'PSNR_Output_A': train_PSNR_all_A / iter_nums,'PSNR_Input_A': input_PSNR_all_A / iter_nums,
-                                                             'PSNR_Output_B': train_PSNR_all_B / iter_nums,'PSNR_Input_B': input_PSNR_all_B / iter_nums
-                                                             ,'PSNR_Output_C': train_PSNR_all_C / iter_nums,'PSNR_Input_C': input_PSNR_all_C / iter_nums} , iter_nums)
-                writer.add_scalars(exper_name +'/training_Loss' ,{'total_loss_A': total_lossA / iter_nums,'total_loss_B': total_lossB / iter_nums,'total_loss_C': total_lossC/ iter_nums,
-                                                             'loss1': total_loss1 / iter_nums, 'loss3': total_loss3 / iter_nums,
-                                                             'loss5': total_loss5 / iter_nums, 'total loss': total_loss / iter_nums} , iter_nums)
-                writer.add_scalar(exper_name + '/Percent Weights Activated_B1',
-                                  torch.mean((torch.tensor(net.module.getIndicators_B1()) >= .1).float()), iter_nums)
-                writer.add_scalar(exper_name + '/Percent Weights Activated_B2',
-                                  torch.mean((torch.tensor(net.module.getIndicators_B2()) >= .1).float()), iter_nums)
-                writer.add_scalar(exper_name + '/Percent Weights Activated_B3',
-                                  torch.mean((torch.tensor(net.module.getIndicators_B3()) >= .1).float()), iter_nums)
                 print(
                     "[epoch:%d / EPOCH :%d],[%d / %d], [lr: %.7f ],[loss1:%.5f,loss3:%.5f,loss5:%.5f, avg_lossA:%.5f, avg_lossB:%.5f, avg_lossC:%.5f, avg_loss:%.5f],"
                     "[in_PSNR_A: %.3f, out_PSNR_A: %.3f],[in_PSNR_B: %.3f, out_PSNR_B: %.3f],[in_PSNR_C: %.3f, out_PSNR_C: %.3f],"
@@ -406,9 +374,6 @@ if __name__ == '__main__':
                     (epoch,args.EPOCH, i + 1, len(train_loader), optimizerG_B1.module.param_groups[0]["lr"],  loss1.item(),
                      loss3.item(), loss5.item(),total_lossA / iter_nums,total_lossB / iter_nums, total_lossC / iter_nums,total_loss / iter_nums,
                      input_PSNR_A, trian_PSNR_A, input_PSNR_B, trian_PSNR_B, input_PSNR_C, trian_PSNR_C,time.time() - st))
-                # print("[Threshold [0.1],  PercentB1: %.3f, PercentB2: %.3f, PercentB3: %.3f]" % (Percent_B1.item(), Percent_B2.item(), Percent_B3.item()))
-                # print("[Threshold [0.2],  PercentB1: %.3f, PercentB2: %.3f, PercentB3: %.3f]"%(Percent_B1_1.item(), Percent_B2_1.item(), Percent_B3_1.item()))
-                # print("[Threshold [0.4],  PercentB1: %.3f, PercentB2: %.3f, PercentB3: %.3f]"%(Percent_B1_2.item(), Percent_B2_2.item(), Percent_B3_2.item()))
 
                 st = time.time()
             # if args.SAVE_Inter_Results:
@@ -420,3 +385,17 @@ if __name__ == '__main__':
         max_psnr_val_L = test(net= net_eval, save_model = save_model,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])
         max_psnr_val_Rain = test(net=net_eval, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
         max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
+    
+def main():
+    world_size = 1
+    mp.spawn(example,
+        args=(world_size,),
+        nprocs=world_size,
+        join=True)       
+    
+
+
+if __name__ == '__main__':
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "29501"
+    main()

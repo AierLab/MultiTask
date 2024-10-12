@@ -120,26 +120,12 @@ class freeze_conv(nn.Conv2d):
         else:
             self.channel_score_3 = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
 
-
-
-
-
-
-        # self.register_parameter('specific_weight', nn.Parameter(self.weight.clone()))
         self.register_parameter(name = 'B1_residual', param = nn.Parameter(self.weight.clone()))
-        # self.register_parameter(name = 'B1_residual', param = torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
-        # self.register_parameter(name = 'B1_indicator', param = torch.nn.Parameter(torch.ones([1])*.15))
 
-        # self.register_parameter(name = 'B2_residual', param = torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
         self.register_parameter(name = 'B2_residual', param = nn.Parameter(self.weight.clone()))
-        # self.register_parameter(name = 'B2_indicator', param = torch.nn.Parameter(torch.ones([1])*.15))
 
-        # self.register_parameter(name='B3_residual', param=torch.nn.Parameter(torch.zeros([c1,c2,1,1])))
         self.register_parameter(name = 'B3_residual', param = nn.Parameter(self.weight.clone()))
-        # self.register_parameter(name='B3_indicator', param=torch.nn.Parameter(torch.ones([1]) * .15))
-        # import pdb;pdb.set_trace()
-        
-        # import pdb;pdb.set_trace()
+
         if self.channel_score_1 == None:
             channel_score_1 = torch.einsum("ab,cd->acbd", self.channel_score1_1, self.channel_score2_1).reshape(
                     self.weight.shape[0], self.weight.shape[1])
@@ -158,8 +144,7 @@ class freeze_conv(nn.Conv2d):
             score_2 = self.channel_score_2[:, :, None, None] * self.space_score_2[None, None, :, :]
         mean_score_2 = score_2.mean().item()
         std_score_2 = score_2.std().item()
-        threshold_2 = mean_score_2 + 0.5 * std_score_2  # 选择合适的 k 值
-        
+        threshold_2 = mean_score_2 + 0.5 * std_score_2  
         
         if self.channel_score_3 == None:
             channel_score_3 = torch.einsum("ab,cd->acbd", self.channel_score1_3, self.channel_score2_3).reshape(
@@ -178,13 +163,6 @@ class freeze_conv(nn.Conv2d):
         self.score_1 = binarizer_fn(score_1, threshold_1)
         self.score_2 = binarizer_fn(score_2, threshold_2)
         self.score_3 = binarizer_fn(score_3, threshold_3)
-        # self.B1_indicator.data = score_1
-        # self.B2_indicator.data= score_2
-        # self.B3_indicator.data = score_3
-        # import pdb;pdb.set_trace()
-        # self.register_parameter(name = 'B1_indicator',  param=torch.nn.Parameter(torch.ones([1]) * score_1))
-        # self.register_parameter(name = 'B2_indicator', param = torch.nn.Parameter(torch.ones([1]) * score_2))
-        # self.register_parameter(name = 'B3_indicator', param = torch.nn.Parameter(torch.ones([1]) * score_3))
         
         
         
@@ -193,7 +171,9 @@ class freeze_conv(nn.Conv2d):
     def forward(self, x ,flag = [1,0,0]):
         #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         device = self.B1_residual.device
-        flag_tensor = flag#torch.tensor(np.array(flag))#,device=device
+        # flag_tensor = torch.tensor(np.array(flag)).to(device)#,device=device
+        # flag_tensor = torch.tensor(flag, device=device) 
+        flag_tensor = flag.clone().detach().to(device)
         
         # self.B1_residual=self.B1_residual.to(device)
         self.score_1=self.score_1.to(device)
