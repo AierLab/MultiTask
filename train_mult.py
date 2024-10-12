@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch.distributed as dist
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset,DataLoader
+from torch.utils.data import Dataset, DataLoader, DistributedSampler
 from torch.autograd import Variable
 import torch.optim as optim
 from datasets.WSG_dataset import my_dataset
@@ -113,18 +113,18 @@ else:
 exper_name =args.experiment_name
 writer = SummaryWriter(args.writer_dir + exper_name)
 if not os.path.exists(args.writer_dir):
-    os.mkdir(args.writer_dir)
+    os.makedirs(SAVargs.writer_dirE_PATH, exist_ok=True)
 if not os.path.exists(args.logging_path):
-    os.mkdir(args.logging_path)
+    os.makedirs(args.logging_path, exist_ok=True)
 
 unified_path = args.unified_path
 SAVE_PATH =unified_path  + exper_name + '/'
 if not os.path.exists(SAVE_PATH):
-    os.mkdir(SAVE_PATH)
+    os.makedirs(SAVE_PATH, exist_ok=True)
 if args.SAVE_Inter_Results:
     SAVE_Inter_Results_PATH = unified_path + exper_name +'__inter_results/'
     if not os.path.exists(SAVE_Inter_Results_PATH):
-        os.mkdir(SAVE_Inter_Results_PATH)
+        os.makedirs(SAVE_Inter_Results_PATH, exist_ok=True)
 
 base_channel=args.base_channel
 num_res = args.num_block
@@ -207,35 +207,45 @@ def print_param_number(net):
 
 def example(rank, world_size):
     torch.autograd
-    #初始化
-    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+
+    # Initialize process group
+    dist.init_process_group(backend='nccl', rank=rank, world_size=world_size)
+    torch.cuda.set_device(rank)
+    device = torch.device("cuda", rank)
+    
+    # Model initialization
     if args.flag == 'K1':
-            # from networks.Network_Stage2_K1_Flag import UNet
         from networks.Network_Stage2_share import UNet
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
-    net = UNet(base_channel=base_channel, num_res=num_res).to(rank)
-    net_eval = UNet(base_channel=base_channel, num_res=num_res).to(rank)
-    # pretrained_model = torch.load(args.pre_model)
-    # net.load_state_dict(pretrained_model, strict=False)
-    ddp_model = DDP(net, device_ids=[rank])
+    net = UNet(base_channel=base_channel, num_res=num_res)
+    net_eval = UNet(base_channel=base_channel, num_res=num_res)
+    pretrained_model = torch.load(args.pre_model, map_location='cpu')
+    net.load_state_dict(pretrained_model, strict=False)
+    net = DDP(net, device_ids=[rank]) # TODO ddp_model is name matter
     
-    #数据加载
-    train_loader = get_training_data()
-    eval_loader_RD = get_eval_data(val_in_path=args.eval_in_path_RD,val_gt_path =args.eval_gt_path_RD)
-    eval_loader_Rain = get_eval_data(val_in_path=args.eval_in_path_Rain, val_gt_path=args.eval_gt_path_Rain)
-    eval_loader_L = get_eval_data(val_in_path=args.eval_in_path_L, val_gt_path =args.eval_gt_path_L)
-       
-    optimizerG_B1 = optim.Adam(ddp_model.parameters(), lr=args.learning_rate,betas=(0.9,0.999))
-    scheduler_B1 = CosineAnnealingWarmRestarts(optimizerG_B1, T_0=args.T_period,  T_mult=1) #MultiStepLR(optimizerG_B1, milestones=[5,20,40,60,80], gamma=0.5)# args.milestep   [5,20,40,60,80]
-    #
-    # optimizerG_B1 = nn.DataParallel(optimizerG_B1, device_ids=device_ids)
-    # scheduler_B1 = nn.DataParallel(scheduler_B1, device_ids=device_ids)
+    # Data loading with DistributedSampler
+    train_datasets = get_training_data()
+    train_sampler = DistributedSampler(train_datasets, num_replicas=world_size, rank=rank)
+    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers=6, sampler=train_sampler)
+    
+    # Only rank 0 needs to initialize the SummaryWriter and evaluation datasets
+    if rank == 0:
+        writer = SummaryWriter(args.writer_dir + exper_name)
+        eval_loader_RD = get_eval_data(val_in_path=args.eval_in_path_RD, val_gt_path=args.eval_gt_path_RD)
+        eval_loader_Rain = get_eval_data(val_in_path=args.eval_in_path_Rain, val_gt_path=args.eval_gt_path_Rain)
+        eval_loader_L = get_eval_data(val_in_path=args.eval_in_path_L, val_gt_path=args.eval_gt_path_L)
+    else:
+        writer = None
+    
+    # Optimizer and scheduler
+    optimizerG_B1 = optim.Adam(net.parameters(), lr=args.learning_rate, betas=(0.9, 0.999))
+    scheduler_B1 = CosineAnnealingWarmRestarts(optimizerG_B1, T_0=args.T_period, T_mult=1)
 
     loss_char= losses.CharbonnierLoss()
 
-    vgg = models.vgg16(pretrained=False)
-    vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
+    vgg = models.vgg16(pretrained=True) # TODO uncomment this line, and change back to False
+    # vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
     vgg_model = vgg_model.to(rank)
     for param in vgg_model.parameters():
@@ -272,8 +282,7 @@ def example(rank, world_size):
     # TODO check later
     torch.autograd.set_detect_anomaly(True)
     for epoch in range(args.EPOCH):
-        # scheduler_B1.module.step(epoch)
-        # optimizerG_B1.step()
+        train_sampler.set_epoch(epoch)
         scheduler_B1.step(epoch)
 
         st = time.time()
@@ -315,11 +324,11 @@ def example(rank, world_size):
             train_PSNR_all_A = train_PSNR_all_A + trian_PSNR_A
 
             g_lossA.backward()
-            optimizerG_B1.module.step()
+            optimizerG_B1.step()
 
             # ============================== data B  ============================== #
-            net.module.zero_grad()
-            optimizerG_B1.module.zero_grad()
+            net.zero_grad()
+            optimizerG_B1.zero_grad()
 
             train_output_B = net(inputs_B, flag = [0,1,0])
             input_PSNR_B = compute_psnr(inputs_B, labels_B)
@@ -334,10 +343,10 @@ def example(rank, world_size):
             train_PSNR_all_B = train_PSNR_all_B + trian_PSNR_B
 
             g_lossB.backward()
-            optimizerG_B1.module.step()
+            optimizerG_B1.step()
             # ============================== data C  ============================== #
-            net.module.zero_grad()
-            optimizerG_B1.module.zero_grad()
+            net.zero_grad()
+            optimizerG_B1.zero_grad()
 
             train_output_C = net(inputs_C,flag = [0, 0, 1])
             input_PSNR_C = compute_psnr(inputs_C, labels_C)
@@ -352,7 +361,7 @@ def example(rank, world_size):
             train_PSNR_all_C = train_PSNR_all_C + trian_PSNR_C
 
             g_lossC.backward()
-            optimizerG_B1.module.step()
+            optimizerG_B1.step()
 
             g_loss = g_lossA + g_lossB + g_lossC
 
@@ -388,16 +397,15 @@ def example(rank, world_size):
         max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
     
 def main():
-    world_size = 1
-    mp.spawn(example,
-        args=(world_size,),
-        args=(args.rank,),
-        nprocs=world_size,
-        join=True)       
-    
+    try:
+        mp.spawn(example,
+                args=(args.rank,),
+                nprocs=1,
+                join=True)
+    except Exception as ex:
+        print(f"An error occurred: {ex}")     
 
 
 if __name__ == '__main__':
-    os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "29501"
+    os.environ["NCCL_DEBUG"] = "INFO"
     main()
