@@ -217,10 +217,10 @@ def example(rank, world_size):
         from networks.Network_Stage2_share import UNet
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
-    net = UNet(base_channel=base_channel, num_res=num_res).to(device)
+    net = UNet(base_channel=base_channel, num_res=num_res)
     net_eval = UNet(base_channel=base_channel, num_res=num_res)
-    # pretrained_model = torch.load(args.pre_model, map_location='cpu') # FIXME uncomment this line
-    # net.load_state_dict(pretrained_model, strict=False)
+    pretrained_model = torch.load(args.pre_model, map_location='cpu')
+    net.load_state_dict(pretrained_model, strict=False)
     net = DDP(net, device_ids=[rank])
     
     # Data loading with DistributedSampler
