@@ -101,7 +101,7 @@ parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weathe
 parser.add_argument('--base_channel', type = int, default= 20)
 parser.add_argument('--num_block', type=int, default= 6)
 parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
-# parser.add_argument('--rank', type=int, help='rank of distributed processes')
+parser.add_argument('--rank', type=int, help='rank of distributed processes')
 args = parser.parse_args()
 
 
@@ -206,7 +206,7 @@ def print_param_number(net):
 
 
 def example(rank, world_size):
-    
+    torch.autograd
     #初始化
     dist.init_process_group("nccl", rank=rank, world_size=world_size)
     if args.flag == 'K1':
@@ -216,8 +216,8 @@ def example(rank, world_size):
         from networks.Network_Stage2_K3_Flag import UNet
     net = UNet(base_channel=base_channel, num_res=num_res).to(rank)
     net_eval = UNet(base_channel=base_channel, num_res=num_res).to(rank)
-    pretrained_model = torch.load(args.pre_model)
-    net.load_state_dict(pretrained_model, strict=False)
+    # pretrained_model = torch.load(args.pre_model)
+    # net.load_state_dict(pretrained_model, strict=False)
     ddp_model = DDP(net, device_ids=[rank])
     
     #数据加载
@@ -269,7 +269,8 @@ def example(rank, world_size):
     Frequncy_eval_save = len(train_loader)
 
     iter_nums = 0
-    # torch.autograd.set_detect_anomaly(True)
+    # TODO check later
+    torch.autograd.set_detect_anomaly(True)
     for epoch in range(args.EPOCH):
         # scheduler_B1.module.step(epoch)
         # optimizerG_B1.step()
@@ -390,6 +391,7 @@ def main():
     world_size = 1
     mp.spawn(example,
         args=(world_size,),
+        args=(args.rank,),
         nprocs=world_size,
         join=True)       
     
