@@ -93,7 +93,7 @@ class freeze_conv(nn.Conv2d):
         # self.register_parameter('specific_weight', nn.Parameter(self.weight.clone()))
         # if self.bias is not None:
         #     self.register_parameter('specific_bias', nn.Parameter(self.bias.clone()))
-        self.scale = 3
+        self.scale = 1
         
 
         self.space_score_1 = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())

@@ -206,7 +206,8 @@ def print_param_number(net):
 
 
 def example(rank, world_size):
-    
+    torch.autograd
+
     # Initialize process group
     dist.init_process_group(backend='nccl', rank=rank, world_size=world_size)
     torch.cuda.set_device(rank)
@@ -221,7 +222,7 @@ def example(rank, world_size):
     net_eval = UNet(base_channel=base_channel, num_res=num_res)
     pretrained_model = torch.load(args.pre_model, map_location='cpu')
     net.load_state_dict(pretrained_model, strict=False)
-    net = DDP(net, device_ids=[rank])
+    net = DDP(net, device_ids=[rank]) # TODO ddp_model is name matter
     
     # Data loading with DistributedSampler
     train_datasets = get_training_data()
@@ -240,7 +241,7 @@ def example(rank, world_size):
     # Optimizer and scheduler
     optimizerG_B1 = optim.Adam(net.parameters(), lr=args.learning_rate, betas=(0.9, 0.999))
     scheduler_B1 = CosineAnnealingWarmRestarts(optimizerG_B1, T_0=args.T_period, T_mult=1)
-    
+
     loss_char= losses.CharbonnierLoss()
 
     vgg = models.vgg16(pretrained=True) # TODO uncomment this line, and change back to False
@@ -278,7 +279,8 @@ def example(rank, world_size):
     Frequncy_eval_save = len(train_loader)
 
     iter_nums = 0
-    # torch.autograd.set_detect_anomaly(True)
+    # TODO check later
+    torch.autograd.set_detect_anomaly(True)
     for epoch in range(args.EPOCH):
         train_sampler.set_epoch(epoch)
         scheduler_B1.step(epoch)
@@ -402,7 +404,6 @@ def main():
                 join=True)
     except Exception as ex:
         print(f"An error occurred: {ex}")     
-    
 
 
 if __name__ == '__main__':
