@@ -395,11 +395,10 @@ def example(rank, world_size):
         max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
     
 def main():
-    world_size = torch.cuda.device_count()
     try:
         mp.spawn(example,
                 args=(args.rank,),
-                nprocs=world_size,
+                nprocs=1,
                 join=True)
     except Exception as ex:
         print(f"An error occurred: {ex}")     
