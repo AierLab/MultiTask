@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch.distributed as dist
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset,DataLoader
+from torch.utils.data import Dataset, DataLoader, DistributedSampler
 from torch.autograd import Variable
 import torch.optim as optim
 from datasets.WSG_dataset import my_dataset
@@ -101,7 +101,7 @@ parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weathe
 parser.add_argument('--base_channel', type = int, default= 20)
 parser.add_argument('--num_block', type=int, default= 6)
 parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
-# parser.add_argument('--rank', type=int, help='rank of distributed processes')
+parser.add_argument('--rank', type=int, help='rank of distributed processes')
 args = parser.parse_args()
 
 
@@ -398,7 +398,7 @@ def main():
     world_size = torch.cuda.device_count()
     try:
         mp.spawn(example,
-                args=(world_size,),
+                args=(args.rank,),
                 nprocs=world_size,
                 join=True)
     except Exception as ex:
