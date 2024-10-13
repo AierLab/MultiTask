@@ -17,7 +17,7 @@ python /home/4paradigm/WGWS-Net/train_mult.py \
     --learning_rate 0.0001 \
     --fix_sample 9000 \
     --Crop_patches 224 \
-    --BATCH_SIZE 12 \
+    --BATCH_SIZE 8 \
     --EPOCH 120 \
     --T_period 30 \
     --flag K1 \

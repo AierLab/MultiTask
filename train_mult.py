@@ -182,9 +182,10 @@ def get_training_data(fix_sample=fix_sample, Crop_patches=args.Crop_patches):
     rootC_txt = '/mnt/pipeline_1/set1/data_txt/train/raindrop_images.txt'
     train_datasets = my_dataset(rootA_in, rootA_label,rootA_txt,rootB_in, rootB_label,rootB_txt,rootC_in, rootC_label,rootC_txt,crop_size =Crop_patches,
                                 fix_sample_A = fix_sample, fix_sample_B = fix_sample,fix_sample_C = fix_sample)
-    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers= 6 ,shuffle=True)
-    print('len(train_loader):' ,len(train_loader))
-    return train_loader
+    # train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers= 6 ,shuffle=True)
+    # print('len(train_loader):' ,len(train_loader))
+    # return train_loader
+    return train_datasets
 
 def get_eval_data(val_in_path=args.eval_in_path_L,val_gt_path =args.eval_gt_path_L ,trans_eval=trans_eval):
     eval_data = my_dataset_eval(
@@ -205,8 +206,9 @@ def print_param_number(net):
     print(f'Trainable params: {Trainable_params}')
 
 
-def example(rank, world_size):
+def example(rank, world_size=4):
     torch.autograd
+    world_size=4
 
     # Initialize process group
     dist.init_process_group(backend='nccl', rank=rank, world_size=world_size)
@@ -218,16 +220,16 @@ def example(rank, world_size):
         from networks.Network_Stage2_share import UNet
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
-    net = UNet(base_channel=base_channel, num_res=num_res)
+    net = UNet(base_channel=base_channel, num_res=num_res).to(rank)
     net_eval = UNet(base_channel=base_channel, num_res=num_res)
-    pretrained_model = torch.load(args.pre_model, map_location='cpu')
-    net.load_state_dict(pretrained_model, strict=False)
+    # pretrained_model = torch.load(args.pre_model, map_location='cpu')
+    # net.load_state_dict(pretrained_model, strict=False)
     net = DDP(net, device_ids=[rank]) # TODO ddp_model is name matter
     
     # Data loading with DistributedSampler
     train_datasets = get_training_data()
     train_sampler = DistributedSampler(train_datasets, num_replicas=world_size, rank=rank)
-    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers=6, sampler=train_sampler)
+    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers=0, sampler=train_sampler)
     
     # Only rank 0 needs to initialize the SummaryWriter and evaluation datasets
     if rank == 0:
@@ -244,8 +246,8 @@ def example(rank, world_size):
 
     loss_char= losses.CharbonnierLoss()
 
-    vgg = models.vgg16(pretrained=True) # TODO uncomment this line, and change back to False
-    # vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
+    vgg = models.vgg16(pretrained=False) # TODO uncomment this line, and change back to False
+    vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
     vgg_model = vgg_model.to(rank)
     for param in vgg_model.parameters():
@@ -282,28 +284,30 @@ def example(rank, world_size):
     # TODO check later
     torch.autograd.set_detect_anomaly(True)
     for epoch in range(args.EPOCH):
-        train_sampler.set_epoch(epoch)
+        # train_sampler.set_epoch(epoch)
         scheduler_B1.step(epoch)
 
         st = time.time()
-        for i,train_data in enumerate(train_loader,0):#   (data_in, label)  ----- train_data
+        # import pdb;pdb.set_trace()
+        for i,train_data in enumerate(train_loader):#   (data_in, label)  ----- train_data
             #data_A, data_B = train_data
+            # import pdb;pdb.set_trace()
             data_A, data_B, data_C = train_data
-            if i ==0:
-                print("data_A.size(),in_GT:",data_A[0].size(), data_A[1].size())  # Snow
-                print("data_B.size(),in_GT:", data_B[0].size(), data_B[1].size()) # Rain
-                print("data_C.size(),in_GT:", data_C[0].size(), data_C[1].size()) # RD
+            # if i ==0:
+            #     print("data_A.size(),in_GT:",data_A[0].size(), data_A[1].size())  # Snow
+            #     print("data_B.size(),in_GT:", data_B[0].size(), data_B[1].size()) # Rain
+            #     print("data_C.size(),in_GT:", data_C[0].size(), data_C[1].size()) # RD
 
             iter_nums = iter_nums + 1
             net.train()
 
 
-            inputs_A = Variable(data_A[0]).to(rank)
-            labels_A = Variable(data_A[1]).to(rank)
-            inputs_B = Variable(data_B[0]).to(rank)
-            labels_B = Variable(data_B[1]).to(rank)
-            inputs_C = Variable(data_C[0]).to(rank)
-            labels_C = Variable(data_C[1]).to(rank)
+            inputs_A = Variable(data_A[0]).cuda(rank, non_blocking=True)
+            labels_A = Variable(data_A[1]).cuda(rank, non_blocking=True)
+            inputs_B = Variable(data_B[0]).cuda(rank, non_blocking=True)
+            labels_B = Variable(data_B[1]).cuda(rank, non_blocking=True)
+            inputs_C = Variable(data_C[0]).cuda(rank, non_blocking=True)
+            labels_C = Variable(data_C[1]).cuda(rank, non_blocking=True)
             #--------------------------------------------optimizerG_B1---------------------------------------------#
 
 
@@ -316,15 +320,16 @@ def example(rank, world_size):
             trian_PSNR_A = compute_psnr(train_output_A, labels_A)
             # import pdb;pdb.set_trace()
 
-            loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)
-
+            loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A.clone(), labels_A.clone())
+            
             g_lossA = loss1
             total_lossA = total_lossA + g_lossA.item()
             input_PSNR_all_A = input_PSNR_all_A + input_PSNR_A
             train_PSNR_all_A = train_PSNR_all_A + trian_PSNR_A
-
+            print("***********loss************")
             g_lossA.backward()
             optimizerG_B1.step()
+            print("A is ok")
 
             # ============================== data B  ============================== #
             net.zero_grad()
@@ -341,8 +346,9 @@ def example(rank, world_size):
 
             input_PSNR_all_B = input_PSNR_all_B + input_PSNR_B
             train_PSNR_all_B = train_PSNR_all_B + trian_PSNR_B
-
+            print("B is start")
             g_lossB.backward()
+            print("B is ok")
             optimizerG_B1.step()
             # ============================== data C  ============================== #
             net.zero_grad()
@@ -400,12 +406,16 @@ def main():
     try:
         mp.spawn(example,
                 args=(args.rank,),
-                nprocs=1,
+                nprocs=4,
                 join=True)
     except Exception as ex:
         print(f"An error occurred: {ex}")     
 
 
 if __name__ == '__main__':
+    # import os
+    os.environ['MASTER_PORT'] = '29500'  # 选择一个未被占用的端口号
+
     os.environ["NCCL_DEBUG"] = "INFO"
+    
     main()
