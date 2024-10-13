@@ -4,9 +4,9 @@
 export CUDA_VISIBLE_DEVICES=2,3,4,5
 export MASTER_ADDR='localhost'
 export MASTER_PORT='29502'  # 更改端口号
-export WORLD_SIZE=1  
+export WORLD_SIZE=4 # 设置进程数  
 
-for RANK in $(seq 0 $(($WORLD_SIZE - 1))); do
+for RANK in $(seq 0 $(($WORLD_SIZE - 1))); do # 循环启动多个进程
     # 运行Python训练脚本
     python -m torch.distributed.launch --nproc_per_node=1 /home/4paradigm/WGWS-Net/train_share.py \
         --lam 0.008 \
