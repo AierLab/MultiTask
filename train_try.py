@@ -142,7 +142,6 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 def test(net,eval_loader, save_model ,epoch =1,max_psnr_val=26 ,Dname = 'S',flag = [1,0,0]):
     net.to('cuda:0')
     net.eval()
-    torch.distributed.barrier() 
     net.load_state_dict(torch.load(save_model), strict=True)
 
     st = time.time()
@@ -209,7 +208,7 @@ def print_param_number(net):
 
 def example(rank, world_size=4):
     torch.autograd
-    world_size=6
+    world_size=4
 
     # Initialize process group
     dist.init_process_group(backend='nccl', rank=rank, world_size=world_size)
@@ -230,16 +229,16 @@ def example(rank, world_size=4):
     # Data loading with DistributedSampler
     train_datasets = get_training_data()
     train_sampler = DistributedSampler(train_datasets, num_replicas=world_size, rank=rank)
-    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers=2, sampler=train_sampler)
+    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers=0, sampler=train_sampler)
     
     # Only rank 0 needs to initialize the SummaryWriter and evaluation datasets
-    # if rank == 0:
-    writer = SummaryWriter(args.writer_dir + exper_name)
-    eval_loader_RD = get_eval_data(val_in_path=args.eval_in_path_RD, val_gt_path=args.eval_gt_path_RD)
-    eval_loader_Rain = get_eval_data(val_in_path=args.eval_in_path_Rain, val_gt_path=args.eval_gt_path_Rain)
-    eval_loader_L = get_eval_data(val_in_path=args.eval_in_path_L, val_gt_path=args.eval_gt_path_L)
-    # else:
-    #     writer = None
+    if rank == 0:
+        writer = SummaryWriter(args.writer_dir + exper_name)
+        eval_loader_RD = get_eval_data(val_in_path=args.eval_in_path_RD, val_gt_path=args.eval_gt_path_RD)
+        eval_loader_Rain = get_eval_data(val_in_path=args.eval_in_path_Rain, val_gt_path=args.eval_gt_path_Rain)
+        eval_loader_L = get_eval_data(val_in_path=args.eval_in_path_L, val_gt_path=args.eval_gt_path_L)
+    else:
+        writer = None
     
     # Optimizer and scheduler
     optimizerG_B1 = optim.Adam(net.parameters(), lr=args.learning_rate, betas=(0.9, 0.999))
@@ -251,8 +250,8 @@ def example(rank, world_size=4):
     vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
     vgg_model = vgg_model.to(rank)
-    for param in vgg_model.parameters():
-        param.requires_grad = False
+    # for param in vgg_model.parameters():
+    #     param.requires_grad = False
     loss_network = LossNetwork(vgg_model)
     loss_network.eval()
     
@@ -321,16 +320,17 @@ def example(rank, world_size=4):
             trian_PSNR_A = compute_psnr(train_output_A, labels_A)
             # import pdb;pdb.set_trace()
 
-            loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)
+            loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A.clone(), labels_A.clone())
             
             g_lossA = loss1
             total_lossA = total_lossA + g_lossA.item()
             input_PSNR_all_A = input_PSNR_all_A + input_PSNR_A
             train_PSNR_all_A = train_PSNR_all_A + trian_PSNR_A
-            # print("***********loss************")
-            g_lossA.backward(retain_graph=True)
+            print(f"***********loss is {g_lossA}")
+            optimizerG_B1.zero_grad()
+            g_lossA.backward(retain_graph=False)
             optimizerG_B1.step()
-            # print("A is ok")
+            print("A is ok")
 
             # ============================== data B  ============================== #
             net.zero_grad()
@@ -347,13 +347,7 @@ def example(rank, world_size=4):
 
             input_PSNR_all_B = input_PSNR_all_B + input_PSNR_B
             train_PSNR_all_B = train_PSNR_all_B + trian_PSNR_B
-            # print("B is start")
-            g_lossB.backward(retain_graph=True)
-            # print("B is ok")
-            optimizerG_B1.step()
-            # ============================== data C  ============================== #
-            net.zero_grad()
-            optimizerG_B1.zero_grad()
+
 
             train_output_C = net(inputs_C,flag = [0, 0, 1])
             input_PSNR_C = compute_psnr(inputs_C, labels_C)
@@ -367,8 +361,7 @@ def example(rank, world_size=4):
             input_PSNR_all_C = input_PSNR_all_C + input_PSNR_C
             train_PSNR_all_C = train_PSNR_all_C + trian_PSNR_C
 
-            g_lossC.backward(retain_graph=True)
-            optimizerG_B1.step()
+
 
             g_loss = g_lossA + g_lossB + g_lossC
 
@@ -388,7 +381,7 @@ def example(rank, world_size=4):
                     "[epoch:%d / EPOCH :%d],[%d / %d], [lr: %.7f ],[loss1:%.5f,loss3:%.5f,loss5:%.5f, avg_lossA:%.5f, avg_lossB:%.5f, avg_lossC:%.5f, avg_loss:%.5f],"
                     "[in_PSNR_A: %.3f, out_PSNR_A: %.3f],[in_PSNR_B: %.3f, out_PSNR_B: %.3f],[in_PSNR_C: %.3f, out_PSNR_C: %.3f],"
                     "time: %.3f" %
-                    (epoch,args.EPOCH, i + 1, len(train_loader), optimizerG_B1.param_groups[0]["lr"],  loss1.item(),
+                    (epoch,args.EPOCH, i + 1, len(train_loader), optimizerG_B1.module.param_groups[0]["lr"],  loss1.item(),
                      loss3.item(), loss5.item(),total_lossA / iter_nums,total_lossB / iter_nums, total_lossC / iter_nums,total_loss / iter_nums,
                      input_PSNR_A, trian_PSNR_A, input_PSNR_B, trian_PSNR_B, input_PSNR_C, trian_PSNR_C,time.time() - st))
 
@@ -405,12 +398,10 @@ def example(rank, world_size=4):
     
 def main():
     try:
-        mp.set_start_method('fork', force=True)
         mp.spawn(example,
                 args=(args.rank,),
-                nprocs=6,
+                nprocs=4,
                 join=True)
-        torch.distributed.barrier() 
     except Exception as ex:
         print(f"An error occurred: {ex}")     
 
@@ -420,7 +411,5 @@ if __name__ == '__main__':
     os.environ['MASTER_PORT'] = '29500'  # 选择一个未被占用的端口号
 
     os.environ["NCCL_DEBUG"] = "INFO"
-    import multiprocessing
-    multiprocessing.set_start_method('fork', force=True)
     
     main()
