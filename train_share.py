@@ -99,7 +99,7 @@ parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weathe
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
 parser.add_argument('--num_block', type=int, default= 6)
-parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
+parser.add_argument('--world_size', default=4, type=int, help='number of distributed processes')
 parser.add_argument('--rank', type=int, help='rank of distributed processes')
 args = parser.parse_args()
 
@@ -205,16 +205,13 @@ def print_param_number(net):
 
 
 if __name__ == '__main__':
-    os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "29500"
-    rank = int(os.environ.get("RANK", 0))
-    world_size = 4
+    rank = args.rank
+    world_size = args.world_size
+    
     # import pdb;pdb.set_trace()
     # 初始化分布式进程组
     dist.init_process_group(backend="nccl", rank=rank, world_size=world_size)
     print('process_group is ok!')
-    # dist.init_process_group(backend='nccl', init_method='tcp://localhost:29502', rank=rank, world_size=world_size)
-
 
     if args.flag == 'K1':
         # from networks.Network_Stage2_K1_Flag import UNet
