@@ -165,9 +165,9 @@ if __name__ == '__main__':
 
 
     # RainDrop
-    # test(net=net, eval_loader = eval_loader_Haze, Dname= 'RD',flag = [0,0,1],model_flag= args.flag)
+    test(net=net, eval_loader = eval_loader_Haze, Dname= 'RD',flag = [0,0,1],model_flag= args.flag)
     # OutDoor-Rain
-    # test(net=net, eval_loader = eval_loader_Rain, Dname= 'HRain',flag = [0,1,0],model_flag= args.flag)
+    test(net=net, eval_loader = eval_loader_Rain, Dname= 'HRain',flag = [0,1,0],model_flag= args.flag)
     # # Snow
     test(net=net, eval_loader = eval_loader_L,  Dname= 'L',flag = [1,0,0],model_flag= args.flag)
     
