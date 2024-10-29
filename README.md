@@ -31,3 +31,6 @@ pip install -r requirements.txt
 pip install tensorboard==2.12.0
 pip install numpy==1.23.0 
 tensorboard --logdir="/mnt/pipeline_1/MLT/writer_logs/training_try_stage2_share/" --port=6007
+
+mkdir -p ./mnt/pipeline_1/MLT/Weather/training_try_stage2_share/
+

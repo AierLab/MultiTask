@@ -94,7 +94,7 @@ parser.add_argument('--VGG_lamda', type=float, default= 0.1)
 parser.add_argument('--debug', type=bool, default= False)
 parser.add_argument('--lam', type=float, default= 0.1)
 parser.add_argument('--flag', type=str, default= 'K1')
-parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weather/training_stage1/net_epoch_99.pth')
+parser.add_argument('--pre_model', type=str,default= None)
 
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
@@ -112,18 +112,18 @@ else:
 exper_name =args.experiment_name
 writer = SummaryWriter(args.writer_dir + exper_name)
 if not os.path.exists(args.writer_dir):
-    os.mkdir(args.writer_dir)
+    os.makedirs(args.writer_dir, exist_ok=True)
 if not os.path.exists(args.logging_path):
-    os.mkdir(args.logging_path)
+    os.makedirs(args.logging_path, exist_ok=True)
 
 unified_path = args.unified_path
 SAVE_PATH =unified_path  + exper_name + '/'
 if not os.path.exists(SAVE_PATH):
-    os.mkdir(SAVE_PATH)
+    os.makedirs(SAVE_PATH, exist_ok=True)
 if args.SAVE_Inter_Results:
     SAVE_Inter_Results_PATH = unified_path + exper_name +'__inter_results/'
     if not os.path.exists(SAVE_Inter_Results_PATH):
-        os.mkdir(SAVE_Inter_Results_PATH)
+        os.makedirs(SAVE_Inter_Results_PATH, exist_ok=True)
 
 base_channel=args.base_channel
 num_res = args.num_block
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     # import pdb;pdb.set_trace()
     # 初始化分布式进程组
     dist.init_process_group(backend="nccl", rank=rank, world_size=world_size)
-    print('process_group is ok!')
+    print('process_group is ok!, Rank:',rank)
 
     if args.flag == 'K1':
         # from networks.Network_Stage2_K1_Flag import UNet

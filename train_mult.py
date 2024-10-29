@@ -100,7 +100,7 @@ parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weathe
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
 parser.add_argument('--num_block', type=int, default= 6)
-parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
+parser.add_argument('--world_size', default=4, type=int, help='number of distributed processes')
 parser.add_argument('--rank', type=int, help='rank of distributed processes')
 args = parser.parse_args()
 
@@ -207,10 +207,13 @@ def print_param_number(net):
     print(f'Trainable params: {Trainable_params}')
 
 
-def example(rank, world_size=4):
+def train(rank, world_size):
+    # already specified in the bash script
+    # os.environ["MASTER_ADDR"] = "localhost"
+    # os.environ["MASTER_PORT"] = "29502"
+    
+    torch.cuda.set_device(rank)
     torch.autograd
-    world_size=6
-
     # Initialize process group
     dist.init_process_group(backend='nccl', rank=rank, world_size=world_size)
     torch.cuda.set_device(rank)
@@ -230,7 +233,7 @@ def example(rank, world_size=4):
     # Data loading with DistributedSampler
     train_datasets = get_training_data()
     train_sampler = DistributedSampler(train_datasets, num_replicas=world_size, rank=rank)
-    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers=2, sampler=train_sampler)
+    train_loader = DataLoader(dataset=train_datasets, batch_size=args.BATCH_SIZE, num_workers=world_size, sampler=train_sampler)
     
     # Only rank 0 needs to initialize the SummaryWriter and evaluation datasets
     # if rank == 0:
@@ -247,7 +250,7 @@ def example(rank, world_size=4):
 
     loss_char= losses.CharbonnierLoss()
 
-    vgg = models.vgg16(pretrained=False) # TODO uncomment this line, and change back to False
+    vgg = models.vgg16(pretrained=True) # TODO uncomment this line, and change back to False
     vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
     vgg_model = vgg_model.to(rank)
@@ -405,22 +408,24 @@ def example(rank, world_size=4):
     
 def main():
     try:
+        # Set the multiprocessing start method to 'fork', which is often required for PyTorch's multiprocessing.
         mp.set_start_method('fork', force=True)
-        mp.spawn(example,
-                args=(args.rank,),
-                nprocs=6,
-                join=True)
+
+        # Spawn multiple processes to run the training function in parallel, based on the defined world size.
+        # `args.world_size` specifies the number of processes, and each process calls `train`.
+        mp.spawn(train,
+                 args=(args.world_size,),
+                 nprocs=args.world_size,
+                 join=True)
+
+        # Synchronize all processes to ensure they have completed execution.
         torch.distributed.barrier() 
+
     except Exception as ex:
-        print(f"An error occurred: {ex}")     
+        # Catch and print any errors that occur during process spawning or synchronization.
+        print(f"An error occurred: {ex}")
+ 
 
 
 if __name__ == '__main__':
-    # import os
-    os.environ['MASTER_PORT'] = '29500'  # 选择一个未被占用的端口号
-
-    os.environ["NCCL_DEBUG"] = "INFO"
-    import multiprocessing
-    multiprocessing.set_start_method('fork', force=True)
-    
     main()
