@@ -314,10 +314,12 @@ def train(rank, world_size):
             labels_C = Variable(data_C[1]).cuda(rank, non_blocking=True)
             #--------------------------------------------optimizerG_B1---------------------------------------------#
 
-
-            # ============================== data A  ============================== #
             net.zero_grad()
             optimizerG_B1.zero_grad()
+
+            # ============================== data A  ============================== #
+            # net.zero_grad()
+            # optimizerG_B1.zero_grad()
             # import pdb;pdb.set_trace()
             train_output_A = net(inputs_A, flag = [1,0,0])
             input_PSNR_A = compute_psnr(inputs_A, labels_A)
@@ -331,13 +333,13 @@ def train(rank, world_size):
             input_PSNR_all_A = input_PSNR_all_A + input_PSNR_A
             train_PSNR_all_A = train_PSNR_all_A + trian_PSNR_A
             # print("***********loss************")
-            g_lossA.backward(retain_graph=True)
-            optimizerG_B1.step()
+            # g_lossA.backward(retain_graph=True)
+            # optimizerG_B1.step()
             # print("A is ok")
 
             # ============================== data B  ============================== #
-            net.zero_grad()
-            optimizerG_B1.zero_grad()
+            # net.zero_grad()
+            # optimizerG_B1.zero_grad()
 
             train_output_B = net(inputs_B, flag = [0,1,0])
             input_PSNR_B = compute_psnr(inputs_B, labels_B)
@@ -351,12 +353,12 @@ def train(rank, world_size):
             input_PSNR_all_B = input_PSNR_all_B + input_PSNR_B
             train_PSNR_all_B = train_PSNR_all_B + trian_PSNR_B
             # print("B is start")
-            g_lossB.backward(retain_graph=True)
+            # g_lossB.backward(retain_graph=True)
             # print("B is ok")
-            optimizerG_B1.step()
+            # optimizerG_B1.step()
             # ============================== data C  ============================== #
-            net.zero_grad()
-            optimizerG_B1.zero_grad()
+            # net.zero_grad()
+            # optimizerG_B1.zero_grad()
 
             train_output_C = net(inputs_C,flag = [0, 0, 1])
             input_PSNR_C = compute_psnr(inputs_C, labels_C)
@@ -370,10 +372,17 @@ def train(rank, world_size):
             input_PSNR_all_C = input_PSNR_all_C + input_PSNR_C
             train_PSNR_all_C = train_PSNR_all_C + trian_PSNR_C
 
-            g_lossC.backward(retain_graph=True)
-            optimizerG_B1.step()
+            # g_lossC.backward(retain_graph=True)
+            # optimizerG_B1.step()
+            
+            alphaA = 1/len(inputs_A)
+            alphaB = 1/len(inputs_B)
+            alphaC = 1/len(inputs_C)
 
-            g_loss = g_lossA + g_lossB + g_lossC
+            g_loss = g_lossA ** alphaA * g_lossB ** alphaB * g_lossC ** alphaC
+            
+            g_loss.backward(retain_graph=True)
+            optimizerG_B1.step()
 
             #-----------------------------------------------------------------------------------------#
             total_loss = total_loss + g_loss.item()
@@ -399,6 +408,7 @@ def train(rank, world_size):
             # if args.SAVE_Inter_Results:
             #     save_path = SAVE_Inter_Results_PATH + str(iter_nums) + '.jpg'
             #     save_imgs_for_visual(save_path, inputs, labels, train_output)
+            
         save_model = SAVE_PATH  + 'net_epoch_{}.pth'.format(epoch)
         torch.save(net.module.state_dict(),save_model)
 
