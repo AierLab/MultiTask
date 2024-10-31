@@ -163,3 +163,4 @@ cython_debug/
 
 mnt
 .conda
+tmp

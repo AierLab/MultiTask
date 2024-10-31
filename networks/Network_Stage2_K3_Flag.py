@@ -230,10 +230,6 @@ class FAM(nn.Module):
 class UNet(nn.Module):
     def __init__(self, base_channel=24, num_res=6):
         super(UNet, self).__init__()
-        self.log_var_A = nn.Parameter(torch.tensor(0.0))
-        self.log_var_B = nn.Parameter(torch.tensor(0.0))
-        self.log_var_C = nn.Parameter(torch.tensor(0.0))
-
         base_channel = base_channel
 
         self.Encoder = nn.ModuleList([

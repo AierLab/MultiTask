@@ -1,4 +1,6 @@
+import datetime
 import os,cv2,time,torchvision,argparse,logging,sys,os,gc
+import shutil
 import torch,math,random
 import numpy as np
 from tqdm import tqdm
@@ -227,6 +229,32 @@ def remove_overlap_masks(maskA, maskB, maskC):
         maskB[i] = maskB[i] & ~overlap_AB & ~overlap_BC & ~overlap_ABC
         maskC[i] = maskC[i] & ~overlap_AC & ~overlap_BC & ~overlap_ABC
 
+# Generate a time flag based on the current date and time
+time_flag = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Create the folder path using the time flag
+folder = f"tmp/mask_log/run{time_flag}"
+    
+# Define a function to save masks to the local directory
+def save_masks_to_local(maskA, maskB, maskC, epoch, folder=folder):
+    # Ensure the folder exists
+    os.makedirs(folder, exist_ok=True)
+    
+    # Save the masks
+    np.save(os.path.join(folder, f"total_maskA_epoch{epoch}.npy"), maskA)
+    np.save(os.path.join(folder, f"total_maskB_epoch{epoch}.npy"), maskB)
+    np.save(os.path.join(folder, f"total_maskC_epoch{epoch}.npy"), maskC)
+
+def overlap_loss(maskA, maskB, maskC):
+    # Calculate overlaps between each pair of masks
+    overlap_AB = (maskA & maskB).float().sum()
+    overlap_AC = (maskA & maskC).float().sum()
+    overlap_BC = (maskB & maskC).float().sum()
+    
+    # Total overlap loss
+    loss = overlap_AB + overlap_AC + overlap_BC
+    return loss
+
 def train(rank, world_size):
     # already specified in the bash script
     # os.environ["MASTER_ADDR"] = "localhost"
@@ -244,7 +272,12 @@ def train(rank, world_size):
         from networks.Network_Stage2_share import UNet
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
-    net = UNet(base_channel=base_channel, num_res=num_res).to(rank)
+    net = UNet(base_channel=base_channel, num_res=num_res)
+    net.log_var_A = nn.Parameter(torch.tensor(0.0))
+    net.log_var_B = nn.Parameter(torch.tensor(0.0))
+    net.log_var_C = nn.Parameter(torch.tensor(0.0))
+    net = net.to(rank)
+    
     net_eval = UNet(base_channel=base_channel, num_res=num_res)
     # pretrained_model = torch.load(args.pre_model, map_location='cpu')
     # net.load_state_dict(pretrained_model, strict=False)
@@ -308,6 +341,10 @@ def train(rank, world_size):
     # TODO check later
     torch.autograd.set_detect_anomaly(True)
     for epoch in range(args.EPOCH):
+        total_maskA = None
+        total_maskB = None
+        total_maskC = None
+        
         # train_sampler.set_epoch(epoch)
         scheduler_B1.step(epoch)
 
@@ -417,31 +454,43 @@ def train(rank, world_size):
             gradC = [param.grad.clone() for param in net.parameters()]  # Save gradC
             net.zero_grad()
 
+            # Create masks for each gradient set
+            maskA = calculate_mask(gradA, percentage=20) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
+            maskB = calculate_mask(gradB, percentage=20)
+            maskC = calculate_mask(gradC, percentage=20)
+            
             # Calculate gradients for the combined loss
             g_loss = (
                 weight_A * g_lossA +
                 weight_B * g_lossB +
                 weight_C * g_lossC +
                 (net.log_var_A + net.log_var_B + net.log_var_C)
+                # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
             )
             g_loss.backward(retain_graph=True)
             grad_total = [param.grad.clone() for param in net.parameters()]  # Save grad_total
-
-            # Create masks for each gradient set
-            maskA = calculate_mask(gradA, percentage=20)
-            maskB = calculate_mask(gradB, percentage=20)
-            maskC = calculate_mask(gradC, percentage=20)
             
             # Remove overlaps in masks
             remove_overlap_masks(maskA, maskB, maskC)
             
             # TODO capture correlation between A and B, A and C, B and C
+            
+            # Initialize total masks if they are None
+            if total_maskA is None:
+                total_maskA = np.zeros_like(maskA)
+                total_maskB = np.zeros_like(maskB)
+                total_maskC = np.zeros_like(maskC)
+
+            # Accumulate masks
+            total_maskA += maskA
+            total_maskB += maskB
+            total_maskC += maskC
 
             # Apply masks to grad_total
             for i, param in enumerate(net.parameters()):
-                grad_total[i][maskA[i]] = weight_A * gradA[i][maskA[i]]
-                grad_total[i][maskB[i]] = weight_B * gradB[i][maskB[i]]
-                grad_total[i][maskC[i]] = weight_C * gradC[i][maskC[i]]
+                grad_total[i][maskA[i]] = 0.8 * weight_A * gradA[i][maskA[i]] + 0.1 * weight_B * gradB[i][maskB[i]] + 0.1 * weight_C * gradC[i][maskC[i]] + (net.log_var_A + net.log_var_B + net.log_var_C)
+                grad_total[i][maskB[i]] = 0.8 * weight_B * gradB[i][maskB[i]] + 0.1 * weight_A * gradB[i][maskB[i]] + 0.1 * weight_C * gradC[i][maskC[i]] + (net.log_var_A + net.log_var_B + net.log_var_C)
+                grad_total[i][maskC[i]] = 0.8 * weight_C * gradC[i][maskC[i]] + 0.1 * weight_A * gradB[i][maskB[i]] + 0.1 * weight_C * gradC[i][maskC[i]] + (net.log_var_A + net.log_var_B + net.log_var_C)
 
             # Update gradients of the network with modified grad_total
             with torch.no_grad():
@@ -475,7 +524,10 @@ def train(rank, world_size):
             # if args.SAVE_Inter_Results:
             #     save_path = SAVE_Inter_Results_PATH + str(iter_nums) + '.jpg'
             #     save_imgs_for_visual(save_path, inputs, labels, train_output)
-            
+        
+        # Save accumulated masks to local directory at the end of the epoch
+        save_masks_to_local(total_maskA, total_maskB, total_maskC, epoch)
+        
         save_model = SAVE_PATH  + 'net_epoch_{}.pth'.format(epoch)
         torch.save(net.module.state_dict(),save_model)
 
