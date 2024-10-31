@@ -206,6 +206,12 @@ def print_param_number(net):
     print(f'Total params: {Total_params}')
     print(f'Trainable params: {Trainable_params}')
 
+# Calculate threshold for smallest 20% in each gradient
+def calculate_mask(grad, percentage=20):
+    flattened_grad = torch.cat([g.view(-1) for g in grad])
+    threshold = torch.quantile(flattened_grad.abs(), percentage / 100.0)
+    mask = [torch.abs(g) < threshold for g in grad]
+    return mask
 
 def train(rank, world_size):
     # already specified in the bash script
@@ -384,15 +390,46 @@ def train(rank, world_size):
             weight_B = alphaB / (2 * torch.exp(net.log_var_B)**2)
             weight_C = alphaC / (2 * torch.exp(net.log_var_C)**2)
 
-            # Combine losses using weighted sum, including log-variance terms as regularizers
+            # Calculate gradients for each individual loss
+            g_lossA.backward(retain_graph=True)
+            gradA = [param.grad.clone() for param in net.parameters()]  # Save gradA
+            net.zero_grad()
+
+            g_lossB.backward(retain_graph=True)
+            gradB = [param.grad.clone() for param in net.parameters()]  # Save gradB
+            net.zero_grad()
+
+            g_lossC.backward(retain_graph=True)
+            gradC = [param.grad.clone() for param in net.parameters()]  # Save gradC
+            net.zero_grad()
+
+            # Calculate gradients for the combined loss
             g_loss = (
                 weight_A * g_lossA +
                 weight_B * g_lossB +
                 weight_C * g_lossC +
                 (net.log_var_A + net.log_var_B + net.log_var_C)
             )
-            
             g_loss.backward(retain_graph=True)
+            grad_total = [param.grad.clone() for param in net.parameters()]  # Save grad_total
+
+            # Create masks for each gradient set
+            maskA = calculate_mask(gradA, percentage=20)
+            maskB = calculate_mask(gradB, percentage=20)
+            maskC = calculate_mask(gradC, percentage=20)
+
+            # Apply masks to grad_total
+            for i, param in enumerate(net.parameters()):
+                grad_total[i][maskA[i]] = weight_A * gradA[i][maskA[i]]
+                grad_total[i][maskB[i]] = weight_B * gradB[i][maskB[i]]
+                grad_total[i][maskC[i]] = weight_C * gradC[i][maskC[i]]
+
+            # Update gradients of the network with modified grad_total
+            with torch.no_grad():
+                for i, param in enumerate(net.parameters()):
+                    param.grad = grad_total[i]
+                        
+            
             optimizerG_B1.step()
 
             #-----------------------------------------------------------------------------------------#
