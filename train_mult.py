@@ -213,6 +213,20 @@ def calculate_mask(grad, percentage=20):
     mask = [torch.abs(g) < threshold for g in grad]
     return mask
 
+# Ensure no overlap among maskA, maskB, and maskC
+def remove_overlap_masks(maskA, maskB, maskC):
+    # Create overlap areas
+    overlap_AB = [mA & mB for mA, mB in zip(maskA, maskB)]
+    overlap_AC = [mA & mC for mA, mC in zip(maskA, maskC)]
+    overlap_BC = [mB & mC for mB, mC in zip(maskB, maskC)]
+    overlap_ABC = [mA & mB & mC for mA, mB, mC in zip(maskA, maskB, maskC)]
+    
+    # Remove overlaps by setting to False where there's any overlap
+    for i in range(len(maskA)):
+        maskA[i] = maskA[i] & ~overlap_AB & ~overlap_AC & ~overlap_ABC
+        maskB[i] = maskB[i] & ~overlap_AB & ~overlap_BC & ~overlap_ABC
+        maskC[i] = maskC[i] & ~overlap_AC & ~overlap_BC & ~overlap_ABC
+
 def train(rank, world_size):
     # already specified in the bash script
     # os.environ["MASTER_ADDR"] = "localhost"
@@ -417,6 +431,11 @@ def train(rank, world_size):
             maskA = calculate_mask(gradA, percentage=20)
             maskB = calculate_mask(gradB, percentage=20)
             maskC = calculate_mask(gradC, percentage=20)
+            
+            # Remove overlaps in masks
+            remove_overlap_masks(maskA, maskB, maskC)
+            
+            # TODO capture correlation between A and B, A and C, B and C
 
             # Apply masks to grad_total
             for i, param in enumerate(net.parameters()):
