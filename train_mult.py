@@ -379,7 +379,18 @@ def train(rank, world_size):
             alphaB = 1/len(inputs_B)
             alphaC = 1/len(inputs_C)
 
-            g_loss = g_lossA ** alphaA * g_lossB ** alphaB * g_lossC ** alphaC
+            # Define weighting factors for each loss, adjusted by log-variance and data length
+            weight_A = alphaA / (2 * torch.exp(net.log_var_A)**2)
+            weight_B = alphaB / (2 * torch.exp(net.log_var_B)**2)
+            weight_C = alphaC / (2 * torch.exp(net.log_var_C)**2)
+
+            # Combine losses using weighted sum, including log-variance terms as regularizers
+            g_loss = (
+                weight_A * g_lossA +
+                weight_B * g_lossB +
+                weight_C * g_lossC +
+                (net.log_var_A + net.log_var_B + net.log_var_C)
+            )
             
             g_loss.backward(retain_graph=True)
             optimizerG_B1.step()
