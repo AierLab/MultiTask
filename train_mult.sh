@@ -18,7 +18,7 @@ python train_mult.py \
     --BATCH_SIZE 12 \
     --EPOCH 120 \
     --T_period 30 \
-    --flag K1 \
+    --flag O \
     --base_channel 18 \
     --print_frequency 100 \
     --world_size $WORLD_SIZE \

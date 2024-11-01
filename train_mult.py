@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os,cv2,time,torchvision,argparse,logging,sys,os,gc
 import shutil
 import torch,math,random
@@ -209,31 +209,101 @@ def print_param_number(net):
     print(f'Trainable params: {Trainable_params}')
 
 # Calculate threshold for smallest 20% in each gradient
+# def calculate_mask(grad, percentage=20):
+#     flattened_grad = torch.cat([g.view(-1) for g in grad])
+#     threshold = torch.quantile(flattened_grad.abs(), percentage / 100.0)
+#     mask = [torch.abs(g) < threshold for g in grad]
+#     return mask
+
 def calculate_mask(grad, percentage=20):
-    flattened_grad = torch.cat([g.view(-1) for g in grad])
-    threshold = torch.quantile(flattened_grad.abs(), percentage / 100.0)
-    mask = [torch.abs(g) < threshold for g in grad]
-    return mask
+    if grad is None or len(grad) == 0:
+        return None
+    
+    # Initialize an empty list to hold masks
+    masks = []
+
+    for g in grad:
+        if g is None:
+            masks.append(None)
+            continue
+        
+        flattened_grad = g.view(-1)
+        threshold = torch.quantile(flattened_grad.abs(), percentage / 100.0)
+        mask = torch.abs(g) < threshold
+        
+        masks.append(mask)
+
+    return masks
 
 # Ensure no overlap among maskA, maskB, and maskC
-def remove_overlap_masks(maskA, maskB, maskC):
-    # Create overlap areas
-    overlap_AB = [mA & mB for mA, mB in zip(maskA, maskB)]
-    overlap_AC = [mA & mC for mA, mC in zip(maskA, maskC)]
-    overlap_BC = [mB & mC for mB, mC in zip(maskB, maskC)]
-    overlap_ABC = [mA & mB & mC for mA, mB, mC in zip(maskA, maskB, maskC)]
+# def remove_overlap_masks(maskA, maskB, maskC):
+#     # Create overlap areas
+#     overlap_AB = [mA & mB for mA, mB in zip(maskA, maskB)]
+#     overlap_AC = [mA & mC for mA, mC in zip(maskA, maskC)]
+#     overlap_BC = [mB & mC for mB, mC in zip(maskB, maskC)]
+#     overlap_ABC = [mA & mB & mC for mA, mB, mC in zip(maskA, maskB, maskC)]
+#     print(len(maskA))
+#     print(f"maskA is {maskA[0].shape}")
+#     print(len(overlap_AB))
+#     print(f"the overleap is {overlap_AB[0].shape}")
     
+#     # Remove overlaps by setting to False where there's any overlap
+#     for i in range(len(maskA)):
+#         maskA[i] = torch.tensor(maskA[i]) & ~overlap_AB[i] & ~overlap_AC[i] & ~overlap_ABC[i]
+#         maskB[i] = torch.tensor(maskB[i]) & ~overlap_AB[i] & ~overlap_BC[i] & ~overlap_ABC[i]
+#         maskC[i] = torch.tensor(maskC[i]) & ~overlap_AC[i] & ~overlap_BC[i] & ~overlap_ABC[i]
+
+def remove_overlap_masks(maskA, maskB, maskC):
+    # Ensure masks are of the same length
+    if len(maskA) != len(maskB) or len(maskA) != len(maskC):
+        raise ValueError("All masks must have the same length.")
+
+    # Create overlap areas
+    overlap_AB = []
+    overlap_AC = []
+    overlap_BC = []
+    overlap_ABC = []
+
+    for mA, mB, mC in zip(maskA, maskB, maskC):
+        if mA is None:
+            mA = torch.ones_like(mB, dtype=torch.bool) if mB is not None else torch.empty(0, dtype=torch.bool)
+        if mB is None:
+            mB = torch.ones_like(mA, dtype=torch.bool) if mA is not None else torch.empty(0, dtype=torch.bool)
+        if mC is None:
+            mC = torch.ones_like(mA, dtype=torch.bool) if mA is not None else torch.empty(0, dtype=torch.bool)
+
+        overlap_AB.append(mA & mB)
+        overlap_AC.append(mA & mC)
+        overlap_BC.append(mB & mC)
+        overlap_ABC.append(mA & mB & mC)
+
     # Remove overlaps by setting to False where there's any overlap
     for i in range(len(maskA)):
-        maskA[i] = maskA[i] & ~overlap_AB & ~overlap_AC & ~overlap_ABC
-        maskB[i] = maskB[i] & ~overlap_AB & ~overlap_BC & ~overlap_ABC
-        maskC[i] = maskC[i] & ~overlap_AC & ~overlap_BC & ~overlap_ABC
+        if maskA[i] is None:
+            continue  # Skip if maskA[i] is None
+
+        overlap_maskA = overlap_AB[i] if overlap_AB[i] is not None else torch.zeros_like(maskA[i], dtype=torch.bool)
+        overlap_maskAC = overlap_AC[i] if overlap_AC[i] is not None else torch.zeros_like(maskA[i], dtype=torch.bool)
+        overlap_maskABC = overlap_ABC[i] if overlap_ABC[i] is not None else torch.zeros_like(maskA[i], dtype=torch.bool)
+
+        maskA[i] = maskA[i] & ~overlap_maskA & ~overlap_maskAC & ~overlap_maskABC
+
+        if maskB[i] is not None:
+            overlap_maskB = overlap_AB[i] if overlap_AB[i] is not None else torch.zeros_like(maskB[i], dtype=torch.bool)
+            overlap_maskBC = overlap_BC[i] if overlap_BC[i] is not None else torch.zeros_like(maskB[i], dtype=torch.bool)
+            maskB[i] = maskB[i] & ~overlap_maskB & ~overlap_maskBC & ~overlap_maskABC
+
+        if maskC[i] is not None:
+            overlap_maskC = overlap_AC[i] if overlap_AC[i] is not None else torch.zeros_like(maskC[i], dtype=torch.bool)
+            overlap_maskBC = overlap_BC[i] if overlap_BC[i] is not None else torch.zeros_like(maskC[i], dtype=torch.bool)
+            maskC[i] = maskC[i] & ~overlap_maskC & ~overlap_maskBC & ~overlap_maskABC
+
 
 # Generate a time flag based on the current date and time
 time_flag = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Create the folder path using the time flag
-folder = f"tmp/mask_log/run{time_flag}"
+folder = f"/mnt/pipeline_1/mask_log/run{time_flag}"
     
 # Define a function to save masks to the local directory
 def save_masks_to_local(maskA, maskB, maskC, epoch, folder=folder):
@@ -272,16 +342,20 @@ def train(rank, world_size):
         from networks.Network_Stage2_share import UNet
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
+    elif args.flag == 'O':
+        from networks.Network_our import UNet
     net = UNet(base_channel=base_channel, num_res=num_res)
-    net.log_var_A = nn.Parameter(torch.tensor(0.0))
-    net.log_var_B = nn.Parameter(torch.tensor(0.0))
-    net.log_var_C = nn.Parameter(torch.tensor(0.0))
+    # net.log_var_A = nn.Parameter(torch.tensor(0.0))
+    print(net.log_var_A)
+    # net.log_var_B = nn.Parameter(torch.tensor(0.0))
+    # net.log_var_C = nn.Parameter(torch.tensor(0.0))
     net = net.to(rank)
     
     net_eval = UNet(base_channel=base_channel, num_res=num_res)
     # pretrained_model = torch.load(args.pre_model, map_location='cpu')
     # net.load_state_dict(pretrained_model, strict=False)
-    net = DDP(net, device_ids=[rank]) # TODO ddp_model is name matter
+    net = DDP(net, device_ids=[rank],find_unused_parameters=True) # TODO ddp_model is name matter
+    # net._set_static_graph()   # DDP
     
     # Data loading with DistributedSampler
     train_datasets = get_training_data()
@@ -303,7 +377,7 @@ def train(rank, world_size):
 
     loss_char= losses.CharbonnierLoss()
 
-    vgg = models.vgg16(pretrained=True) # TODO uncomment this line, and change back to False
+    vgg = models.vgg16(pretrained=False) # TODO uncomment this line, and change back to False
     vgg.load_state_dict(torch.load('/mnt/pipeline_1/weight/vgg16-397923af.pth'))
     vgg_model = vgg.features[:16]
     vgg_model = vgg_model.to(rank)
@@ -369,6 +443,25 @@ def train(rank, world_size):
             labels_B = Variable(data_B[1]).cuda(rank, non_blocking=True)
             inputs_C = Variable(data_C[0]).cuda(rank, non_blocking=True)
             labels_C = Variable(data_C[1]).cuda(rank, non_blocking=True)
+            # print(f"length of dataA is {len(inputs_A)}")
+            # print(f"length of dataB is {len(inputs_B)}")
+            # print(f"length of dataC is {len(inputs_C)}")
+            assert inputs_A.size(0) == inputs_B.size(0) == inputs_C.size(0), "Batch sizes must match"
+
+            # 沿第一个维度拼接
+            combined_data = torch.cat((inputs_A, inputs_B, inputs_C), dim=0)
+            combined_labels = torch.cat((labels_A, labels_B, labels_C), dim=0)
+
+            # 计算 1/3 的数量
+            total_length = combined_data.size(0)
+            subset_length = total_length // 3  # 向下取整
+
+            # 生成随机索引
+            indices = torch.randperm(total_length)[:subset_length]
+
+            # 根据随机索引提取数据
+            inputs_all = combined_data[indices]
+            labels_all = combined_labels[indices]
             #--------------------------------------------optimizerG_B1---------------------------------------------#
 
             net.zero_grad()
@@ -386,13 +479,19 @@ def train(rank, world_size):
             loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)
             
             g_lossA = loss1
-            total_lossA = total_lossA + g_lossA.item()
+            net.zero_grad()  # 清除梯度
+            g_lossA.backward(retain_graph=True)  # 计算梯度
+            # gradA = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradA
+            gradA = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            # gradA = [
+            #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
+            #             for param in net.parameters()
+            #         ]
+            
+ 
             input_PSNR_all_A = input_PSNR_all_A + input_PSNR_A
             train_PSNR_all_A = train_PSNR_all_A + trian_PSNR_A
-            # print("***********loss************")
-            # g_lossA.backward(retain_graph=True)
-            # optimizerG_B1.step()
-            # print("A is ok")
+
 
             # ============================== data B  ============================== #
             # net.zero_grad()
@@ -405,17 +504,24 @@ def train(rank, world_size):
             loss3 = F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B)
 
             g_lossB = loss3
-            total_lossB = total_lossB + g_lossB.item()
+            net.zero_grad()  # 清除梯度
+            g_lossB.backward(retain_graph=True)
+            # gradB = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradB
+            gradB = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            # gradB = [
+            #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
+            #             for param in net.parameters()
+            #         ]
+
+            
 
             input_PSNR_all_B = input_PSNR_all_B + input_PSNR_B
             train_PSNR_all_B = train_PSNR_all_B + trian_PSNR_B
-            # print("B is start")
-            # g_lossB.backward(retain_graph=True)
-            # print("B is ok")
-            # optimizerG_B1.step()
+
+            
+            
             # ============================== data C  ============================== #
-            # net.zero_grad()
-            # optimizerG_B1.zero_grad()
+
 
             train_output_C = net(inputs_C,flag = [0, 0, 1])
             input_PSNR_C = compute_psnr(inputs_C, labels_C)
@@ -425,7 +531,17 @@ def train(rank, world_size):
 
 
             g_lossC =  loss5
-            total_lossC  = total_lossC +  g_lossC.item()
+            net.zero_grad()  # 清除梯度
+            g_lossC.backward(retain_graph=True)
+            # gradC = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradC
+            gradC = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            
+            # gradC = [
+            #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
+            #             for param in net.parameters()
+            #         ]
+
+
             input_PSNR_all_C = input_PSNR_all_C + input_PSNR_C
             train_PSNR_all_C = train_PSNR_all_C + trian_PSNR_C
 
@@ -435,24 +551,15 @@ def train(rank, world_size):
             alphaA = 1/len(inputs_A)
             alphaB = 1/len(inputs_B)
             alphaC = 1/len(inputs_C)
+            
 
             # Define weighting factors for each loss, adjusted by log-variance and data length
-            weight_A = alphaA / (2 * torch.exp(net.log_var_A)**2)
-            weight_B = alphaB / (2 * torch.exp(net.log_var_B)**2)
-            weight_C = alphaC / (2 * torch.exp(net.log_var_C)**2)
+            weight_A = alphaA / (2 * torch.exp(net.module.log_var_A)**2)
+            weight_B = alphaB / (2 * torch.exp(net.module.log_var_B)**2)
+            weight_C = alphaC / (2 * torch.exp(net.module.log_var_C)**2)
+            # print(f"grad A is {gradA[10]}")
 
-            # Calculate gradients for each individual loss
-            g_lossA.backward(retain_graph=True)
-            gradA = [param.grad.clone() for param in net.parameters()]  # Save gradA
-            net.zero_grad()
-
-            g_lossB.backward(retain_graph=True)
-            gradB = [param.grad.clone() for param in net.parameters()]  # Save gradB
-            net.zero_grad()
-
-            g_lossC.backward(retain_graph=True)
-            gradC = [param.grad.clone() for param in net.parameters()]  # Save gradC
-            net.zero_grad()
+          
 
             # Create masks for each gradient set
             maskA = calculate_mask(gradA, percentage=20) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
@@ -460,44 +567,97 @@ def train(rank, world_size):
             maskC = calculate_mask(gradC, percentage=20)
             
             # Calculate gradients for the combined loss
-            g_loss = (
-                weight_A * g_lossA +
-                weight_B * g_lossB +
-                weight_C * g_lossC +
-                (net.log_var_A + net.log_var_B + net.log_var_C)
-                # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
-            )
+            # g_loss = (
+            #     weight_A * g_lossA +
+            #     weight_B * g_lossB +
+            #     weight_C * g_lossC +
+            #     (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+            #     # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
+            # )
+            # g_loss.backward(retain_graph=False)
+            # net.zero_grad()
+            train_output_all = net(inputs_all, flag = [1,0,0])
+            g_loss = F.smooth_l1_loss(train_output_all, labels_all) +  args.VGG_lamda * loss_network(train_output_all, labels_all)
+            net.zero_grad()
             g_loss.backward(retain_graph=True)
-            grad_total = [param.grad.clone() for param in net.parameters()]  # Save grad_total
-            
+            # grad_total = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save grad_total
+            grad_total = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            # grad_total = [
+            #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
+            #             for param in net.parameters()
+            #         ]
+
+          
+
             # Remove overlaps in masks
             remove_overlap_masks(maskA, maskB, maskC)
             
             # TODO capture correlation between A and B, A and C, B and C
             
             # Initialize total masks if they are None
-            if total_maskA is None:
-                total_maskA = np.zeros_like(maskA)
-                total_maskB = np.zeros_like(maskB)
-                total_maskC = np.zeros_like(maskC)
+            # TODO mask visual
+            # if total_maskA is None:
+            #     total_maskA = torch.zeros(len(maskA), *maskA[0].shape, device=maskA[0].device)
+            #     total_maskB = torch.zeros(len(maskB), *maskB[0].shape, device=maskB[0].device)
+            #     total_maskC = torch.zeros(len(maskC), *maskC[0].shape, device=maskC[0].device)
 
-            # Accumulate masks
-            total_maskA += maskA
-            total_maskB += maskB
-            total_maskC += maskC
+            # # Accumulate masks
+            # total_maskA += maskA
+            # total_maskB += maskB
+            # total_maskC += maskC
 
             # Apply masks to grad_total
             for i, param in enumerate(net.parameters()):
-                grad_total[i][maskA[i]] = 0.8 * weight_A * gradA[i][maskA[i]] + 0.1 * weight_B * gradB[i][maskB[i]] + 0.1 * weight_C * gradC[i][maskC[i]] + (net.log_var_A + net.log_var_B + net.log_var_C)
-                grad_total[i][maskB[i]] = 0.8 * weight_B * gradB[i][maskB[i]] + 0.1 * weight_A * gradB[i][maskB[i]] + 0.1 * weight_C * gradC[i][maskC[i]] + (net.log_var_A + net.log_var_B + net.log_var_C)
-                grad_total[i][maskC[i]] = 0.8 * weight_C * gradC[i][maskC[i]] + 0.1 * weight_A * gradB[i][maskB[i]] + 0.1 * weight_C * gradC[i][maskC[i]] + (net.log_var_A + net.log_var_B + net.log_var_C)
+                if param.grad is not None:
+                    # print("********")
+                    # print(len(list(net.parameters())))
+                    # print(len(grad_total))
+                    # print(grad_total[i].shape,gradA[i].shape,maskA[i].float().shape)
+                    para_A= (
+                        0.8 * weight_A * gradA[i]*maskA[i].float()  +
+                        0.1 * weight_B * gradB[i]*maskB[i].float()  +
+                        0.1 * weight_C * gradC[i]*maskC[i].float()  +
+                        (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                    )
+                    para_B= (
+                        0.8 * weight_B * gradB[i]*maskB[i].float() +
+                        0.1 * weight_A * gradA[i]*maskA[i].float() +
+                        0.1 * weight_C * gradC[i]*maskC[i].float() +
+                        (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                    )
+                    para_C= (
+                        0.8 * weight_C * gradC[i]*maskC[i].float() +
+                        0.1 * weight_A * gradA[i]*maskA[i].float() +
+                        0.1 * weight_B * gradB[i]*maskB[i].float() +
+                        (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                    )
 
-            # Update gradients of the network with modified grad_total
+
+                    # 根据 maskA、maskB 和 maskC 更新 grad_total[i]
+                    # import pdb;pdb.set_trace()
+                    # print(para_A[i].shape,grad_total[i].shape,maskA[i].shape)
+                    if grad_total[i].sum() == 0:  # 检查grad_total[i]是否全为零
+                        grad_total[i] = torch.zeros_like(para_A)  # 替换为与para_A相同维度的全零数组
+
+
+                    grad_total[i][maskA[i]] = para_A[maskA[i]]
+
+                    grad_total[i][maskB[i]] = para_B[maskB[i]]
+
+                    grad_total[i][maskC[i]] = para_C[maskC[i]]
+                # for i, param in enumerate(net.parameters()):
+                    
+                #     grad_total[i][maskA[i]] = 0.8 * weight_A * gradA[i][maskA[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                #     grad_total[i][maskB[i]] = 0.8 * weight_B * gradB[i][maskB[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                #     grad_total[i][maskC[i]] = 0.8 * weight_C * gradC[i][maskC[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+
+                # Update gradients of the network with modified grad_total
             with torch.no_grad():
                 for i, param in enumerate(net.parameters()):
-                    param.grad = grad_total[i]
-                        
-            
+                    if param.grad is not None:
+                        param.grad = grad_total[i]
+                            
+                
             optimizerG_B1.step()
 
             #-----------------------------------------------------------------------------------------#
@@ -526,7 +686,8 @@ def train(rank, world_size):
             #     save_imgs_for_visual(save_path, inputs, labels, train_output)
         
         # Save accumulated masks to local directory at the end of the epoch
-        save_masks_to_local(total_maskA, total_maskB, total_maskC, epoch)
+        #TODO mask visual
+        # save_masks_to_local(total_maskA, total_maskB, total_maskC, epoch)
         
         save_model = SAVE_PATH  + 'net_epoch_{}.pth'.format(epoch)
         torch.save(net.module.state_dict(),save_model)

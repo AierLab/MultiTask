@@ -48,151 +48,32 @@ class freeze_conv(nn.Conv2d):
         weight_shape = self.weight.shape
         c1, c2, _, _ = weight_shape
         self.scale = 1
-        
-
-        # self.space_score_1 = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
-        # if self.weight.shape[0] >= 8 and self.weight.shape[1] >= 8:
-        #     self.channel_score1_1 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
-        #     self.channel_score2_1 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
-        #     self.channel_score_1 = None
-        # else:
-        #     self.channel_score_1 = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
-
-        # self.space_score_2 = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
-        # if self.weight.shape[0] >= 3 and self.weight.shape[1] >= 3:
-        #     self.channel_score1_2 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
-        #     self.channel_score2_2 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
-        #     self.channel_score_2 = None
-        # else:
-        #     self.channel_score_2 = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
-
-        # self.space_score_3 = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
-        # if self.weight.shape[0] >= 3 and self.weight.shape[1] >= 3:
-        #     self.channel_score1_3 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
-        #     self.channel_score2_3 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
-        #     self.channel_score_3 = None
-        # else:
-        #     self.channel_score_3 = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
-
-        # self.register_parameter(name = 'B1_residual', param = nn.Parameter(self.weight.clone()))
-
-        # self.register_parameter(name = 'B2_residual', param = nn.Parameter(self.weight.clone()))
-
-        # self.register_parameter(name = 'B3_residual', param = nn.Parameter(self.weight.clone()))
-
-        # if self.channel_score_1 == None:
-        #     channel_score_1 = torch.einsum("ab,cd->acbd", self.channel_score1_1, self.channel_score2_1).reshape(
-        #             self.weight.shape[0], self.weight.shape[1])
-        #     score_1 = channel_score_1[:, :, None, None] * self.space_score_1[None, None, :, :]
-        # else:
-        #     score_1 = self.channel_score_1[:, :, None, None] * self.space_score_1[None, None, :, :]
-        # mean_score_1 = score_1.mean().item()
-        # std_score_1 = score_1.std().item()
-        # threshold_1 = mean_score_1 + 0.5 * std_score_1  # 选择合适的 k 值
-        
-        # if self.channel_score_2 == None:
-        #     channel_score_2 = torch.einsum("ab,cd->acbd", self.channel_score1_2, self.channel_score2_2).reshape(
-        #     self.weight.shape[0], self.weight.shape[1])
-        #     score_2 = channel_score_2[:, :, None, None] * self.space_score_2[None, None, :, :]
-        # else:
-        #     score_2 = self.channel_score_2[:, :, None, None] * self.space_score_2[None, None, :, :]
-        # mean_score_2 = score_2.mean().item()
-        # std_score_2 = score_2.std().item()
-        # threshold_2 = mean_score_2 + 0.5 * std_score_2  
-        
-        # if self.channel_score_3 == None:
-        #     channel_score_3 = torch.einsum("ab,cd->acbd", self.channel_score1_3, self.channel_score2_3).reshape(
-        #     self.weight.shape[0], self.weight.shape[1])
-        #     score_3 = channel_score_3[:, :, None, None] * self.space_score_3[None, None, :, :]
-        # else:
-        #     score_3 = self.channel_score_3[:, :, None, None] * self.space_score_3[None, None, :, :]
-        # mean_score_3 = score_3.mean().item()
-        # std_score_3 = score_3.std().item()
-        # threshold_3 = mean_score_3 + 0.5 * std_score_3  # 选择合适的 k 值
-   
-        # self.score_1 = binarizer_fn(score_1, threshold_1)
-        # self.score_2 = binarizer_fn(score_2, threshold_2)
-        # self.score_3 = binarizer_fn(score_3, threshold_3)
-        
-        # 初始化通道和空间评分参数列表
-        self.space_scores = []
-        self.channel_scores1 = []
-        self.channel_scores2 = []
-        self.channel_scores = []
-
-        # 初始化残差
-        for i in range(3):
-            self.register_parameter(name = f'B{i+1}_residual', param = nn.Parameter(self.weight.clone()))
-          
-            space_score = nn.Parameter(torch.rand((self.weight.shape[2], self.weight.shape[3])).cuda())
-            self.space_scores.append(space_score)
-            
-            # 通道评分
-            if self.weight.shape[0] >= 3 and self.weight.shape[1] >= 3:
-                channel_score1 = nn.Parameter(torch.rand((self.weight.shape[0] // self.scale, self.weight.shape[1] // self.scale)).cuda())
-                channel_score2 = nn.Parameter(torch.rand((self.scale, self.scale)).cuda())
-                self.channel_scores1.append(channel_score1)
-                self.channel_scores2.append(channel_score2)
-                self.channel_scores.append(None)
-            else:
-                channel_score = nn.Parameter(torch.rand((self.weight.shape[0], self.weight.shape[1])).cuda())
-                self.channel_scores.append(channel_score)
-                self.channel_scores1.append(None)
-                self.channel_scores2.append(None)
-
-        # 计算评分和阈值
-        self.scores = []
-        for i in range(3):
-            if self.channel_scores[i] is None:
-                # 使用 einsum 计算通道评分
-                channel_score = torch.einsum("ab,cd->acbd", self.channel_scores1[i], self.channel_scores2[i]).reshape(self.weight.shape[0], self.weight.shape[1])
-            else:
-                channel_score = self.channel_scores[i]
-            
-            # 计算最终评分
-            score = channel_score[:, :, None, None] * self.space_scores[i][None, None, :, :]
-            
-            # 计算均值、标准差和阈值
-            mean_score = score.mean().item()
-            std_score = score.std().item()
-            threshold = mean_score + 0.5 * std_score
-            
-            # 计算二值化后的评分
-            self.scores.append(binarizer_fn(score, threshold))
-
-                
-                
+      
                 
         # self.weight.requires_grad = False
         # self.weight.grad = None
     def forward(self, x ,flag = [1,0,0]):
         #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        device = self.B1_residual.device
+        device = x.device
         flag_tensor = flag.clone().detach().to(device)
         
-        self.B1_residual=self.B1_residual.to(device)
-        self.scores= [score.to(device) for score in self.scores]
-
+        # self.B1_residual=self.B1_residual.to(device)
+        
 
         # print(f'the shape of score is {self.score_3.shape}')
-        self.weight = self.weight.to(device)
-      
-        # import pdb;pdb.set_trace()
-        weight1 = self.scores[0] * self.weight + (1 -  self.scores[0]) * self.B1_residual
-        weight2 = self.scores[1] * self.weight + (1 - self.scores[1]) * self.B2_residual
-        weight3 = self.scores[2] * self.weight + (1 - self.scores[2]) * self.B3_residual
-        x1 = flag_tensor[0] * F.conv2d(x, weight1 ,self.bias,self.stride,self.padding)
-        x2 = flag_tensor[1] * F.conv2d(x, weight2, self.bias, self.stride,self.padding)
-        x3 = flag_tensor[2] * F.conv2d(x, weight3, self.bias, self.stride,self.padding)
-        # print(torch.equal(self.weight, self.B1_residual))
-
-        x = x1 + x2+ x3
+        self.weight = self.weight.to(device) 
+        # print("{self.B1_residual.device} is the device")
+        
+        for i in range(len(flag_tensor)):
+            if flag_tensor[i] == 1:
+                x = F.conv2d(x, self.weight, self.bias, self.stride, self.padding)
 
         return x
 
 def conv1x1(in_planes, out_planes, stride=1):
     """1x1 convolution"""
     return freeze_conv(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+    # return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, padding=1):
     """3x3 convolution with padding"""
@@ -363,11 +244,10 @@ class FAM(nn.Module):
 class UNet(nn.Module):
     def __init__(self, base_channel=24, num_res=6):
         super(UNet, self).__init__()
-        print("is share")
         
-        self.log_var_A = nn.Parameter(torch.tensor(0.0))
-        self.log_var_B = nn.Parameter(torch.tensor(0.0))
-        self.log_var_C = nn.Parameter(torch.tensor(0.0))
+        self.log_var_A = nn.Parameter(torch.tensor(0.01))
+        self.log_var_B = nn.Parameter(torch.tensor(0.01))
+        self.log_var_C = nn.Parameter(torch.tensor(0.01))
 
         base_channel = base_channel
 
