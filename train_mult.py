@@ -579,10 +579,10 @@ def train(rank, world_size):
             
             # Calculate gradients for the combined loss
             g_loss = (
-                weight_A * F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A) +
-                weight_B * F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B) +
-                weight_C * F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C)
-            ) / (weight_A + weight_B + weight_C) # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
+                weight_A * (F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)) +
+                weight_B * (F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B)) +
+                weight_C * (F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C))
+            ) # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
             # g_loss.backward(retain_graph=False)
             # net.zero_grad()
             # train_output_all = net(inputs_all, flag = [1,0,0])
