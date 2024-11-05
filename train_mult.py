@@ -224,7 +224,7 @@ def calculate_mask(grad, percentage=20):
 
     for g in grad:
         if g is None:
-            masks.append(None)
+            masks.append(False)
             continue
         
         flattened_grad = g.view(-1)
@@ -424,7 +424,7 @@ def train(rank, world_size):
 
         st = time.time()
         # import pdb;pdb.set_trace()
-        for i,train_data in enumerate(train_loader):#   (data_in, label)  ----- train_data
+        for idx,train_data in enumerate(train_loader):#   (data_in, label)  ----- train_data
             #data_A, data_B = train_data
             # import pdb;pdb.set_trace()
             data_A, data_B, data_C = train_data
@@ -483,7 +483,7 @@ def train(rank, world_size):
             net.zero_grad()  # 清除梯度
             g_lossA.backward(retain_graph=True)  # 计算梯度
             # gradA = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradA
-            gradA = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            gradA = [param.grad.clone() if param.grad is not None else torch.zeros_like(param) for param in net.parameters()]
             # gradA = [
             #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
             #             for param in net.parameters()
@@ -509,7 +509,7 @@ def train(rank, world_size):
             net.zero_grad()  # 清除梯度
             g_lossB.backward(retain_graph=True)
             # gradB = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradB
-            gradB = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            gradB = [param.grad.clone() if param.grad is not None else torch.zeros_like(param) for param in net.parameters()]
             # gradB = [
             #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
             #             for param in net.parameters()
@@ -537,7 +537,8 @@ def train(rank, world_size):
             net.zero_grad()  # 清除梯度
             g_lossC.backward(retain_graph=True)
             # gradC = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradC
-            gradC = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            gradC = [param.grad.clone() if param.grad is not None else torch.zeros_like(param) for param in net.parameters()]
+
             
             # gradC = [
             #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
@@ -561,30 +562,38 @@ def train(rank, world_size):
             weight_B = alphaB / (2 * torch.exp(net.module.log_var_B)**2)
             weight_C = alphaC / (2 * torch.exp(net.module.log_var_C)**2)
             # print(f"grad A is {gradA[10]}")
+            
+            total_weight = weight_A + weight_B + weight_C
+
+# 标准化
+            weight_A /= total_weight
+            weight_B /= total_weight
+            weight_C /= total_weight
 
           
-
+            # TODO updata to traniable para
             # Create masks for each gradient set
-            maskA = calculate_mask(gradA, percentage=20) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
-            maskB = calculate_mask(gradB, percentage=20)
-            maskC = calculate_mask(gradC, percentage=20)
+            maskA = calculate_mask(gradA, percentage=10) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
+            maskB = calculate_mask(gradB, percentage=10)
+            maskC = calculate_mask(gradC, percentage=10)
             
             # Calculate gradients for the combined loss
-            # g_loss = (
-            #     weight_A * g_lossA +
-            #     weight_B * g_lossB +
-            #     weight_C * g_lossC +
-            #     (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
-            #     # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
-            # )
+            g_loss = (
+                weight_A * F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A) +
+                weight_B * F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B) +
+                weight_C * F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C) +
+                (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
+            )
             # g_loss.backward(retain_graph=False)
             # net.zero_grad()
-            train_output_all = net(inputs_all, flag = [1,0,0])
-            g_loss = F.smooth_l1_loss(train_output_all, labels_all) +  args.VGG_lamda * loss_network(train_output_all, labels_all)
+            # train_output_all = net(inputs_all, flag = [1,0,0])
+            # g_loss = F.smooth_l1_loss(train_output_all, labels_all) +  args.VGG_lamda * loss_network(train_output_all, labels_all)
+            
             net.zero_grad()
             g_loss.backward(retain_graph=True)
             # grad_total = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save grad_total
-            grad_total = [param.grad.clone() if param.grad is not None else None for param in net.parameters()]
+            grad_total = [param.grad.clone() if param.grad is not None else torch.zeros_like(param) for param in net.parameters()]
             # grad_total = [
             #             param.grad.clone() if param.grad is not None else torch.zeros_like(param)
             #             for param in net.parameters()
@@ -616,23 +625,20 @@ def train(rank, world_size):
                     # print(len(list(net.parameters())))
                     # print(len(grad_total))
                     # print(grad_total[i].shape,gradA[i].shape,maskA[i].float().shape)
-                    para_A= (
-                        0.8 * weight_A * gradA[i]*maskA[i].float()  +
-                        0.1 * weight_B * gradB[i]*maskB[i].float()  +
-                        0.1 * weight_C * gradC[i]*maskC[i].float()  +
-                        (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                    para_A= ( 
+                        0.8 * gradA[i] * maskA[i].float()  +
+                        0.1 *  gradB[i] * maskB[i].float()  +
+                        0.1 * gradC[i] *maskC[i].float()
                     )
                     para_B= (
-                        0.8 * weight_B * gradB[i]*maskB[i].float() +
-                        0.1 * weight_A * gradA[i]*maskA[i].float() +
-                        0.1 * weight_C * gradC[i]*maskC[i].float() +
-                        (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                        0.8 * gradB[i] *maskB[i].float() +
+                        0.1 * gradA[i] *maskA[i].float() +
+                        0.1 * gradC[i]*maskC[i].float()                         
                     )
                     para_C= (
-                        0.8 * weight_C * gradC[i]*maskC[i].float() +
-                        0.1 * weight_A * gradA[i]*maskA[i].float() +
-                        0.1 * weight_B * gradB[i]*maskB[i].float() +
-                        (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                        0.8 * gradC[i]*maskC[i].float() +
+                        0.1 * gradA[i]*maskA[i].float() +
+                        0.1 * gradB[i]*maskB[i].float() 
                     )
 
 
@@ -642,12 +648,12 @@ def train(rank, world_size):
                     if grad_total[i].sum() == 0:  # 检查grad_total[i]是否全为零
                         grad_total[i] = torch.zeros_like(para_A)  # 替换为与para_A相同维度的全零数组
 
+                    # TODO para
+                    grad_total[i][maskA[i]] =  weight_A* para_A[maskA[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
 
-                    grad_total[i][maskA[i]] = para_A[maskA[i]]
+                    grad_total[i][maskB[i]] = weight_B* para_B[maskB[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
 
-                    grad_total[i][maskB[i]] = para_B[maskB[i]]
-
-                    grad_total[i][maskC[i]] = para_C[maskC[i]]
+                    grad_total[i][maskC[i]] = weight_C* para_C[maskC[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
                 # for i, param in enumerate(net.parameters()):
                     
                 #     grad_total[i][maskA[i]] = 0.8 * weight_A * gradA[i][maskA[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
@@ -673,14 +679,15 @@ def train(rank, world_size):
             # total_loss6 += loss6.item()
 
 
-
-            if (i+1) % args.print_frequency ==0 and i >1:
+            # print(i,(i+1) % args.print_frequency)
+            if (idx+1) % args.print_frequency ==0 and idx >1:
+                
                 print(
-                    "[epoch:%d / EPOCH :%d],[%d / %d], [lr: %.7f ],[loss1:%.5f,loss3:%.5f,loss5:%.5f, avg_lossA:%.5f, avg_lossB:%.5f, avg_lossC:%.5f, avg_loss:%.5f],"
+                    "[epoch:%d / EPOCH :%d],[%d / %d], [lr: %.7f ],[ weight_A:%.5f,loss1:%.5f, weight_B:%.5f,loss3:%.5f, weight_C:%.5f,loss5:%.5f, avg_lossA:%.5f, avg_lossB:%.5f, avg_lossC:%.5f, avg_loss:%.5f],"
                     "[in_PSNR_A: %.3f, out_PSNR_A: %.3f],[in_PSNR_B: %.3f, out_PSNR_B: %.3f],[in_PSNR_C: %.3f, out_PSNR_C: %.3f],"
                     "time: %.3f" %
-                    (epoch,args.EPOCH, i + 1, len(train_loader), optimizerG_B1.param_groups[0]["lr"],  loss1.item(),
-                     loss3.item(), loss5.item(),total_lossA / iter_nums,total_lossB / iter_nums, total_lossC / iter_nums,total_loss / iter_nums,
+                    (epoch,args.EPOCH, i + 1, len(train_loader), optimizerG_B1.param_groups[0]["lr"], weight_A.item(),loss1.item(),
+                     weight_B.item(),loss3.item(),weight_C.item(), loss5.item(),total_lossA / iter_nums,total_lossB / iter_nums, total_lossC / iter_nums,total_loss / iter_nums,
                      input_PSNR_A, trian_PSNR_A, input_PSNR_B, trian_PSNR_B, input_PSNR_C, trian_PSNR_C,time.time() - st))
 
                 st = time.time()
@@ -696,8 +703,8 @@ def train(rank, world_size):
         torch.save(net.module.state_dict(),save_model)
 
         max_psnr_val_L = test(net= net_eval, save_model = save_model,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])
-        max_psnr_val_Rain = test(net=net_eval, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
-        max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
+        # max_psnr_val_Rain = test(net=net_eval, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
+        # max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
     
 def main():
     try:

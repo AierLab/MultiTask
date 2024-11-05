@@ -1,0 +1,13 @@
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-05 23:14:46
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-05 23:14:50
+Parameter containing:
+tensor(0.0100, requires_grad=True)
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-05 23:14:50
+Parameter containing:
+tensor(0.0100, requires_grad=True)

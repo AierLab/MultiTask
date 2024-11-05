@@ -4,7 +4,7 @@
 # export CUDA_VISIBLE_DEVICES=0,1
 export CUDA_VISIBLE_DEVICES=6,7
 export MASTER_ADDR='localhost'
-export MASTER_PORT='29502'  # 更改端口号
+export MASTER_PORT='29503'  # 更改端口号
 # export WORLD_SIZE=4 # 设置进程数  
 export WORLD_SIZE=2 # 设置进程数, 最好是GPU数量
 
@@ -20,5 +20,5 @@ python train_mult.py \
     --T_period 30 \
     --flag O \
     --base_channel 18 \
-    --print_frequency 50 \
+    --print_frequency 100 \
     --world_size $WORLD_SIZE \
