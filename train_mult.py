@@ -566,9 +566,9 @@ def train(rank, world_size):
             total_weight = weight_A + weight_B + weight_C
 
 # 标准化
-            weight_A /= total_weight
-            weight_B /= total_weight
-            weight_C /= total_weight
+            weight_A = weight_A / total_weight
+            weight_B = weight_B / total_weight
+            weight_C = weight_B / total_weight
 
           
             # TODO updata to traniable para
