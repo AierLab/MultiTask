@@ -57,7 +57,7 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_try_stage2_share") # modify the experiments name-->modify all save path
+parser.add_argument('--experiment_name', type=str,default= "training_fine_tune") # modify the experiments name-->modify all save path
 parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
@@ -97,7 +97,7 @@ parser.add_argument('--VGG_lamda', type=float, default= 0.1)
 parser.add_argument('--debug', type=bool, default= False)
 parser.add_argument('--lam', type=float, default= 0.1)
 parser.add_argument('--flag', type=str, default= 'K1')
-parser.add_argument('--pre_model', type=str,default= '/mnt/pipeline_1/MLT/Weather/training_stage1/net_epoch_99.pth')
+parser.add_argument('--pre_model', type=str,default= '/home/4paradigm/Weather/share_old/net_epoch_119.pth')
 
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
@@ -352,8 +352,8 @@ def train(rank, world_size):
     net = net.to(rank)
     
     net_eval = UNet(base_channel=base_channel, num_res=num_res)
-    # pretrained_model = torch.load(args.pre_model, map_location='cpu')
-    # net.load_state_dict(pretrained_model, strict=False)
+    pretrained_model = torch.load(args.pre_model, map_location='cpu')
+    net.load_state_dict(pretrained_model, strict=False)
     net = DDP(net, device_ids=[rank],find_unused_parameters=True) # TODO ddp_model is name matter
     # net._set_static_graph()   # DDP
     
@@ -479,6 +479,7 @@ def train(rank, world_size):
             loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)
             
             g_lossA = loss1
+            total_lossA += g_lossA.item()
             net.zero_grad()  # 清除梯度
             g_lossA.backward(retain_graph=True)  # 计算梯度
             # gradA = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradA
@@ -504,6 +505,7 @@ def train(rank, world_size):
             loss3 = F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B)
 
             g_lossB = loss3
+            total_lossB += g_lossB.item()
             net.zero_grad()  # 清除梯度
             g_lossB.backward(retain_graph=True)
             # gradB = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradB
@@ -531,6 +533,7 @@ def train(rank, world_size):
 
 
             g_lossC =  loss5
+            total_lossC += g_lossC.item()
             net.zero_grad()  # 清除梯度
             g_lossC.backward(retain_graph=True)
             # gradC = [param.grad.clone() for param in net.parameters() if param.grad is not None]  # Save gradC

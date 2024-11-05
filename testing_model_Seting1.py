@@ -39,12 +39,12 @@ parser.add_argument('--eval_gt_path_L', type=str,default= '/mnt/pipeline_1/set1/
 # parser.add_argument('--eval_in_path_realRainDrop', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDS/RainDS/RainDS_real/test_set/raindrop/')
 # parser.add_argument('--eval_gt_path_realRainDrop', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDS/RainDS/RainDS_real/test_set/gt/')
 # /mnt/pipeline_1/MLT/Weather/training_try_stage2_share/net_epoch_119.pth
-parser.add_argument('--model_path', type=str,default= '/mnt/pipeline_1/MLT/Weather/training_try_stage2_share/')
-parser.add_argument('--model_name', type=str,default= 'net_epoch_119.pth')
+parser.add_argument('--model_path', type=str,default= '/mnt/pipeline_1/xt/work_dirs_weight_encoder_share/_share_element_encoderoutdoorrain/')
+parser.add_argument('--model_name', type=str,default= 'iter_40000.pth')
 parser.add_argument('--save_path', type=str,default= '/mnt/pipeline_1/MLT/')
 
 #training setting
-parser.add_argument('--flag', type=str, default= 's1')
+parser.add_argument('--flag', type=str, default= 'O')
 parser.add_argument('--base_channel', type = int, default= 18)
 parser.add_argument('--num_block', type=int, default= 6)
 args = parser.parse_args()
@@ -59,7 +59,7 @@ if not os.path.exists(args.save_path):
     
 def get_eval_data(val_in_path=args.eval_in_path_L,val_gt_path =args.eval_gt_path_L ,trans_eval=trans_eval):
     eval_data = my_dataset_eval(
-        root_in=val_in_path, root_label =val_gt_path, transform=trans_eval,fix_sample= 500 )
+        root_in=val_in_path, root_label =val_gt_path, transform=trans_eval,fix_sample= 100 )
     eval_loader = DataLoader(dataset=eval_data, batch_size=1, num_workers=4)
     return eval_loader
 
@@ -117,9 +117,10 @@ def print_indictor(indictor):
     print('indictor_array---Binary out:',list(out))
     
 if __name__ == '__main__':
-    if args.flag == 'K1':
-        from networks.Network_Stage2_K1_Flag import UNet
-        from networks.Network_Stage2_share import UNet
+    if args.flag == 'O':
+        # from networks.Network_Stage2_K1_Flag import UNet
+        from networks.Network_our import UNet
+        print("network is ours")
     elif args.flag == 'K3':
         from networks.Network_Stage2_K3_Flag import UNet
     elif args.flag == 'S1':
@@ -132,7 +133,7 @@ if __name__ == '__main__':
 
     model_name = args.model_name
     pretrained_model = torch.load(args.model_path + model_name)
-    net.load_state_dict(pretrained_model, strict=True)
+    net.load_state_dict(pretrained_model, strict=False)
     print('----Load successfully!------')
 
     if args.flag != 'S1':
@@ -140,18 +141,7 @@ if __name__ == '__main__':
         indictor2 = net.getIndicators_B2()
         indictor3 = net.getIndicators_B3()
 
-        # Percent_B1 = torch.mean((torch.tensor(net.getIndicators_B1()) >= .05).float())
-        # Percent_B2 = torch.mean((torch.tensor(net.getIndicators_B2()) >= .05).float())
-        # Percent_B3 = torch.mean((torch.tensor(net.getIndicators_B3()) >= .05).float())
-        # Percent_B1_1 = torch.mean((torch.tensor(net.getIndicators_B1()) >= .1).float())
-        # Percent_B2_1 = torch.mean((torch.tensor(net.getIndicators_B2()) >= .1).float())
-        # Percent_B3_1 = torch.mean((torch.tensor(net.getIndicators_B3()) >= .1).float())
-        # Percent_B1_2 = torch.mean((torch.tensor(net.getIndicators_B1()) >= .2).float())
-        # Percent_B2_2 = torch.mean((torch.tensor(net.getIndicators_B2()) >= .2).float())
-        # Percent_B3_2 = torch.mean((torch.tensor(net.getIndicators_B3()) >= .2).float())
-        # print("Snow (Expansion Ratios) || Percent_B1 0.05: {} |  0.1: {} | 0.15: {} ".format(Percent_B1, Percent_B1_1, Percent_B1_2))
-        # print("Rain (Expansion Ratios)|| Percent_B2 0.05: {} |  0.1: {} | 0.15: {} ".format(Percent_B2, Percent_B2_1, Percent_B2_2))
-        # print("RainDrop (Expansion Ratios) || Percent_B3 0.05: {} |  0.1: {} | 0.15: {} ".format(Percent_B3, Percent_B3_1, Percent_B3_2))
+
     
         
     # Datasets of Setting1
