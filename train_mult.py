@@ -581,10 +581,8 @@ def train(rank, world_size):
             g_loss = (
                 weight_A * F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A) +
                 weight_B * F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B) +
-                weight_C * F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C) +
-                (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
-                # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
-            )
+                weight_C * F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C)
+            ) / (weight_A + weight_B + weight_C) # + overlap_loss(maskA, maskB, maskC) # TODO experiment need, may restrict the model too much
             # g_loss.backward(retain_graph=False)
             # net.zero_grad()
             # train_output_all = net(inputs_all, flag = [1,0,0])
@@ -649,11 +647,9 @@ def train(rank, world_size):
                         grad_total[i] = torch.zeros_like(para_A)  # 替换为与para_A相同维度的全零数组
 
                     # TODO para
-                    grad_total[i][maskA[i]] =  weight_A* para_A[maskA[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
-
-                    grad_total[i][maskB[i]] = weight_B* para_B[maskB[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
-
-                    grad_total[i][maskC[i]] = weight_C* para_C[maskC[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
+                    grad_total[i][maskA[i]] = para_A[maskA[i]]
+                    grad_total[i][maskB[i]] = para_B[maskB[i]]
+                    grad_total[i][maskC[i]] = para_C[maskC[i]]
                 # for i, param in enumerate(net.parameters()):
                     
                 #     grad_total[i][maskA[i]] = 0.8 * weight_A * gradA[i][maskA[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
