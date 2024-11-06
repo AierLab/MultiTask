@@ -248,6 +248,10 @@ class UNet(nn.Module):
         self.log_var_A = nn.Parameter(torch.tensor(0.01))
         self.log_var_B = nn.Parameter(torch.tensor(0.01))
         self.log_var_C = nn.Parameter(torch.tensor(0.01))
+        
+        self.percentage_A = nn.Parameter(torch.tensor(0.1))
+        self.percentage_B = nn.Parameter(torch.tensor(0.1))
+        self.percentage_C = nn.Parameter(torch.tensor(0.1))
 
         base_channel = base_channel
 

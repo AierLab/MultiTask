@@ -57,7 +57,7 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_fine_tune") # modify the experiments name-->modify all save path
+parser.add_argument('--experiment_name', type=str,default= "training_tune_trainable") # modify the experiments name-->modify all save path
 parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
@@ -97,7 +97,7 @@ parser.add_argument('--VGG_lamda', type=float, default= 0.1)
 parser.add_argument('--debug', type=bool, default= False)
 parser.add_argument('--lam', type=float, default= 0.1)
 parser.add_argument('--flag', type=str, default= 'K1')
-parser.add_argument('--pre_model', type=str,default= '/home/4paradigm/Weather/share_old/net_epoch_119.pth')
+parser.add_argument('--pre_model', type=str,default= '/home/4paradigm/Weather/training_fine_tune/net_epoch_19.pth')
 
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
@@ -573,9 +573,10 @@ def train(rank, world_size):
           
             # TODO updata to traniable para
             # Create masks for each gradient set
-            maskA = calculate_mask(gradA, percentage=10) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
-            maskB = calculate_mask(gradB, percentage=10)
-            maskC = calculate_mask(gradC, percentage=10)
+
+            maskA = calculate_mask(gradA, percentage=torch.sigmoid(net.module.percentage_A) * 100) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
+            maskB = calculate_mask(gradB, percentage=torch.sigmoid(net.module.percentage_B) * 100)
+            maskC = calculate_mask(gradC, percentage=torch.sigmoid(net.module.percentage_C) * 100)
             
             # Calculate gradients for the combined loss
             g_loss = (
