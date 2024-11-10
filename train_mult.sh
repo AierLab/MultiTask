@@ -2,11 +2,11 @@
 
 # 设置可见的GPU设备，代码里其实也设置了
 # export CUDA_VISIBLE_DEVICES=0,1
-export CUDA_VISIBLE_DEVICES=6,7
+export CUDA_VISIBLE_DEVICES=7
 export MASTER_ADDR='localhost'
-export MASTER_PORT='29503'  # 更改端口号
+export MASTER_PORT='29507'  # 更改端口号
 # export WORLD_SIZE=4 # 设置进程数  
-export WORLD_SIZE=2 # 设置进程数, 最好是GPU数量
+export WORLD_SIZE=1 # 设置进程数, 最好是GPU数量
 
 # 运行Python训练脚本
 python train_mult.py \
@@ -15,10 +15,10 @@ python train_mult.py \
     --learning_rate 0.0001 \
     --fix_sample 9000 \
     --Crop_patches 224 \
-    --BATCH_SIZE 9 \
-    --EPOCH 20 \
+    --BATCH_SIZE 6 \
+    --EPOCH 10 \
     --T_period 30 \
-    --flag O \
+    --flag S1 \
     --base_channel 18 \
     --print_frequency 100 \
     --world_size $WORLD_SIZE \

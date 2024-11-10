@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from torch.utils.data import Dataset,DataLoader
 from torch.autograd import Variable
-
+# from datasets.WSG_dataset import my_dataset_eval
 from datasets.dataset_pairs_wRandomSample import my_dataset_eval
 import torchvision.transforms as transforms
 import matplotlib.image as img
@@ -39,8 +39,8 @@ parser.add_argument('--eval_gt_path_L', type=str,default= '/mnt/pipeline_1/set1/
 # parser.add_argument('--eval_in_path_realRainDrop', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDS/RainDS/RainDS_real/test_set/raindrop/')
 # parser.add_argument('--eval_gt_path_realRainDrop', type=str,default= '/gdata2/zhuyr/Weather/Data/RainDS/RainDS/RainDS_real/test_set/gt/')
 # /mnt/pipeline_1/MLT/Weather/training_try_stage2_share/net_epoch_119.pth
-parser.add_argument('--model_path', type=str,default= '/home/4paradigm/Weather/training_tune_trainable/')
-parser.add_argument('--model_name', type=str,default= 'net_epoch_7.pth')
+parser.add_argument('--model_path', type=str,default= '/home/4paradigm/Weather/stage1/')
+parser.add_argument('--model_name', type=str,default= 'net_epoch_40.pth')
 parser.add_argument('--save_path', type=str,default= '/mnt/pipeline_1/MLT/')
 
 #training setting

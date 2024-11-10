@@ -491,3 +491,147 @@ MULTI_GPU 2: True
 device ----------------------------------------: cuda
 2024-11-06 19:36:50
 epoch:9---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:26.59]--------max_psnr_val:26.65:-----cost time;131.0299711227417
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:38:49
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:38:52
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:38:44
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:38:47
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.11227,loss1:0.03676, weight_B:0.01756,loss3:0.05584, weight_C:0.03870,loss5:0.05550, avg_lossA:0.04375, avg_lossB:0.06918, avg_lossC:0.05878, avg_loss:0.01746],[in_PSNR_A: 23.461, out_PSNR_A: 28.835],[in_PSNR_B: 11.386, out_PSNR_B: 21.474],[in_PSNR_C: 22.727, out_PSNR_C: 27.262],time: 234.030
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10991,loss1:0.05438, weight_B:0.01722,loss3:0.08655, weight_C:0.03762,loss5:0.03549, avg_lossA:0.04373, avg_lossB:0.06920, avg_lossC:0.05883, avg_loss:0.01728],[in_PSNR_A: 21.561, out_PSNR_A: 28.808],[in_PSNR_B: 11.754, out_PSNR_B: 19.480],[in_PSNR_C: 23.007, out_PSNR_C: 26.728],time: 226.590
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10755,loss1:0.04571, weight_B:0.01688,loss3:0.05780, weight_C:0.03656,loss5:0.07253, avg_lossA:0.04374, avg_lossB:0.06924, avg_lossC:0.05886, avg_loss:0.01711],[in_PSNR_A: 20.626, out_PSNR_A: 28.195],[in_PSNR_B: 12.656, out_PSNR_B: 22.700],[in_PSNR_C: 20.796, out_PSNR_C: 25.150],time: 227.697
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10522,loss1:0.03838, weight_B:0.01655,loss3:0.07950, weight_C:0.03553,loss5:0.06207, avg_lossA:0.04376, avg_lossB:0.06926, avg_lossC:0.05890, avg_loss:0.01695],[in_PSNR_A: 23.337, out_PSNR_A: 30.844],[in_PSNR_B: 12.758, out_PSNR_B: 22.898],[in_PSNR_C: 21.198, out_PSNR_C: 25.290],time: 223.835
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10297,loss1:0.04363, weight_B:0.01623,loss3:0.06765, weight_C:0.03454,loss5:0.04199, avg_lossA:0.04376, avg_lossB:0.06924, avg_lossC:0.05892, avg_loss:0.01678],[in_PSNR_A: 22.388, out_PSNR_A: 29.566],[in_PSNR_B: 14.435, out_PSNR_B: 20.425],[in_PSNR_C: 20.321, out_PSNR_C: 25.395],time: 225.195
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.11216,loss1:0.03453, weight_B:0.01757,loss3:0.05341, weight_C:0.03872,loss5:0.05116, avg_lossA:0.04394, avg_lossB:0.07001, avg_lossC:0.05884, avg_loss:0.01754],[in_PSNR_A: 22.616, out_PSNR_A: 30.279],[in_PSNR_B: 12.987, out_PSNR_B: 20.583],[in_PSNR_C: 21.955, out_PSNR_C: 25.489],time: 242.319
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10980,loss1:0.04000, weight_B:0.01723,loss3:0.05854, weight_C:0.03765,loss5:0.04103, avg_lossA:0.04393, avg_lossB:0.07001, avg_lossC:0.05888, avg_loss:0.01736],[in_PSNR_A: 20.571, out_PSNR_A: 29.618],[in_PSNR_B: 13.100, out_PSNR_B: 23.369],[in_PSNR_C: 22.379, out_PSNR_C: 26.202],time: 226.586
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10747,loss1:0.03652, weight_B:0.01690,loss3:0.06253, weight_C:0.03660,loss5:0.05232, avg_lossA:0.04392, avg_lossB:0.07001, avg_lossC:0.05890, avg_loss:0.01719],[in_PSNR_A: 22.738, out_PSNR_A: 30.361],[in_PSNR_B: 10.940, out_PSNR_B: 23.947],[in_PSNR_C: 20.852, out_PSNR_C: 25.930],time: 227.695
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10513,loss1:0.06822, weight_B:0.01656,loss3:0.06686, weight_C:0.03556,loss5:0.03505, avg_lossA:0.04395, avg_lossB:0.06999, avg_lossC:0.05896, avg_loss:0.01702],[in_PSNR_A: 19.619, out_PSNR_A: 26.009],[in_PSNR_B: 11.763, out_PSNR_B: 21.154],[in_PSNR_C: 26.388, out_PSNR_C: 29.248],time: 223.867
+[epoch:10 / EPOCH :20],[178 / 500], [lr: 0.0000750 ],[ weight_A:0.10290,loss1:0.03015, weight_B:0.01624,loss3:0.07955, weight_C:0.03456,loss5:0.06294, avg_lossA:0.04394, avg_lossB:0.07000, avg_lossC:0.05900, avg_loss:0.01685],[in_PSNR_A: 26.560, out_PSNR_A: 31.737],[in_PSNR_B: 12.629, out_PSNR_B: 20.636],[in_PSNR_C: 21.874, out_PSNR_C: 25.857],time: 225.199
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:58:00
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:57:57
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:57:50
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:57:54
+epoch:10---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:26.38]--------max_psnr_val:26.65:-----cost time;122.96761679649353
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:58:00
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:57:50
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:57:57
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:57:54
+epoch:10---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:26.38]--------max_psnr_val:26.65:-----cost time;131.55857706069946
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:00:01
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:59:59
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:59:53
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 19:59:56
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.10081,loss1:0.03563, weight_B:0.01594,loss3:0.04781, weight_C:0.03364,loss5:0.05794, avg_lossA:0.04395, avg_lossB:0.06997, avg_lossC:0.05905, avg_loss:0.01669],[in_PSNR_A: 21.053, out_PSNR_A: 30.521],[in_PSNR_B: 12.924, out_PSNR_B: 22.687],[in_PSNR_C: 21.457, out_PSNR_C: 25.660],time: 241.358
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09877,loss1:0.04485, weight_B:0.01564,loss3:0.07960, weight_C:0.03274,loss5:0.04340, avg_lossA:0.04397, avg_lossB:0.06997, avg_lossC:0.05910, avg_loss:0.01653],[in_PSNR_A: 20.614, out_PSNR_A: 29.088],[in_PSNR_B: 12.229, out_PSNR_B: 20.787],[in_PSNR_C: 23.892, out_PSNR_C: 26.682],time: 225.922
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09677,loss1:0.03653, weight_B:0.01536,loss3:0.06280, weight_C:0.03187,loss5:0.05755, avg_lossA:0.04397, avg_lossB:0.06997, avg_lossC:0.05911, avg_loss:0.01637],[in_PSNR_A: 22.625, out_PSNR_A: 30.221],[in_PSNR_B: 10.650, out_PSNR_B: 22.558],[in_PSNR_C: 21.070, out_PSNR_C: 25.368],time: 224.054
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09480,loss1:0.07610, weight_B:0.01507,loss3:0.08352, weight_C:0.03103,loss5:0.03983, avg_lossA:0.04400, avg_lossB:0.06996, avg_lossC:0.05913, avg_loss:0.01622],[in_PSNR_A: 18.696, out_PSNR_A: 25.601],[in_PSNR_B: 12.387, out_PSNR_B: 22.417],[in_PSNR_C: 25.584, out_PSNR_C: 28.443],time: 225.905
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09292,loss1:0.03350, weight_B:0.01480,loss3:0.08457, weight_C:0.03021,loss5:0.05682, avg_lossA:0.04399, avg_lossB:0.06998, avg_lossC:0.05913, avg_loss:0.01607],[in_PSNR_A: 26.828, out_PSNR_A: 30.930],[in_PSNR_B: 11.631, out_PSNR_B: 20.834],[in_PSNR_C: 21.821, out_PSNR_C: 26.313],time: 225.583
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.10091,loss1:0.03776, weight_B:0.01593,loss3:0.06284, weight_C:0.03363,loss5:0.06759, avg_lossA:0.04376, avg_lossB:0.06923, avg_lossC:0.05896, avg_loss:0.01662],[in_PSNR_A: 23.171, out_PSNR_A: 28.711],[in_PSNR_B: 12.322, out_PSNR_B: 22.460],[in_PSNR_C: 22.705, out_PSNR_C: 25.942],time: 232.817
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09891,loss1:0.05062, weight_B:0.01564,loss3:0.07566, weight_C:0.03274,loss5:0.04230, avg_lossA:0.04375, avg_lossB:0.06921, avg_lossC:0.05901, avg_loss:0.01646],[in_PSNR_A: 21.418, out_PSNR_A: 28.319],[in_PSNR_B: 12.842, out_PSNR_B: 22.054],[in_PSNR_C: 22.629, out_PSNR_C: 25.779],time: 225.900
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09692,loss1:0.04300, weight_B:0.01535,loss3:0.04991, weight_C:0.03187,loss5:0.06510, avg_lossA:0.04375, avg_lossB:0.06918, avg_lossC:0.05905, avg_loss:0.01630],[in_PSNR_A: 21.676, out_PSNR_A: 29.604],[in_PSNR_B: 13.113, out_PSNR_B: 22.258],[in_PSNR_C: 23.065, out_PSNR_C: 25.281],time: 224.042
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09495,loss1:0.04160, weight_B:0.01506,loss3:0.07984, weight_C:0.03101,loss5:0.05453, avg_lossA:0.04377, avg_lossB:0.06919, avg_lossC:0.05909, avg_loss:0.01615],[in_PSNR_A: 23.613, out_PSNR_A: 29.791],[in_PSNR_B: 13.241, out_PSNR_B: 22.804],[in_PSNR_C: 22.315, out_PSNR_C: 25.824],time: 225.941
+[epoch:11 / EPOCH :20],[178 / 500], [lr: 0.0000703 ],[ weight_A:0.09300,loss1:0.04636, weight_B:0.01479,loss3:0.06242, weight_C:0.03019,loss5:0.04091, avg_lossA:0.04378, avg_lossB:0.06919, avg_lossC:0.05909, avg_loss:0.01599],[in_PSNR_A: 21.402, out_PSNR_A: 29.554],[in_PSNR_B: 13.392, out_PSNR_B: 20.784],[in_PSNR_C: 20.418, out_PSNR_C: 25.302],time: 225.542
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:19:06
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:19:00
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:18:57
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:19:03
+epoch:11---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:20.28]--------max_psnr_val:26.65:-----cost time;122.03866410255432
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:18:57
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:19:06
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:19:03
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:19:00
+epoch:11---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:20.28]--------max_psnr_val:26.65:-----cost time;131.23736000061035
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:21:05
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:21:07
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:20:59
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:21:02
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.09123,loss1:0.03762, weight_B:0.01453,loss3:0.06033, weight_C:0.02942,loss5:0.07374, avg_lossA:0.04380, avg_lossB:0.06922, avg_lossC:0.05913, avg_loss:0.01585],[in_PSNR_A: 23.390, out_PSNR_A: 29.184],[in_PSNR_B: 11.575, out_PSNR_B: 20.008],[in_PSNR_C: 22.341, out_PSNR_C: 26.141],time: 232.570
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08951,loss1:0.03887, weight_B:0.01427,loss3:0.06923, weight_C:0.02866,loss5:0.04643, avg_lossA:0.04379, avg_lossB:0.06922, avg_lossC:0.05920, avg_loss:0.01570],[in_PSNR_A: 23.188, out_PSNR_A: 30.117],[in_PSNR_B: 12.349, out_PSNR_B: 22.031],[in_PSNR_C: 22.017, out_PSNR_C: 24.926],time: 224.918
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08784,loss1:0.04007, weight_B:0.01403,loss3:0.05802, weight_C:0.02795,loss5:0.07101, avg_lossA:0.04380, avg_lossB:0.06919, avg_lossC:0.05922, avg_loss:0.01556],[in_PSNR_A: 22.000, out_PSNR_A: 30.385],[in_PSNR_B: 12.626, out_PSNR_B: 20.252],[in_PSNR_C: 21.686, out_PSNR_C: 24.840],time: 226.821
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08615,loss1:0.03305, weight_B:0.01378,loss3:0.08342, weight_C:0.02723,loss5:0.04920, avg_lossA:0.04382, avg_lossB:0.06921, avg_lossC:0.05925, avg_loss:0.01542],[in_PSNR_A: 23.802, out_PSNR_A: 31.741],[in_PSNR_B: 12.645, out_PSNR_B: 22.031],[in_PSNR_C: 23.973, out_PSNR_C: 26.785],time: 229.269
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08450,loss1:0.04619, weight_B:0.01354,loss3:0.07122, weight_C:0.02654,loss5:0.05420, avg_lossA:0.04383, avg_lossB:0.06919, avg_lossC:0.05928, avg_loss:0.01528],[in_PSNR_A: 21.717, out_PSNR_A: 29.069],[in_PSNR_B: 13.837, out_PSNR_B: 20.044],[in_PSNR_C: 19.608, out_PSNR_C: 24.001],time: 257.609
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.09114,loss1:0.03505, weight_B:0.01454,loss3:0.05484, weight_C:0.02943,loss5:0.05580, avg_lossA:0.04400, avg_lossB:0.06998, avg_lossC:0.05919, avg_loss:0.01592],[in_PSNR_A: 21.085, out_PSNR_A: 30.320],[in_PSNR_B: 12.715, out_PSNR_B: 21.157],[in_PSNR_C: 21.105, out_PSNR_C: 24.730],time: 241.729
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08941,loss1:0.04392, weight_B:0.01428,loss3:0.06291, weight_C:0.02868,loss5:0.05121, avg_lossA:0.04402, avg_lossB:0.06998, avg_lossC:0.05925, avg_loss:0.01577],[in_PSNR_A: 21.493, out_PSNR_A: 28.729],[in_PSNR_B: 12.344, out_PSNR_B: 23.143],[in_PSNR_C: 20.862, out_PSNR_C: 24.876],time: 225.059
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08770,loss1:0.03439, weight_B:0.01403,loss3:0.07101, weight_C:0.02795,loss5:0.06366, avg_lossA:0.04403, avg_lossB:0.06999, avg_lossC:0.05929, avg_loss:0.01563],[in_PSNR_A: 23.089, out_PSNR_A: 30.098],[in_PSNR_B: 11.876, out_PSNR_B: 20.792],[in_PSNR_C: 20.033, out_PSNR_C: 24.542],time: 226.914
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08602,loss1:0.07082, weight_B:0.01378,loss3:0.08145, weight_C:0.02723,loss5:0.04540, avg_lossA:0.04405, avg_lossB:0.06998, avg_lossC:0.05934, avg_loss:0.01549],[in_PSNR_A: 19.873, out_PSNR_A: 26.592],[in_PSNR_B: 12.315, out_PSNR_B: 20.117],[in_PSNR_C: 24.355, out_PSNR_C: 27.743],time: 229.580
+[epoch:12 / EPOCH :20],[178 / 500], [lr: 0.0000655 ],[ weight_A:0.08442,loss1:0.03523, weight_B:0.01354,loss3:0.07552, weight_C:0.02654,loss5:0.06165, avg_lossA:0.04404, avg_lossB:0.07000, avg_lossC:0.05936, avg_loss:0.01535],[in_PSNR_A: 25.502, out_PSNR_A: 29.785],[in_PSNR_B: 12.345, out_PSNR_B: 21.535],[in_PSNR_C: 20.128, out_PSNR_C: 24.911],time: 257.149
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:40
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:48
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:43
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:45
+epoch:12---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:20.42]--------max_psnr_val:26.65:-----cost time;121.8639588356018
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:40
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:43
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:45
+MULTI_GPU 2: True
+device ----------------------------------------: cuda
+2024-11-06 20:40:48
+epoch:12---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:20.42]--------max_psnr_val:26.65:-----cost time;129.97939276695251

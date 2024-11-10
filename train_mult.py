@@ -57,7 +57,7 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_tune_trainable") # modify the experiments name-->modify all save path
+parser.add_argument('--experiment_name', type=str,default= "training_tune_percent90_new") # modify the experiments name-->modify all save path
 parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
@@ -97,7 +97,7 @@ parser.add_argument('--VGG_lamda', type=float, default= 0.1)
 parser.add_argument('--debug', type=bool, default= False)
 parser.add_argument('--lam', type=float, default= 0.1)
 parser.add_argument('--flag', type=str, default= 'K1')
-parser.add_argument('--pre_model', type=str,default= '/home/4paradigm/Weather/training_fine_tune/net_epoch_19.pth')
+parser.add_argument('--pre_model', type=str,default= '/home/4paradigm/Weather/stage1/net_epoch_99.pth')
 
 #training setting
 parser.add_argument('--base_channel', type = int, default= 20)
@@ -155,7 +155,7 @@ def test(net,eval_loader, save_model ,epoch =1,max_psnr_val=26 ,Dname = 'S',flag
             inputs = Variable(data_in).to('cuda:0')
             labels = Variable(label).to('cuda:0')
 
-            outputs = net(inputs,flag=flag)
+            outputs = net(inputs)
             eval_input_psnr += compute_psnr(inputs, labels)
             eval_output_psnr += compute_psnr(outputs, labels)
         Final_output_PSNR = eval_output_psnr / len(eval_loader)
@@ -229,7 +229,7 @@ def calculate_mask(grad, percentage=20):
         
         flattened_grad = g.view(-1)
         threshold = torch.quantile(flattened_grad.abs(), percentage / 100.0)
-        mask = torch.abs(g) < threshold
+        mask = torch.abs(g) > threshold
         
         masks.append(mask)
 
@@ -311,9 +311,9 @@ def save_masks_to_local(maskA, maskB, maskC, epoch, folder=folder):
     os.makedirs(folder, exist_ok=True)
     
     # Save the masks
-    np.save(os.path.join(folder, f"total_maskA_epoch{epoch}.npy"), maskA)
-    np.save(os.path.join(folder, f"total_maskB_epoch{epoch}.npy"), maskB)
-    np.save(os.path.join(folder, f"total_maskC_epoch{epoch}.npy"), maskC)
+    np.save(os.path.join(folder, f"maskAs_epoch{epoch}.npy"), maskA)
+    np.save(os.path.join(folder, f"maskBs_epoch{epoch}.npy"), maskB)
+    np.save(os.path.join(folder, f"maskCs_epoch{epoch}.npy"), maskC)
 
 def overlap_loss(maskA, maskB, maskC):
     # Calculate overlaps between each pair of masks
@@ -340,8 +340,8 @@ def train(rank, world_size):
     # Model initialization
     if args.flag == 'K1':
         from networks.Network_Stage2_share import UNet
-    elif args.flag == 'K3':
-        from networks.Network_Stage2_K3_Flag import UNet
+    elif args.flag == 'S1':
+        from networks.Network_Stage1 import UNet
     elif args.flag == 'O':
         from networks.Network_our import UNet
     net = UNet(base_channel=base_channel, num_res=num_res)
@@ -410,21 +410,70 @@ def train(rank, world_size):
     input_PSNR_all_C = 0
     train_PSNR_all_C = 0
     Frequncy_eval_save = len(train_loader)
+    
+    parameter_A = []
+    parameter_B = []
+    parameter_C = []
+    
+    maskAs = []
+    maskBs = []
+    maskCs = []
+    
+    parameters_A=[]
+    parameters_B=[]
+    parameters_C=[]
+    
+    
+
 
     iter_nums = 0
     # TODO check later
     torch.autograd.set_detect_anomaly(True)
-    for epoch in range(args.EPOCH):
-        total_maskA = None
-        total_maskB = None
-        total_maskC = None
-        
+    
+    fine_tune = True
+    
+    if fine_tune:
+        original_parameters = [param.clone().detach() for param in net.parameters()]
+    
+    for epoch in range(args.EPOCH): 
         # train_sampler.set_epoch(epoch)
         scheduler_B1.step(epoch)
 
         st = time.time()
         # import pdb;pdb.set_trace()
         for idx,train_data in enumerate(train_loader):#   (data_in, label)  ----- train_data
+            # net.parameters = original_parameters.clone()
+            cloned_parameters = [param.clone() for param in original_parameters]
+            with torch.no_grad():
+                for param, cloned_param in zip(net.parameters(), cloned_parameters):
+                    param.data.copy_(cloned_param.data)
+
+            # net.parameters = [param.clone() for param in original_parameters]
+            # print(maskAs)
+            # if maskAs is not None:
+            #     maskA = maskAs[-1]
+            #     maskB = maskBs[-1]
+            #     maskC = maskCs[-1]
+            # if maskAs and maskBs and maskCs:  # 检查列表是否都不为 None 且不为空
+            if maskAs:
+                    maskA = maskAs[-1] if maskAs[-1] is not None else torch.zeros_like(cloned_parameters[0], dtype=torch.bool)
+            else:
+                maskA = torch.zeros_like(cloned_parameters[0], dtype=torch.bool)
+
+            if maskBs:
+                maskB = maskBs[-1] if maskBs[-1] is not None else torch.zeros_like(cloned_parameters[1], dtype=torch.bool)
+            else:
+                maskB = torch.zeros_like(cloned_parameters[1], dtype=torch.bool)
+
+            if maskCs:
+                maskC = maskCs[-1] if maskCs[-1] is not None else torch.zeros_like(cloned_parameters[2], dtype=torch.bool)
+            else:
+                maskC = torch.zeros_like(cloned_parameters[2], dtype=torch.bool)
+            # maskA = maskAs[-1]
+            # maskB = maskBs[-1]
+            # maskC = maskCs[-1]
+            # print(maskA)
+            
             #data_A, data_B = train_data
             # import pdb;pdb.set_trace()
             data_A, data_B, data_C = train_data
@@ -448,20 +497,20 @@ def train(rank, world_size):
             # print(f"length of dataC is {len(inputs_C)}")
             assert inputs_A.size(0) == inputs_B.size(0) == inputs_C.size(0), "Batch sizes must match"
 
-            # 沿第一个维度拼接
-            combined_data = torch.cat((inputs_A, inputs_B, inputs_C), dim=0)
-            combined_labels = torch.cat((labels_A, labels_B, labels_C), dim=0)
+            # # 沿第一个维度拼接
+            # combined_data = torch.cat((inputs_A, inputs_B, inputs_C), dim=0)
+            # combined_labels = torch.cat((labels_A, labels_B, labels_C), dim=0)
 
-            # 计算 1/3 的数量
-            total_length = combined_data.size(0)
-            subset_length = total_length // 3  # 向下取整
+            # # 计算 1/3 的数量
+            # total_length = combined_data.size(0)
+            # subset_length = total_length // 3  # 向下取整
 
-            # 生成随机索引
-            indices = torch.randperm(total_length)[:subset_length]
+            # # 生成随机索引
+            # indices = torch.randperm(total_length)[:subset_length]
 
-            # 根据随机索引提取数据
-            inputs_all = combined_data[indices]
-            labels_all = combined_labels[indices]
+            # # 根据随机索引提取数据
+            # inputs_all = combined_data[indices]
+            # labels_all = combined_labels[indices]
             #--------------------------------------------optimizerG_B1---------------------------------------------#
 
             net.zero_grad()
@@ -471,13 +520,21 @@ def train(rank, world_size):
             # net.zero_grad()
             # optimizerG_B1.zero_grad()
             # import pdb;pdb.set_trace()
-            train_output_A = net(inputs_A, flag = [1,0,0])
+
+            if parameter_A:
+                parameters_list = list(net.parameters())
+                with torch.no_grad():
+                    # 遍历 parameters_list 的每个参数并应用 maskA
+                    for param, new_val,mask in zip(parameters_list, parameter_A,maskA):
+                        param.data[mask] = new_val[mask]  # 仅更新 maskA 为 True 的位置
+                # net.parameters()[maskA] = parameter_A
+            train_output_A = net(inputs_A)
             input_PSNR_A = compute_psnr(inputs_A, labels_A)
             trian_PSNR_A = compute_psnr(train_output_A, labels_A)
             # import pdb;pdb.set_trace()
 
             loss1 = F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)
-            
+            # print(loss1)
             g_lossA = loss1
             total_lossA += g_lossA.item()
             net.zero_grad()  # 清除梯度
@@ -497,8 +554,13 @@ def train(rank, world_size):
             # ============================== data B  ============================== #
             # net.zero_grad()
             # optimizerG_B1.zero_grad()
-
-            train_output_B = net(inputs_B, flag = [0,1,0])
+            if parameter_B:
+                parameters_list = list(net.parameters())
+                with torch.no_grad():
+                    # 遍历 parameters_list 的每个参数并应用 maskA
+                    for param, new_val,mask in zip(parameters_list, parameter_B,maskB):
+                        param.data[mask] = new_val[mask]  # 仅更新 maskA 为 True 的位置
+            train_output_B = net(inputs_B)
             input_PSNR_B = compute_psnr(inputs_B, labels_B)
             trian_PSNR_B = compute_psnr(train_output_B, labels_B)
 
@@ -524,8 +586,13 @@ def train(rank, world_size):
             
             # ============================== data C  ============================== #
 
-
-            train_output_C = net(inputs_C,flag = [0, 0, 1])
+            if parameter_C:
+                parameters_list = list(net.parameters())
+                with torch.no_grad():
+                    # 遍历 parameters_list 的每个参数并应用 maskA
+                    for param, new_val,mask in zip(parameters_list, parameter_C,maskC):
+                        param.data[mask] = new_val[mask]  # 仅更新 maskA 为 True 的位置
+            train_output_C = net(inputs_C)
             input_PSNR_C = compute_psnr(inputs_C, labels_C)
             trian_PSNR_C = compute_psnr(train_output_C, labels_C)
 
@@ -573,12 +640,17 @@ def train(rank, world_size):
           
             # TODO updata to traniable para
             # Create masks for each gradient set
-
-            maskA = calculate_mask(gradA, percentage=torch.sigmoid(net.module.percentage_A) * 100) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
-            maskB = calculate_mask(gradB, percentage=torch.sigmoid(net.module.percentage_B) * 100)
-            maskC = calculate_mask(gradC, percentage=torch.sigmoid(net.module.percentage_C) * 100)
+            percentage=90
+            maskA = calculate_mask(gradA, percentage=percentage) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
+            maskB = calculate_mask(gradB, percentage=percentage)
+            maskC = calculate_mask(gradC, percentage=percentage)
             
             # Calculate gradients for the combined loss
+            # g_loss = (
+            #     (F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)) +
+            #     (F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B)) +
+            #     (F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C))
+            # ) 
             g_loss = (
                 weight_A * (F.smooth_l1_loss(train_output_A, labels_A) +  args.VGG_lamda * loss_network(train_output_A, labels_A)) +
                 weight_B * (F.smooth_l1_loss(train_output_B, labels_B) + args.VGG_lamda * loss_network(train_output_B, labels_B)) +
@@ -606,51 +678,118 @@ def train(rank, world_size):
             # TODO capture correlation between A and B, A and C, B and C
             
             # Initialize total masks if they are None
-            # TODO mask visual
-            # if total_maskA is None:
-            #     total_maskA = torch.zeros(len(maskA), *maskA[0].shape, device=maskA[0].device)
-            #     total_maskB = torch.zeros(len(maskB), *maskB[0].shape, device=maskB[0].device)
-            #     total_maskC = torch.zeros(len(maskC), *maskC[0].shape, device=maskC[0].device)
+            # TODO mask visual of maskA, maskB, maskC
+            # Accumulate masks
+            maskAs.append(maskA)
+            maskBs.append(maskB)
+            maskCs.append(maskC)
+            
+            # 检查每个列表的长度，如果超过 1，就移除第一个元素
+            if len(maskAs) > 1:
+                maskAs.pop(0)
+            if len(maskBs) > 1:
+                maskBs.pop(0)
+            if len(maskCs) > 1:
+                maskCs.pop(0)
+            
+            parameters_list = list(net.parameters())
+            #遍历parameters_list与mask中的每个变量，将对应位置的参数留下，其他位置用0代替
+            
+            maskA_paras=[]
+            maskB_paras=[]
+            maskC_paras=[]
+            if maskA is not None:
+                # parameter_A = net.parameters()[maskA].clone().detach() # FIXME not sure detach is necessary
+                  # 将参数生成器转换为列表
+                # parameter_A = parameters_list[maskA].clone().detach()  # 现在可以按索引访问
+                for param, mask in zip(parameters_list, maskA):  # Assume mask_list is the list of masks with the same structure as parameters_list
+                    masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
+                    maskA_paras.append(masked_param)
+                parameters_A.append(maskA_paras)
 
-            # # Accumulate masks
-            # total_maskA += maskA
-            # total_maskB += maskB
-            # total_maskC += maskC
+                if len(parameter_A) > 1:
+                    parameter_A.pop(0)
+                parameter_A=parameters_A[-1]
+                
+
+            if maskB is not None:
+                for param, mask in zip(parameters_list, maskB):  # Assume mask_list is the list of masks with the same structure as parameters_list
+                    masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
+                    maskB_paras.append(masked_param)
+                
+                if len(parameter_B) > 1:
+                    parameter_B.pop(0)
+                parameters_B.append(maskB_paras)
+                parameter_B=parameters_B[-1]
+            if maskC is not None:
+                for param, mask in zip(parameters_list, maskC):  # Assume mask_list is the list of masks with the same structure as parameters_list
+                    masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
+                    maskC_paras.append(masked_param)
+                parameters_C.append(maskC_paras)
+                if len(parameter_C) > 1:
+                    parameter_C.pop(0)
+                parameter_C=parameters_C[-1]
 
             # Apply masks to grad_total
             for i, param in enumerate(net.parameters()):
+                if grad_total[i].sum() == 0:  # 检查grad_total[i]是否全为零
+                    grad_total[i] = torch.zeros_like(grad_a)  # 替换为与grad_a相同维度的全零数组
+                    
                 if param.grad is not None:
-                    # print("********")
-                    # print(len(list(net.parameters())))
-                    # print(len(grad_total))
-                    # print(grad_total[i].shape,gradA[i].shape,maskA[i].float().shape)
-                    para_A= ( 
-                        0.8 * gradA[i] * maskA[i].float()  +
-                        0.1 *  gradB[i] * maskB[i].float()  +
-                        0.1 * gradC[i] *maskC[i].float()
-                    )
-                    para_B= (
-                        0.8 * gradB[i] *maskB[i].float() +
-                        0.1 * gradA[i] *maskA[i].float() +
-                        0.1 * gradC[i]*maskC[i].float()                         
-                    )
-                    para_C= (
-                        0.8 * gradC[i]*maskC[i].float() +
-                        0.1 * gradA[i]*maskA[i].float() +
-                        0.1 * gradB[i]*maskB[i].float() 
-                    )
+                    fine_tune = True  # Define the variable
+                    if fine_tune:
+                        grad_a= ( 
+                            gradA[i] * maskA[i].float()
+                        )
+                        grad_b= (
+                            gradB[i] * maskB[i].float()
+                        )
+                        grad_c= (
+                            gradC[i] * maskC[i].float()
+                        )
+                        # maskA = torch.tensor(maskA, dtype=torch.bool) if isinstance(maskA, list) else maskA
+                        # maskB = torch.tensor(maskB, dtype=torch.bool) if isinstance(maskB, list) else maskB
+                        # maskC = torch.tensor(maskC, dtype=torch.bool) if isinstance(maskC, list) else maskC
+                        # print(maskA)
+                        mask_combined = maskA[i] | maskB[i] | maskC[i]
+                        # mask_combined = [a | b | c for a, b, c in zip(maskA, maskB, maskC)]
+                        # mask_combined = [a.item() or b.item() or c.item() for a, b, c in zip(maskA, maskB, maskC)]
+
+                        grad_total[i][mask_combined] = 0
+                    else:
+                        # print("********")
+                        # print(len(list(net.parameters())))
+                        # print(len(grad_total))
+                        # print(grad_total[i].shape,gradA[i].shape,maskA[i].float().shape)
+                        grad_a= ( 
+                            0.8 * gradA[i] * maskA[i].float()  +
+                            0.1 *  gradB[i] * maskB[i].float()  +
+                            0.1 * gradC[i] *maskC[i].float()
+                        )
+                        grad_b= (
+                            0.8 * gradB[i] *maskB[i].float() +
+                            0.1 * gradA[i] *maskA[i].float() +
+                            0.1 * gradC[i]*maskC[i].float()                         
+                        )
+                        grad_c= (
+                            0.8 * gradC[i]*maskC[i].float() +
+                            0.1 * gradA[i]*maskA[i].float() +
+                            0.1 * gradB[i]*maskB[i].float() 
+                        )
 
 
                     # 根据 maskA、maskB 和 maskC 更新 grad_total[i]
                     # import pdb;pdb.set_trace()
                     # print(para_A[i].shape,grad_total[i].shape,maskA[i].shape)
                     if grad_total[i].sum() == 0:  # 检查grad_total[i]是否全为零
-                        grad_total[i] = torch.zeros_like(para_A)  # 替换为与para_A相同维度的全零数组
+                        grad_total[i] = torch.zeros_like(grad_a)  # 替换为与para_A相同维度的全零数组
 
                     # TODO para
-                    grad_total[i][maskA[i]] = para_A[maskA[i]]
-                    grad_total[i][maskB[i]] = para_B[maskB[i]]
-                    grad_total[i][maskC[i]] = para_C[maskC[i]]
+                    grad_total[i][maskA[i]] = grad_a[maskA[i]]
+                    grad_total[i][maskB[i]] = grad_b[maskB[i]]
+                    grad_total[i][maskC[i]] = grad_c[maskC[i]]
+                        
+                        
                 # for i, param in enumerate(net.parameters()):
                     
                 #     grad_total[i][maskA[i]] = 0.8 * weight_A * gradA[i][maskA[i]] + (net.module.log_var_A + net.module.log_var_B + net.module.log_var_C)
@@ -694,14 +833,14 @@ def train(rank, world_size):
         
         # Save accumulated masks to local directory at the end of the epoch
         #TODO mask visual
-        # save_masks_to_local(total_maskA, total_maskB, total_maskC, epoch)
+        save_masks_to_local(maskAs, maskBs, maskCs, epoch)
         
         save_model = SAVE_PATH  + 'net_epoch_{}.pth'.format(epoch)
         torch.save(net.module.state_dict(),save_model)
 
         max_psnr_val_L = test(net= net_eval, save_model = save_model,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])
-        # max_psnr_val_Rain = test(net=net_eval, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
-        # max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
+        max_psnr_val_Rain = test(net=net_eval, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
+        max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
     
 def main():
     try:

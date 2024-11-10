@@ -376,65 +376,73 @@ def print_param_number(net):
     print("------" * 5, 'Parameter', "------" * 5)
 if __name__ == "__main__":
     model = UNet(base_channel=20, num_res=6)
-    conv_count = 0
-    for name,module in model.named_modules():
-        print(name,'----------------',name.split('.')[-1])
-        if name.split('.')[-1] =='conv':
-            conv_count +=1
+    # conv_count = 0
+    # for name,module in model.named_modules():
+    #     print(name,'----------------',name.split('.')[-1])
+    #     if name.split('.')[-1] =='conv':
+    #         conv_count +=1
 
-    print('===='*10,conv_count)
+    # print('===='*10,conv_count)
     from functools import partial
     #flag = torch.randn(3)
     input = torch.randn(1, 3, 64, 64)
     output = model(input,flag=[1,0,0])
-    print('-'*50)
-    print(output.shape)
-    print_param_number(model)
+    from torchviz import make_dot
 
-    params1 = []
-    params2 = []
-    params3 = []
-    for name, param in model.named_parameters():
-        if "B1_indicator" in name:
-            params1.append(param)
-        if "B2_indicator" in name:
-            params2.append(param)
-        if "B3_indicator" in name:
-            params3.append(param)
-    print('type(params1)', type(params1), len(params1))
-    print('type(params2)', type(params2), len(params2))
-    print('type(params3)', type(params3), len(params3))
+    make_dot(output, params=dict(model.named_parameters())).render("model_computation_graph.png", format="png")
+    
+    
+    
+    
+    
+    # print('-'*50)
+    # print(output.shape)
+    # print_param_number(model)
 
-    indictor = model.getIndicators_B1()
-    print(indictor,len(indictor))
-    indictor_list = []
-    for i in range(len(indictor)):
-        indictor_list.append(indictor[i].item())
-    print(indictor_list)
+    # params1 = []
+    # params2 = []
+    # params3 = []
+    # for name, param in model.named_parameters():
+    #     if "B1_indicator" in name:
+    #         params1.append(param)
+    #     if "B2_indicator" in name:
+    #         params2.append(param)
+    #     if "B3_indicator" in name:
+    #         params3.append(param)
+    # print('type(params1)', type(params1), len(params1))
+    # print('type(params2)', type(params2), len(params2))
+    # print('type(params3)', type(params3), len(params3))
 
-    indictor_array = np.array(indictor_list)
-    print(indictor_array.shape)
+    # indictor = model.getIndicators_B1()
+    # print(indictor,len(indictor))
+    # indictor_list = []
+    # for i in range(len(indictor)):
+    #     indictor_list.append(indictor[i].item())
+    # print(indictor_list)
 
-    x = np.zeros_like(indictor_array,dtype=int)
-    y = np.ones_like(indictor_array)
-    import numpy as np
+    # indictor_array = np.array(indictor_list)
+    # print(indictor_array.shape)
 
-    out = np.where(indictor_array>0.2, y,x)
+    # x = np.zeros_like(indictor_array,dtype=int)
+    # y = np.ones_like(indictor_array)
+    # import numpy as np
 
-    def print_indictor(indictor):
-        indictor_list = []
-        for i in range(len(indictor)):
-            indictor_list.append(indictor[i].item())
-        indictor_array = np.array(indictor_list)
-        print('indictor_array---ori:',indictor_array)
+    # out = np.where(indictor_array>0.2, y,x)
 
-        x = np.zeros_like(indictor_array)
-        y = np.ones_like(indictor_array)
-        out = np.where(indictor_array>0.1, y,x)
-        #print('indictor_array---Binary out:',out)
-        print('indictor_array---Binary out:',list(out))
+    # def print_indictor(indictor):
+    #     indictor_list = []
+    #     for i in range(len(indictor)):
+    #         indictor_list.append(indictor[i].item())
+    #     indictor_array = np.array(indictor_list)
+    #     print('indictor_array---ori:',indictor_array)
+
+    #     x = np.zeros_like(indictor_array)
+    #     y = np.ones_like(indictor_array)
+    #     out = np.where(indictor_array>0.1, y,x)
+    #     #print('indictor_array---Binary out:',out)
+    #     print('indictor_array---Binary out:',list(out))
 
 
-    print_indictor(indictor)
+    # print_indictor(indictor)
 
 

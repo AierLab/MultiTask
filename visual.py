@@ -1,3 +1,4 @@
+import os
 import re
 import matplotlib.pyplot as plt
 
@@ -50,7 +51,7 @@ def plot_metrics(data, save_path='metrics_plot.png'):
     epochs = data['epoch']
     
     # 设置子图
-    fig, axs = plt.subplots(3, 1, figsize=(12, 18))
+    fig, axs = plt.subplots(2, 1, figsize=(12, 18))
     fig.suptitle("Training Metrics")
     
     # 绘制 Loss 图
@@ -65,24 +66,27 @@ def plot_metrics(data, save_path='metrics_plot.png'):
     axs[0].grid(True)
     
     # 绘制 PSNR_A 图
-    axs[1].plot(epochs, data['in_PSNR_A'], label='in_PSNR_A', marker='x')
+    # axs[1].plot(epochs, data['in_PSNR_A'], label='in_PSNR_A', marker='x')
     axs[1].plot(epochs, data['out_PSNR_A'], label='out_PSNR_A', marker='x')
-    axs[1].set_title("PSNR for A")
+    axs[1].plot(epochs, data['out_PSNR_B'], label='out_PSNR_B', marker='x')
+    # axs[2].plot(epochs, data['in_PSNR_C'], label='in_PSNR_C', marker='x')
+    axs[1].plot(epochs, data['out_PSNR_C'], label='out_PSNR_C', marker='x')
+    axs[1].set_title("PSNR for A, B and C")
     axs[1].set_xlabel("Epoch")
     axs[1].set_ylabel("PSNR")
     axs[1].legend()
     axs[1].grid(True)
     
-    # 绘制 PSNR_B 和 PSNR_C 图
-    axs[2].plot(epochs, data['in_PSNR_B'], label='in_PSNR_B', marker='x')
-    axs[2].plot(epochs, data['out_PSNR_B'], label='out_PSNR_B', marker='x')
-    axs[2].plot(epochs, data['in_PSNR_C'], label='in_PSNR_C', marker='x')
-    axs[2].plot(epochs, data['out_PSNR_C'], label='out_PSNR_C', marker='x')
-    axs[2].set_title("PSNR for B and C")
-    axs[2].set_xlabel("Epoch")
-    axs[2].set_ylabel("PSNR")
-    axs[2].legend()
-    axs[2].grid(True)
+    # # 绘制 PSNR_B 和 PSNR_C 图
+    # # axs[2].plot(epochs, data['in_PSNR_B'], label='in_PSNR_B', marker='x')
+    # axs[2].plot(epochs, data['out_PSNR_B'], label='out_PSNR_B', marker='x')
+    # # axs[2].plot(epochs, data['in_PSNR_C'], label='in_PSNR_C', marker='x')
+    # axs[2].plot(epochs, data['out_PSNR_C'], label='out_PSNR_C', marker='x')
+    # axs[2].set_title("PSNR for B and C")
+    # axs[2].set_xlabel("Epoch")
+    # axs[2].set_ylabel("PSNR")
+    # axs[2].legend()
+    # axs[2].grid(True)
     
     # 调整布局并保存图像
     plt.tight_layout(rect=[0, 0, 1, 0.96])
@@ -91,7 +95,8 @@ def plot_metrics(data, save_path='metrics_plot.png'):
 
 # 主程序
 if __name__ == "__main__":
-    log_file = '/home/4paradigm/WGWS-Net/output_trainable.txt'  # 日志文件路径
+    log_file = '/home/4paradigm/WGWS-Net/log/output_80_completed.txt'  # 日志文件路径
+    log_file_name = os.path.splitext(os.path.basename(log_file))[0]
 
     data = parse_log(log_file)
-    plot_metrics(data, save_path='metrics_plot_trainable.png')
+    plot_metrics(data, save_path=f'/home/4paradigm/WGWS-Net/metrics/{log_file_name}_metrics.png')

@@ -1,0 +1,24 @@
+device ----------------------------------------: cuda
+2024-11-10 14:39:09
+device ----------------------------------------: cuda
+2024-11-10 14:39:15
+Parameter containing:
+tensor(0.0100, requires_grad=True)
+device ----------------------------------------: cuda
+2024-11-10 14:39:28
+An error occurred: 
+
+-- Process 0 terminated with the following error:
+Traceback (most recent call last):
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/multiprocessing/spawn.py", line 69, in _wrap
+    fn(i, *args)
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 529, in train
+    param.data[mask] = new_val[mask]  # 仅更新 maskA 为 True 的位置
+RuntimeError: shape mismatch: value tensor of shape [0, 18, 18, 3, 3] cannot be broadcast to indexing result of shape [0]
+
+device ----------------------------------------: cuda
+2024-11-10 14:50:39
+device ----------------------------------------: cuda
+2024-11-10 14:50:43
+Parameter containing:
+tensor(0.0100, requires_grad=True)
