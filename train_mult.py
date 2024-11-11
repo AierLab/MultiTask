@@ -57,8 +57,8 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_tune_percent90_new") # modify the experiments name-->modify all save path
-parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
+parser.add_argument('--experiment_name', type=str,default= "training_tune_percent90_mask") # modify the experiments name-->modify all save path
+parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_2/MLT/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
 parser.add_argument('--training_gt_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/gt/')
@@ -139,6 +139,26 @@ logging.info(f'begin testing! ')
 print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+
+def save_masked_model(net, mask, original_parameters, epoch, suffix):
+    # 确保路径 SAVE_PATH + suffix 存在
+    save_path = os.path.join(SAVE_PATH, suffix)
+    os.makedirs(save_path, exist_ok=True)
+    
+    # 使用掩码更新参数
+    with torch.no_grad():
+        for param, original_param, m in zip(net.parameters(), original_parameters, mask):
+            # param.data = param.data*m + original_param.data*(1-m)
+            param.data = m * param.data + (1 - m.float()) * original_param.data
+            # param.data = param.data * mask + original_param.data * (1 - mask.float())
+            # param.data = torch.where(m.bool(), param.data, original_param.data)
+
+    # 保存更新后的模型
+    save_model = os.path.join(save_path, f'net_epoch_{epoch}.pth')
+    torch.save(net.state_dict(), save_model)
+    return save_model
+
+
 
 
 def test(net,eval_loader, save_model ,epoch =1,max_psnr_val=26 ,Dname = 'S',flag = [1,0,0]):
@@ -306,14 +326,23 @@ time_flag = datetime.now().strftime("%Y%m%d_%H%M%S")
 folder = f"/mnt/pipeline_1/mask_log/run{time_flag}"
     
 # Define a function to save masks to the local directory
-def save_masks_to_local(maskA, maskB, maskC, epoch, folder=folder):
-    # Ensure the folder exists
-    os.makedirs(folder, exist_ok=True)
+# def save_masks_to_local(maskA, maskB, maskC, epoch, folder=folder):
+#     # Ensure the folder exists
+#     os.makedirs(folder, exist_ok=True)
     
-    # Save the masks
-    np.save(os.path.join(folder, f"maskAs_epoch{epoch}.npy"), maskA)
-    np.save(os.path.join(folder, f"maskBs_epoch{epoch}.npy"), maskB)
-    np.save(os.path.join(folder, f"maskCs_epoch{epoch}.npy"), maskC)
+#     # Save the masks
+#     np.save(os.path.join(folder, f"maskAs_epoch{epoch}.npy"), maskA.cpu().numpy())
+#     np.save(os.path.join(folder, f"maskBs_epoch{epoch}.npy"), maskB.cpu().numpy())
+#     np.save(os.path.join(folder, f"maskCs_epoch{epoch}.npy"), maskC.cpu().numpy())
+    
+def save_masks_to_local(maskA, maskB, maskC, epoch, folder='/home/4paradigm/Weather/masks'):
+
+    # 保存 maskAs
+    os.makedirs(folder, exist_ok=True)
+    torch.save(maskA, os.path.join(folder, f'maskA_epoch{epoch}.pth'))
+    torch.save(maskB, os.path.join(folder, f'maskB_epoch{epoch}.pth'))
+    torch.save(maskC, os.path.join(folder, f'maskC_epoch{epoch}.pth'))
+
 
 def overlap_loss(maskA, maskB, maskC):
     # Calculate overlaps between each pair of masks
@@ -673,7 +702,8 @@ def train(rank, world_size):
           
 
             # Remove overlaps in masks
-            remove_overlap_masks(maskA, maskB, maskC)
+            # TODO remove the overlap
+            # remove_overlap_masks(maskA, maskB, maskC)
             
             # TODO capture correlation between A and B, A and C, B and C
             
@@ -707,8 +737,8 @@ def train(rank, world_size):
                     maskA_paras.append(masked_param)
                 parameters_A.append(maskA_paras)
 
-                if len(parameter_A) > 1:
-                    parameter_A.pop(0)
+                if len(parameters_A) > 1:
+                    parameters_A.pop(0)
                 parameter_A=parameters_A[-1]
                 
 
@@ -717,8 +747,8 @@ def train(rank, world_size):
                     masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
                     maskB_paras.append(masked_param)
                 
-                if len(parameter_B) > 1:
-                    parameter_B.pop(0)
+                if len(parameters_B) > 1:
+                    parameters_B.pop(0)
                 parameters_B.append(maskB_paras)
                 parameter_B=parameters_B[-1]
             if maskC is not None:
@@ -726,8 +756,8 @@ def train(rank, world_size):
                     masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
                     maskC_paras.append(masked_param)
                 parameters_C.append(maskC_paras)
-                if len(parameter_C) > 1:
-                    parameter_C.pop(0)
+                if len(parameters_C) > 1:
+                    parameters_C.pop(0)
                 parameter_C=parameters_C[-1]
 
             # Apply masks to grad_total
@@ -755,7 +785,7 @@ def train(rank, world_size):
                         # mask_combined = [a | b | c for a, b, c in zip(maskA, maskB, maskC)]
                         # mask_combined = [a.item() or b.item() or c.item() for a, b, c in zip(maskA, maskB, maskC)]
 
-                        grad_total[i][mask_combined] = 0
+                        grad_total[i][~mask_combined] = 0
                     else:
                         # print("********")
                         # print(len(list(net.parameters())))
@@ -834,14 +864,26 @@ def train(rank, world_size):
         # Save accumulated masks to local directory at the end of the epoch
         #TODO mask visual
         save_masks_to_local(maskAs, maskBs, maskCs, epoch)
+        #TODO save three different models
+        # save_model_A = save_masked_model(net, maskA, original_parameters, epoch, 'snow')
+        # save_model_B = save_masked_model(net, maskB, original_parameters, epoch, 'rain')
+        # save_model_C = save_masked_model(net, maskC, original_parameters, epoch, 'raindrop')
+        
+        
         
         save_model = SAVE_PATH  + 'net_epoch_{}.pth'.format(epoch)
         torch.save(net.module.state_dict(),save_model)
-
+        
+        
         max_psnr_val_L = test(net= net_eval, save_model = save_model,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])
         max_psnr_val_Rain = test(net=net_eval, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
         max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
     
+
+        # max_psnr_val_L = test(net= net_eval, save_model = save_model_A,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])
+        # max_psnr_val_Rain = test(net=net_eval, save_model = save_model_B, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
+        # max_psnr_val_RD = test(net=net_eval, save_model  = save_model_C, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
+    # TODO save the mask
 def main():
     try:
         # Set the multiprocessing start method to 'fork', which is often required for PyTorch's multiprocessing.

@@ -22,3 +22,125 @@ device ----------------------------------------: cuda
 2024-11-10 14:50:43
 Parameter containing:
 tensor(0.0100, requires_grad=True)
+device ----------------------------------------: cuda
+2024-11-10 14:51:27
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03293, weight_B:0.33333,loss3:0.03001, weight_C:1.36027,loss5:0.04850, avg_lossA:0.03107, avg_lossB:0.03323, avg_lossC:0.04705, avg_loss:0.08543],[in_PSNR_A: 20.235, out_PSNR_A: 30.438],[in_PSNR_B: 14.909, out_PSNR_B: 29.013],[in_PSNR_C: 21.089, out_PSNR_C: 25.129],time: 309.627
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02907, weight_B:0.33333,loss3:0.03379, weight_C:1.36027,loss5:0.05432, avg_lossA:0.03056, avg_lossB:0.03272, avg_lossC:0.04766, avg_loss:0.08593],[in_PSNR_A: 21.570, out_PSNR_A: 33.264],[in_PSNR_B: 13.207, out_PSNR_B: 29.155],[in_PSNR_C: 22.065, out_PSNR_C: 26.943],time: 248.816
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02608, weight_B:0.33333,loss3:0.02684, weight_C:1.36027,loss5:0.06259, avg_lossA:0.03070, avg_lossB:0.03256, avg_lossC:0.04656, avg_loss:0.08442],[in_PSNR_A: 21.475, out_PSNR_A: 31.612],[in_PSNR_B: 13.536, out_PSNR_B: 29.226],[in_PSNR_C: 20.888, out_PSNR_C: 26.889],time: 246.248
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02904, weight_B:0.33333,loss3:0.04046, weight_C:1.36027,loss5:0.04849, avg_lossA:0.03068, avg_lossB:0.03255, avg_lossC:0.04676, avg_loss:0.08469],[in_PSNR_A: 21.453, out_PSNR_A: 33.905],[in_PSNR_B: 14.835, out_PSNR_B: 26.191],[in_PSNR_C: 19.172, out_PSNR_C: 26.450],time: 220.455
+An error occurred: 
+
+-- Process 0 terminated with the following error:
+Traceback (most recent call last):
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/multiprocessing/spawn.py", line 69, in _wrap
+    fn(i, *args)
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 657, in train
+    weight_C * (F.smooth_l1_loss(train_output_C, labels_C) +  args.VGG_lamda * loss_network(train_output_C, labels_C))
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/4paradigm/WGWS-Net/loss/perceptual.py", line 31, in forward
+    loss.append(F.mse_loss(pred_im_feature, gt_feature))
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/functional.py", line 3292, in mse_loss
+    return torch._C._nn.mse_loss(expanded_input, expanded_target, _Reduction.get_enum(reduction))
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 74.00 MiB (GPU 0; 79.18 GiB total capacity; 76.47 GiB already allocated; 30.38 MiB free; 77.50 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+
+device ----------------------------------------: cuda
+2024-11-10 17:39:05
+device ----------------------------------------: cuda
+2024-11-10 17:39:08
+Parameter containing:
+tensor(0.0100, requires_grad=True)
+device ----------------------------------------: cuda
+2024-11-10 17:39:16
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03293, weight_B:0.33333,loss3:0.03001, weight_C:1.36027,loss5:0.04850, avg_lossA:0.03107, avg_lossB:0.03323, avg_lossC:0.04705, avg_loss:0.08543],[in_PSNR_A: 20.235, out_PSNR_A: 30.438],[in_PSNR_B: 14.909, out_PSNR_B: 29.013],[in_PSNR_C: 21.089, out_PSNR_C: 25.129],time: 206.990
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02907, weight_B:0.33333,loss3:0.03379, weight_C:1.36027,loss5:0.05432, avg_lossA:0.03056, avg_lossB:0.03272, avg_lossC:0.04766, avg_loss:0.08593],[in_PSNR_A: 21.570, out_PSNR_A: 33.264],[in_PSNR_B: 13.207, out_PSNR_B: 29.155],[in_PSNR_C: 22.065, out_PSNR_C: 26.943],time: 191.659
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02608, weight_B:0.33333,loss3:0.02684, weight_C:1.36027,loss5:0.06259, avg_lossA:0.03070, avg_lossB:0.03256, avg_lossC:0.04656, avg_loss:0.08442],[in_PSNR_A: 21.475, out_PSNR_A: 31.612],[in_PSNR_B: 13.536, out_PSNR_B: 29.226],[in_PSNR_C: 20.888, out_PSNR_C: 26.889],time: 410.352
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02904, weight_B:0.33333,loss3:0.04046, weight_C:1.36027,loss5:0.04849, avg_lossA:0.03068, avg_lossB:0.03255, avg_lossC:0.04676, avg_loss:0.08469],[in_PSNR_A: 21.453, out_PSNR_A: 33.905],[in_PSNR_B: 14.835, out_PSNR_B: 26.191],[in_PSNR_C: 19.172, out_PSNR_C: 26.450],time: 192.700
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03412, weight_B:0.33333,loss3:0.03996, weight_C:1.36027,loss5:0.03098, avg_lossA:0.03058, avg_lossB:0.03272, avg_lossC:0.04687, avg_loss:0.08485],[in_PSNR_A: 21.755, out_PSNR_A: 30.636],[in_PSNR_B: 12.945, out_PSNR_B: 29.126],[in_PSNR_C: 22.756, out_PSNR_C: 29.416],time: 192.418
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.04096, weight_B:0.33333,loss3:0.02691, weight_C:1.36027,loss5:0.02869, avg_lossA:0.03067, avg_lossB:0.03257, avg_lossC:0.04651, avg_loss:0.08434],[in_PSNR_A: 20.155, out_PSNR_A: 29.353],[in_PSNR_B: 13.723, out_PSNR_B: 28.841],[in_PSNR_C: 24.441, out_PSNR_C: 30.369],time: 189.187
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02570, weight_B:0.33333,loss3:0.02209, weight_C:1.36027,loss5:0.05085, avg_lossA:0.03058, avg_lossB:0.03252, avg_lossC:0.04646, avg_loss:0.08423],[in_PSNR_A: 22.492, out_PSNR_A: 32.958],[in_PSNR_B: 10.266, out_PSNR_B: 28.168],[in_PSNR_C: 19.466, out_PSNR_C: 26.501],time: 190.168
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03271, weight_B:0.33333,loss3:0.03205, weight_C:1.36027,loss5:0.03655, avg_lossA:0.03064, avg_lossB:0.03250, avg_lossC:0.04612, avg_loss:0.08378],[in_PSNR_A: 21.874, out_PSNR_A: 32.156],[in_PSNR_B: 13.986, out_PSNR_B: 29.316],[in_PSNR_C: 21.758, out_PSNR_C: 27.981],time: 186.348
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02678, weight_B:0.33333,loss3:0.03106, weight_C:1.36027,loss5:0.05663, avg_lossA:0.03056, avg_lossB:0.03252, avg_lossC:0.04593, avg_loss:0.08350],[in_PSNR_A: 20.763, out_PSNR_A: 32.469],[in_PSNR_B: 12.486, out_PSNR_B: 30.445],[in_PSNR_C: 19.786, out_PSNR_C: 26.431],time: 193.347
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.04182, weight_B:0.33333,loss3:0.05262, weight_C:1.36027,loss5:0.03880, avg_lossA:0.03060, avg_lossB:0.03248, avg_lossC:0.04586, avg_loss:0.08340],[in_PSNR_A: 23.202, out_PSNR_A: 32.487],[in_PSNR_B: 13.550, out_PSNR_B: 27.095],[in_PSNR_C: 23.704, out_PSNR_C: 30.005],time: 189.842
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.01763, weight_B:0.33333,loss3:0.02984, weight_C:1.36027,loss5:0.04443, avg_lossA:0.03059, avg_lossB:0.03253, avg_lossC:0.04588, avg_loss:0.08345],[in_PSNR_A: 25.692, out_PSNR_A: 35.755],[in_PSNR_B: 13.679, out_PSNR_B: 29.226],[in_PSNR_C: 21.631, out_PSNR_C: 27.618],time: 188.450
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03386, weight_B:0.33333,loss3:0.03192, weight_C:1.36027,loss5:0.02780, avg_lossA:0.03065, avg_lossB:0.03254, avg_lossC:0.04586, avg_loss:0.08344],[in_PSNR_A: 21.742, out_PSNR_A: 31.481],[in_PSNR_B: 13.312, out_PSNR_B: 30.299],[in_PSNR_C: 24.232, out_PSNR_C: 29.569],time: 193.217
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02678, weight_B:0.33333,loss3:0.03353, weight_C:1.36027,loss5:0.02432, avg_lossA:0.03061, avg_lossB:0.03253, avg_lossC:0.04585, avg_loss:0.08341],[in_PSNR_A: 24.636, out_PSNR_A: 34.469],[in_PSNR_B: 13.940, out_PSNR_B: 29.307],[in_PSNR_C: 24.210, out_PSNR_C: 31.457],time: 186.838
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02440, weight_B:0.33333,loss3:0.04447, weight_C:1.36027,loss5:0.04614, avg_lossA:0.03058, avg_lossB:0.03254, avg_lossC:0.04573, avg_loss:0.08325],[in_PSNR_A: 23.121, out_PSNR_A: 33.015],[in_PSNR_B: 15.987, out_PSNR_B: 27.578],[in_PSNR_C: 17.488, out_PSNR_C: 26.884],time: 187.833
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03314, weight_B:0.33333,loss3:0.04489, weight_C:1.36027,loss5:0.03521, avg_lossA:0.03055, avg_lossB:0.03263, avg_lossC:0.04567, avg_loss:0.08318],[in_PSNR_A: 21.716, out_PSNR_A: 33.060],[in_PSNR_B: 12.504, out_PSNR_B: 28.309],[in_PSNR_C: 19.877, out_PSNR_C: 27.353],time: 233.188
+An error occurred: 
+
+-- Process 0 terminated with the following error:
+Traceback (most recent call last):
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/multiprocessing/spawn.py", line 69, in _wrap
+    fn(i, *args)
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 836, in train
+    if (idx+1) % args.print_frequency ==0 and idx >1:
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 314, in save_masks_to_local
+    overlap_maskC = overlap_AC[i] if overlap_AC[i] is not None else torch.zeros_like(maskC[i], dtype=torch.bool)
+  File "<__array_function__ internals>", line 200, in save
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/numpy/lib/npyio.py", line 521, in save
+    arr = np.asanyarray(arr)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/_tensor.py", line 956, in __array__
+    return self.numpy()
+TypeError: can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.
+
+device ----------------------------------------: cuda
+2024-11-10 18:37:35
+device ----------------------------------------: cuda
+2024-11-10 18:37:43
+An error occurred: 
+
+-- Process 0 terminated with the following error:
+Traceback (most recent call last):
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/multiprocessing/spawn.py", line 69, in _wrap
+    fn(i, *args)
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 353, in train
+    dist.init_process_group(backend='nccl', rank=rank, world_size=world_size)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/distributed/distributed_c10d.py", line 754, in init_process_group
+    store, rank, world_size = next(rendezvous_iterator)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/distributed/rendezvous.py", line 246, in _env_rendezvous_handler
+    store = _create_c10d_store(master_addr, master_port, rank, world_size, timeout)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/distributed/rendezvous.py", line 177, in _create_c10d_store
+    return TCPStore(
+RuntimeError: The server socket has failed to listen on any local network address. The server socket has failed to bind to [::]:29506 (errno: 98 - Address already in use). The server socket has failed to bind to 0.0.0.0:29506 (errno: 98 - Address already in use).
+
+device ----------------------------------------: cuda
+2024-11-10 18:40:30
+device ----------------------------------------: cuda
+2024-11-10 18:40:35
+Parameter containing:
+tensor(0.0100, requires_grad=True)
+device ----------------------------------------: cuda
+2024-11-10 18:40:50
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03293, weight_B:0.33333,loss3:0.03001, weight_C:1.36027,loss5:0.04850, avg_lossA:0.03107, avg_lossB:0.03323, avg_lossC:0.04705, avg_loss:0.08543],[in_PSNR_A: 20.235, out_PSNR_A: 30.438],[in_PSNR_B: 14.909, out_PSNR_B: 29.013],[in_PSNR_C: 21.089, out_PSNR_C: 25.129],time: 223.638
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02907, weight_B:0.33333,loss3:0.03379, weight_C:1.36027,loss5:0.05432, avg_lossA:0.03056, avg_lossB:0.03272, avg_lossC:0.04766, avg_loss:0.08593],[in_PSNR_A: 21.570, out_PSNR_A: 33.264],[in_PSNR_B: 13.207, out_PSNR_B: 29.155],[in_PSNR_C: 22.065, out_PSNR_C: 26.943],time: 198.063
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02608, weight_B:0.33333,loss3:0.02684, weight_C:1.36027,loss5:0.06259, avg_lossA:0.03070, avg_lossB:0.03256, avg_lossC:0.04656, avg_loss:0.08442],[in_PSNR_A: 21.475, out_PSNR_A: 31.612],[in_PSNR_B: 13.536, out_PSNR_B: 29.226],[in_PSNR_C: 20.888, out_PSNR_C: 26.889],time: 198.132
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02904, weight_B:0.33333,loss3:0.04046, weight_C:1.36027,loss5:0.04849, avg_lossA:0.03068, avg_lossB:0.03255, avg_lossC:0.04676, avg_loss:0.08469],[in_PSNR_A: 21.453, out_PSNR_A: 33.905],[in_PSNR_B: 14.835, out_PSNR_B: 26.191],[in_PSNR_C: 19.172, out_PSNR_C: 26.450],time: 182.904
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03412, weight_B:0.33333,loss3:0.03996, weight_C:1.36027,loss5:0.03098, avg_lossA:0.03058, avg_lossB:0.03272, avg_lossC:0.04687, avg_loss:0.08485],[in_PSNR_A: 21.755, out_PSNR_A: 30.636],[in_PSNR_B: 12.945, out_PSNR_B: 29.126],[in_PSNR_C: 22.756, out_PSNR_C: 29.416],time: 186.333
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.04096, weight_B:0.33333,loss3:0.02691, weight_C:1.36027,loss5:0.02869, avg_lossA:0.03067, avg_lossB:0.03257, avg_lossC:0.04651, avg_loss:0.08434],[in_PSNR_A: 20.155, out_PSNR_A: 29.353],[in_PSNR_B: 13.723, out_PSNR_B: 28.841],[in_PSNR_C: 24.441, out_PSNR_C: 30.369],time: 348.986
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02570, weight_B:0.33333,loss3:0.02209, weight_C:1.36027,loss5:0.05085, avg_lossA:0.03058, avg_lossB:0.03252, avg_lossC:0.04646, avg_loss:0.08423],[in_PSNR_A: 22.492, out_PSNR_A: 32.958],[in_PSNR_B: 10.266, out_PSNR_B: 28.168],[in_PSNR_C: 19.466, out_PSNR_C: 26.501],time: 273.445
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03271, weight_B:0.33333,loss3:0.03205, weight_C:1.36027,loss5:0.03655, avg_lossA:0.03064, avg_lossB:0.03250, avg_lossC:0.04612, avg_loss:0.08378],[in_PSNR_A: 21.874, out_PSNR_A: 32.156],[in_PSNR_B: 13.986, out_PSNR_B: 29.316],[in_PSNR_C: 21.758, out_PSNR_C: 27.981],time: 203.072
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02678, weight_B:0.33333,loss3:0.03106, weight_C:1.36027,loss5:0.05663, avg_lossA:0.03056, avg_lossB:0.03252, avg_lossC:0.04593, avg_loss:0.08350],[in_PSNR_A: 20.763, out_PSNR_A: 32.469],[in_PSNR_B: 12.486, out_PSNR_B: 30.445],[in_PSNR_C: 19.786, out_PSNR_C: 26.431],time: 204.400
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.04182, weight_B:0.33333,loss3:0.05262, weight_C:1.36027,loss5:0.03880, avg_lossA:0.03060, avg_lossB:0.03248, avg_lossC:0.04586, avg_loss:0.08340],[in_PSNR_A: 23.202, out_PSNR_A: 32.487],[in_PSNR_B: 13.550, out_PSNR_B: 27.095],[in_PSNR_C: 23.704, out_PSNR_C: 30.005],time: 184.960
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.01763, weight_B:0.33333,loss3:0.02984, weight_C:1.36027,loss5:0.04443, avg_lossA:0.03059, avg_lossB:0.03253, avg_lossC:0.04588, avg_loss:0.08345],[in_PSNR_A: 25.692, out_PSNR_A: 35.755],[in_PSNR_B: 13.679, out_PSNR_B: 29.226],[in_PSNR_C: 21.631, out_PSNR_C: 27.618],time: 185.977
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03386, weight_B:0.33333,loss3:0.03192, weight_C:1.36027,loss5:0.02780, avg_lossA:0.03065, avg_lossB:0.03254, avg_lossC:0.04586, avg_loss:0.08344],[in_PSNR_A: 21.742, out_PSNR_A: 31.481],[in_PSNR_B: 13.312, out_PSNR_B: 30.299],[in_PSNR_C: 24.232, out_PSNR_C: 29.569],time: 242.207
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02678, weight_B:0.33333,loss3:0.03353, weight_C:1.36027,loss5:0.02432, avg_lossA:0.03061, avg_lossB:0.03253, avg_lossC:0.04585, avg_loss:0.08341],[in_PSNR_A: 24.636, out_PSNR_A: 34.469],[in_PSNR_B: 13.940, out_PSNR_B: 29.307],[in_PSNR_C: 24.210, out_PSNR_C: 31.457],time: 195.635
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.02440, weight_B:0.33333,loss3:0.04447, weight_C:1.36027,loss5:0.04614, avg_lossA:0.03058, avg_lossB:0.03254, avg_lossC:0.04573, avg_loss:0.08325],[in_PSNR_A: 23.121, out_PSNR_A: 33.015],[in_PSNR_B: 15.987, out_PSNR_B: 27.578],[in_PSNR_C: 17.488, out_PSNR_C: 26.884],time: 198.260
+[epoch:0 / EPOCH :10],[346 / 1500], [lr: 0.0001000 ],[ weight_A:0.33333,loss1:0.03314, weight_B:0.33333,loss3:0.04489, weight_C:1.36027,loss5:0.03521, avg_lossA:0.03055, avg_lossB:0.03263, avg_lossC:0.04567, avg_loss:0.08318],[in_PSNR_A: 21.716, out_PSNR_A: 33.060],[in_PSNR_B: 12.504, out_PSNR_B: 28.309],[in_PSNR_C: 19.877, out_PSNR_C: 27.353],time: 196.571
+An error occurred: 
+
+-- Process 0 terminated with the following error:
+Traceback (most recent call last):
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/multiprocessing/spawn.py", line 69, in _wrap
+    fn(i, *args)
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 854, in train
+    save_masks_to_local(maskAs, maskBs, maskCs, epoch)
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 331, in save_masks_to_local
+    np.save(os.path.join(folder, f"maskAs_epoch{epoch}.npy"), maskA)
+  File "<__array_function__ internals>", line 200, in save
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/numpy/lib/npyio.py", line 521, in save
+    arr = np.asanyarray(arr)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/_tensor.py", line 956, in __array__
+    return self.numpy()
+TypeError: can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.
+

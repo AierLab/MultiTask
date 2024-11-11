@@ -2,9 +2,9 @@
 
 # 设置可见的GPU设备，代码里其实也设置了
 # export CUDA_VISIBLE_DEVICES=0,1
-export CUDA_VISIBLE_DEVICES=7
+export CUDA_VISIBLE_DEVICES=6
 export MASTER_ADDR='localhost'
-export MASTER_PORT='29507'  # 更改端口号
+export MASTER_PORT='29506'  # 更改端口号
 # export WORLD_SIZE=4 # 设置进程数  
 export WORLD_SIZE=1 # 设置进程数, 最好是GPU数量
 

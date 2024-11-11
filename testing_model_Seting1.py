@@ -48,6 +48,44 @@ parser.add_argument('--flag', type=str, default= 'O')
 parser.add_argument('--base_channel', type = int, default= 18)
 parser.add_argument('--num_block', type=int, default= 6)
 args = parser.parse_args()
+mask_A_dir = '/home/4paradigm/Weather/masks/maskA_epoch0.pth'
+mask_B_dir = '/home/4paradigm/Weather/masks/maskB_epoch0.pth'
+mask_C_dir = '/home/4paradigm/Weather/masks/maskC_epoch0.pth'
+maskA = torch.load(mask_A_dir)
+maskB = torch.load(mask_B_dir)
+maskC = torch.load(mask_C_dir)
+model_ori ='/home/4paradigm/Weather/stage1/net_epoch_99.pth'
+model_mask='/mnt/pipeline_2/MLT/training_tune_percent90_alone/net_epoch_4.pth'
+
+
+def load_combined_model(net, model_path1, model_path2, mask):
+    # 加载两个预训练模型的 state_dict
+    state_dict1 = torch.load(model_path1)
+    state_dict2 = torch.load(model_path2)
+    
+    # 初始化组合后的 state_dict
+    combined_state_dict = {}
+    
+    # 遍历 state_dict1，将参数根据 mask 进行组合
+    with torch.no_grad():
+        for name, param1 in state_dict1.items():
+            # 如果 state_dict2 中没有该参数，则使用 state_dict1 的参数
+            if name not in state_dict2:
+                combined_state_dict[name] = param1
+            else:
+                param2 = state_dict2[name]
+                # 根据 mask 的值选择来自 param1 或 param2 的参数
+                if name in mask:
+                    combined_state_dict[name] = torch.where(mask[name].bool(), param1, param2)
+                else:
+                    combined_state_dict[name] = param1  # 如果 mask 中没有该参数，则直接选择 param1
+    
+    # 将组合后的参数加载到模型中
+    net.load_state_dict(combined_state_dict, strict=False)
+    return net
+
+
+
 
 trans_eval = transforms.Compose(
         [
@@ -59,7 +97,7 @@ if not os.path.exists(args.save_path):
     
 def get_eval_data(val_in_path=args.eval_in_path_L,val_gt_path =args.eval_gt_path_L ,trans_eval=trans_eval):
     eval_data = my_dataset_eval(
-        root_in=val_in_path, root_label =val_gt_path, transform=trans_eval,fix_sample= 100 )
+        root_in=val_in_path, root_label =val_gt_path, transform=trans_eval,fix_sample= 500 )
     eval_loader = DataLoader(dataset=eval_data, batch_size=1, num_workers=4)
     return eval_loader
 
@@ -131,9 +169,12 @@ if __name__ == '__main__':
 
     index = 0
 
-    model_name = args.model_name
-    pretrained_model = torch.load(args.model_path + model_name)
-    net.load_state_dict(pretrained_model, strict=False)
+    # model_name = args.model_name
+    # pretrained_model = torch.load(args.model_path + model_name)
+    # net.load_state_dict(pretrained_model, strict=False)
+    net_A = load_combined_model(net,model_mask,model_ori,maskA)
+    net_B = load_combined_model(net,model_mask,model_ori,maskA)
+    net_C = load_combined_model(net,model_mask,model_ori,maskA)
     print('----Load successfully!------')
 
     if args.flag != 'S1':
@@ -154,12 +195,12 @@ if __name__ == '__main__':
     # eval_loader_RealRainDrop = get_eval_data(val_in_path=args.eval_in_path_realRainDrop, val_gt_path=args.eval_gt_path_realRainDrop)
 
 
-    # RainDrop
-    test(net=net, eval_loader = eval_loader_Haze, Dname= 'RD',flag = [0,0,1],model_flag= args.flag)
-    # OutDoor-Rain
-    test(net=net, eval_loader = eval_loader_Rain, Dname= 'HRain',flag = [0,1,0],model_flag= args.flag)
+    # # RainDrop
+    test(net=net_C, eval_loader = eval_loader_Haze, Dname= 'RD',flag = [0,0,1],model_flag= args.flag)
+    # # OutDoor-Rain
+    test(net=net_B, eval_loader = eval_loader_Rain, Dname= 'HRain',flag = [0,1,0],model_flag= args.flag)
     # # Snow
-    test(net=net, eval_loader = eval_loader_L,  Dname= 'L',flag = [1,0,0],model_flag= args.flag)
+    test(net=net_A, eval_loader = eval_loader_L,  Dname= 'L',flag = [1,0,0],model_flag= args.flag)
     
     # test(net=net, eval_loader = eval_loader_RealSnow, Dname= 'RealSnow',flag = [1,0,0],model_flag= args.flag)
     # test(net=net, eval_loader = eval_loader_RealRain,Dname= 'RealRain',flag = [0,1,0],model_flag= args.flag)

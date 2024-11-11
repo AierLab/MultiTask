@@ -55,7 +55,7 @@ if __name__ == '__main__':
     parser.add_argument('--save_path', type=str, default='/home/4paradigm/Weather/img_save', help='Path to save output images')
     parser.add_argument('--base_channel', type=int, default=18, help='Base channel for UNet')
     parser.add_argument('--num_block', type=int, default=6, help='Number of blocks in UNet')
-    parser.add_argument('--flag', type=str, default='O', help='Model flag (O, K1, K3)')
+    parser.add_argument('--flag', type=str, default='S1', help='Model flag (O, K1, K3)')
     
     
     parser.add_argument('--eval_in_path_Haze', type=str,default= '/mnt/pipeline_1/set1/rain_drop/test_a/data/')
@@ -81,7 +81,8 @@ if __name__ == '__main__':
 
     net = UNet(base_channel=args.base_channel, num_res=args.num_block)
     pretrained_model = torch.load(args.model_path)
-    net.load_state_dict(pretrained_model, strict=False)
+    import pdb;pdb.set_trace()
+    net.load_state_dict(pretrained_model, strict=True)
     net.to(device)
     print('Model loaded successfully!')
 
