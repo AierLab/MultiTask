@@ -35,7 +35,7 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_stage1") # modify the experiments name-->modify all save path
+parser.add_argument('--experiment_name', type=str,default= "training_stage1_expend") # modify the experiments name-->modify all save path
 parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_1/MLT/Weather/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')

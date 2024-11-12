@@ -55,7 +55,7 @@ maskA = torch.load(mask_A_dir)
 maskB = torch.load(mask_B_dir)
 maskC = torch.load(mask_C_dir)
 model_ori ='/home/4paradigm/Weather/stage1/net_epoch_99.pth'
-model_mask='/mnt/pipeline_2/MLT/training_tune_percent90_alone/net_epoch_4.pth'
+model_mask='/mnt/pipeline_2/MLT/training_tune_percent90_mask/net_epoch_8.pth'
 
 
 def load_combined_model(net, model_path1, model_path2, mask):

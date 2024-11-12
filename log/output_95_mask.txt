@@ -1,0 +1,397 @@
+device ----------------------------------------: cuda
+2024-11-12 02:18:08
+device ----------------------------------------: cuda
+2024-11-12 02:18:10
+Parameter containing:
+tensor(0.0100, requires_grad=True)
+device ----------------------------------------: cuda
+2024-11-12 02:18:19
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.09054, weight_B:0.33333,loss3:0.20983, weight_C:2.04040,loss5:0.07087, avg_lossA:0.09742, avg_lossB:0.19095, avg_lossC:0.09069, avg_loss:0.28118],[in_PSNR_A: 22.848, out_PSNR_A: 24.850],[in_PSNR_B: 14.286, out_PSNR_B: 17.084],[in_PSNR_C: 22.839, out_PSNR_C: 21.241],time: 240.164
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.09935, weight_B:0.33333,loss3:0.16342, weight_C:2.04040,loss5:0.09604, avg_lossA:0.09760, avg_lossB:0.18896, avg_lossC:0.08878, avg_loss:0.27668],[in_PSNR_A: 21.709, out_PSNR_A: 25.150],[in_PSNR_B: 12.727, out_PSNR_B: 16.687],[in_PSNR_C: 22.837, out_PSNR_C: 21.656],time: 222.900
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.09397, weight_B:0.33333,loss3:0.20074, weight_C:2.04040,loss5:0.10227, avg_lossA:0.09717, avg_lossB:0.18861, avg_lossC:0.08944, avg_loss:0.27775],[in_PSNR_A: 24.606, out_PSNR_A: 25.626],[in_PSNR_B: 13.217, out_PSNR_B: 16.348],[in_PSNR_C: 20.591, out_PSNR_C: 20.441],time: 223.038
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.09800, weight_B:0.33333,loss3:0.17937, weight_C:2.04040,loss5:0.05852, avg_lossA:0.09737, avg_lossB:0.18888, avg_lossC:0.08880, avg_loss:0.27660],[in_PSNR_A: 20.954, out_PSNR_A: 23.760],[in_PSNR_B: 12.818, out_PSNR_B: 16.781],[in_PSNR_C: 23.301, out_PSNR_C: 21.566],time: 222.354
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.09635, weight_B:0.33333,loss3:0.18952, weight_C:2.04040,loss5:0.07627, avg_lossA:0.09710, avg_lossB:0.18853, avg_lossC:0.08840, avg_loss:0.27559],[in_PSNR_A: 23.269, out_PSNR_A: 24.780],[in_PSNR_B: 12.359, out_PSNR_B: 15.670],[in_PSNR_C: 21.579, out_PSNR_C: 20.622],time: 225.610
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.12011, weight_B:0.33333,loss3:0.19261, weight_C:2.04040,loss5:0.09331, avg_lossA:0.09704, avg_lossB:0.18884, avg_lossC:0.08773, avg_loss:0.27430],[in_PSNR_A: 20.613, out_PSNR_A: 23.757],[in_PSNR_B: 12.011, out_PSNR_B: 14.728],[in_PSNR_C: 20.742, out_PSNR_C: 20.417],time: 218.419
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.09400, weight_B:0.33333,loss3:0.19890, weight_C:2.04040,loss5:0.07191, avg_lossA:0.09712, avg_lossB:0.18865, avg_lossC:0.08776, avg_loss:0.27432],[in_PSNR_A: 21.958, out_PSNR_A: 25.270],[in_PSNR_B: 11.029, out_PSNR_B: 14.912],[in_PSNR_C: 20.468, out_PSNR_C: 20.074],time: 219.887
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.11859, weight_B:0.33333,loss3:0.20253, weight_C:2.04040,loss5:0.05147, avg_lossA:0.09725, avg_lossB:0.18893, avg_lossC:0.08773, avg_loss:0.27440],[in_PSNR_A: 19.904, out_PSNR_A: 22.778],[in_PSNR_B: 13.554, out_PSNR_B: 17.284],[in_PSNR_C: 27.137, out_PSNR_C: 23.050],time: 225.111
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.08894, weight_B:0.33333,loss3:0.17087, weight_C:2.04040,loss5:0.06712, avg_lossA:0.09740, avg_lossB:0.18883, avg_lossC:0.08763, avg_loss:0.27420],[in_PSNR_A: 21.466, out_PSNR_A: 24.118],[in_PSNR_B: 13.828, out_PSNR_B: 17.282],[in_PSNR_C: 22.720, out_PSNR_C: 21.099],time: 226.094
+[epoch:0 / EPOCH :10],[346 / 1000], [lr: 0.0000500 ],[ weight_A:0.33333,loss1:0.08895, weight_B:0.33333,loss3:0.21346, weight_C:2.04040,loss5:0.06587, avg_lossA:0.09723, avg_lossB:0.18901, avg_lossC:0.08742, avg_loss:0.27379],[in_PSNR_A: 22.777, out_PSNR_A: 24.721],[in_PSNR_B: 13.101, out_PSNR_B: 16.188],[in_PSNR_C: 20.265, out_PSNR_C: 20.060],time: 222.223
+device ----------------------------------------: cuda
+2024-11-12 02:55:50
+device ----------------------------------------: cuda
+2024-11-12 02:55:59
+device ----------------------------------------: cuda
+2024-11-12 02:55:56
+device ----------------------------------------: cuda
+2024-11-12 02:55:53
+epoch:0---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.6]--------max_psnr_val:25:-----cost time;40.927961587905884
+device ----------------------------------------: cuda
+2024-11-12 02:56:28
+device ----------------------------------------: cuda
+2024-11-12 02:56:28
+device ----------------------------------------: cuda
+2024-11-12 02:56:28
+device ----------------------------------------: cuda
+2024-11-12 02:56:29
+epoch:0---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.35]--------max_psnr_val:25:-----cost time;34.68264365196228
+device ----------------------------------------: cuda
+2024-11-12 02:57:03
+device ----------------------------------------: cuda
+2024-11-12 02:57:03
+device ----------------------------------------: cuda
+2024-11-12 02:57:03
+device ----------------------------------------: cuda
+2024-11-12 02:57:04
+epoch:0---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.3]--------max_psnr_val:25:-----cost time;7.354461669921875
+device ----------------------------------------: cuda
+2024-11-12 02:57:11
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.10256, weight_B:0.33333,loss3:0.19573, weight_C:2.04040,loss5:0.07873, avg_lossA:0.09741, avg_lossB:0.18912, avg_lossC:0.08756, avg_loss:0.27418],[in_PSNR_A: 22.686, out_PSNR_A: 24.601],[in_PSNR_B: 14.681, out_PSNR_B: 17.308],[in_PSNR_C: 22.723, out_PSNR_C: 20.644],time: 228.293
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.10171, weight_B:0.33333,loss3:0.15624, weight_C:2.04040,loss5:0.07539, avg_lossA:0.09741, avg_lossB:0.18889, avg_lossC:0.08741, avg_loss:0.27378],[in_PSNR_A: 21.395, out_PSNR_A: 24.500],[in_PSNR_B: 12.417, out_PSNR_B: 16.327],[in_PSNR_C: 24.088, out_PSNR_C: 21.992],time: 223.502
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.08668, weight_B:0.33333,loss3:0.20099, weight_C:2.04040,loss5:0.11111, avg_lossA:0.09725, avg_lossB:0.18874, avg_lossC:0.08752, avg_loss:0.27390],[in_PSNR_A: 24.611, out_PSNR_A: 26.279],[in_PSNR_B: 14.124, out_PSNR_B: 17.119],[in_PSNR_C: 19.096, out_PSNR_C: 19.665],time: 218.529
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.10256, weight_B:0.33333,loss3:0.17876, weight_C:2.04040,loss5:0.06285, avg_lossA:0.09720, avg_lossB:0.18874, avg_lossC:0.08753, avg_loss:0.27391],[in_PSNR_A: 21.170, out_PSNR_A: 24.107],[in_PSNR_B: 11.870, out_PSNR_B: 15.522],[in_PSNR_C: 21.839, out_PSNR_C: 20.654],time: 220.610
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.09914, weight_B:0.33333,loss3:0.18115, weight_C:2.04040,loss5:0.06822, avg_lossA:0.09712, avg_lossB:0.18872, avg_lossC:0.08748, avg_loss:0.27377],[in_PSNR_A: 23.155, out_PSNR_A: 24.160],[in_PSNR_B: 13.479, out_PSNR_B: 17.349],[in_PSNR_C: 20.786, out_PSNR_C: 20.486],time: 223.048
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.10473, weight_B:0.33333,loss3:0.18691, weight_C:2.04040,loss5:0.09524, avg_lossA:0.09713, avg_lossB:0.18892, avg_lossC:0.08738, avg_loss:0.27364],[in_PSNR_A: 21.820, out_PSNR_A: 24.867],[in_PSNR_B: 12.206, out_PSNR_B: 15.319],[in_PSNR_C: 22.016, out_PSNR_C: 20.133],time: 221.367
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.08924, weight_B:0.33333,loss3:0.19773, weight_C:2.04040,loss5:0.06957, avg_lossA:0.09718, avg_lossB:0.18897, avg_lossC:0.08738, avg_loss:0.27367],[in_PSNR_A: 22.537, out_PSNR_A: 24.992],[in_PSNR_B: 11.614, out_PSNR_B: 15.527],[in_PSNR_C: 19.048, out_PSNR_C: 20.248],time: 223.108
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.11677, weight_B:0.33333,loss3:0.21166, weight_C:2.04040,loss5:0.05505, avg_lossA:0.09723, avg_lossB:0.18905, avg_lossC:0.08741, avg_loss:0.27378],[in_PSNR_A: 20.337, out_PSNR_A: 22.998],[in_PSNR_B: 13.273, out_PSNR_B: 16.750],[in_PSNR_C: 26.462, out_PSNR_C: 22.269],time: 222.089
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.09074, weight_B:0.33333,loss3:0.18578, weight_C:2.04040,loss5:0.06757, avg_lossA:0.09738, avg_lossB:0.18901, avg_lossC:0.08732, avg_loss:0.27364],[in_PSNR_A: 21.494, out_PSNR_A: 23.969],[in_PSNR_B: 12.135, out_PSNR_B: 15.417],[in_PSNR_C: 22.367, out_PSNR_C: 21.349],time: 222.112
+[epoch:1 / EPOCH :10],[346 / 1000], [lr: 0.0000499 ],[ weight_A:0.33333,loss1:0.07947, weight_B:0.33333,loss3:0.21225, weight_C:2.04040,loss5:0.07893, avg_lossA:0.09737, avg_lossB:0.18906, avg_lossC:0.08728, avg_loss:0.27356],[in_PSNR_A: 23.420, out_PSNR_A: 25.079],[in_PSNR_B: 13.056, out_PSNR_B: 16.216],[in_PSNR_C: 20.479, out_PSNR_C: 19.961],time: 223.017
+device ----------------------------------------: cuda
+2024-11-12 03:34:22
+device ----------------------------------------: cuda
+2024-11-12 03:34:24
+device ----------------------------------------: cuda
+2024-11-12 03:34:19
+device ----------------------------------------: cuda
+2024-11-12 03:34:30
+epoch:1---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.6]--------max_psnr_val:25:-----cost time;40.82119011878967
+device ----------------------------------------: cuda
+2024-11-12 03:35:00
+device ----------------------------------------: cuda
+2024-11-12 03:35:00
+device ----------------------------------------: cuda
+2024-11-12 03:35:00
+device ----------------------------------------: cuda
+2024-11-12 03:35:00
+epoch:1---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.35]--------max_psnr_val:25:-----cost time;34.73391079902649
+device ----------------------------------------: cuda
+2024-11-12 03:35:35
+device ----------------------------------------: cuda
+2024-11-12 03:35:35
+device ----------------------------------------: cuda
+2024-11-12 03:35:35
+device ----------------------------------------: cuda
+2024-11-12 03:35:35
+epoch:1---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.29]--------max_psnr_val:25:-----cost time;7.302017450332642
+device ----------------------------------------: cuda
+2024-11-12 03:35:43
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.10034, weight_B:0.33333,loss3:0.21359, weight_C:2.04040,loss5:0.08878, avg_lossA:0.09744, avg_lossB:0.18916, avg_lossC:0.08732, avg_loss:0.27371],[in_PSNR_A: 22.890, out_PSNR_A: 24.877],[in_PSNR_B: 14.455, out_PSNR_B: 16.957],[in_PSNR_C: 22.014, out_PSNR_C: 20.532],time: 230.529
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.09432, weight_B:0.33333,loss3:0.16194, weight_C:2.04040,loss5:0.08941, avg_lossA:0.09743, avg_lossB:0.18908, avg_lossC:0.08730, avg_loss:0.27364],[in_PSNR_A: 21.426, out_PSNR_A: 24.613],[in_PSNR_B: 11.767, out_PSNR_B: 15.575],[in_PSNR_C: 23.195, out_PSNR_C: 21.616],time: 221.591
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.08696, weight_B:0.33333,loss3:0.19735, weight_C:2.04040,loss5:0.11424, avg_lossA:0.09731, avg_lossB:0.18897, avg_lossC:0.08741, avg_loss:0.27377],[in_PSNR_A: 23.661, out_PSNR_A: 25.418],[in_PSNR_B: 12.839, out_PSNR_B: 16.136],[in_PSNR_C: 20.066, out_PSNR_C: 20.310],time: 220.437
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.11315, weight_B:0.33333,loss3:0.18143, weight_C:2.04040,loss5:0.05122, avg_lossA:0.09730, avg_lossB:0.18894, avg_lossC:0.08738, avg_loss:0.27371],[in_PSNR_A: 20.827, out_PSNR_A: 23.470],[in_PSNR_B: 12.566, out_PSNR_B: 15.970],[in_PSNR_C: 23.835, out_PSNR_C: 21.150],time: 220.418
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.09342, weight_B:0.33333,loss3:0.17008, weight_C:2.04040,loss5:0.07464, avg_lossA:0.09721, avg_lossB:0.18883, avg_lossC:0.08730, avg_loss:0.27348],[in_PSNR_A: 23.867, out_PSNR_A: 25.181],[in_PSNR_B: 13.738, out_PSNR_B: 17.279],[in_PSNR_C: 20.758, out_PSNR_C: 20.623],time: 221.458
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.10828, weight_B:0.33333,loss3:0.17850, weight_C:2.04040,loss5:0.10039, avg_lossA:0.09722, avg_lossB:0.18885, avg_lossC:0.08728, avg_loss:0.27344],[in_PSNR_A: 21.092, out_PSNR_A: 24.007],[in_PSNR_B: 12.427, out_PSNR_B: 15.688],[in_PSNR_C: 22.206, out_PSNR_C: 20.075],time: 220.904
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.08456, weight_B:0.33333,loss3:0.21103, weight_C:2.04040,loss5:0.08021, avg_lossA:0.09724, avg_lossB:0.18883, avg_lossC:0.08736, avg_loss:0.27359],[in_PSNR_A: 23.759, out_PSNR_A: 25.620],[in_PSNR_B: 11.803, out_PSNR_B: 15.445],[in_PSNR_C: 19.260, out_PSNR_C: 19.363],time: 224.701
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.12367, weight_B:0.33333,loss3:0.18985, weight_C:2.04040,loss5:0.04796, avg_lossA:0.09725, avg_lossB:0.18889, avg_lossC:0.08732, avg_loss:0.27354],[in_PSNR_A: 19.926, out_PSNR_A: 22.569],[in_PSNR_B: 13.239, out_PSNR_B: 16.616],[in_PSNR_C: 27.680, out_PSNR_C: 22.842],time: 224.142
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.09031, weight_B:0.33333,loss3:0.17821, weight_C:2.04040,loss5:0.07688, avg_lossA:0.09730, avg_lossB:0.18884, avg_lossC:0.08733, avg_loss:0.27358],[in_PSNR_A: 22.237, out_PSNR_A: 24.513],[in_PSNR_B: 12.297, out_PSNR_B: 15.493],[in_PSNR_C: 21.853, out_PSNR_C: 21.109],time: 223.161
+[epoch:2 / EPOCH :10],[346 / 1000], [lr: 0.0000495 ],[ weight_A:0.33333,loss1:0.08345, weight_B:0.33333,loss3:0.21064, weight_C:2.04040,loss5:0.07830, avg_lossA:0.09726, avg_lossB:0.18889, avg_lossC:0.08726, avg_loss:0.27342],[in_PSNR_A: 23.380, out_PSNR_A: 25.400],[in_PSNR_B: 12.937, out_PSNR_B: 15.608],[in_PSNR_C: 19.024, out_PSNR_C: 20.010],time: 226.200
+device ----------------------------------------: cuda
+2024-11-12 04:13:11
+device ----------------------------------------: cuda
+2024-11-12 04:13:09
+device ----------------------------------------: cuda
+2024-11-12 04:13:02
+device ----------------------------------------: cuda
+2024-11-12 04:13:00
+epoch:2---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.6]--------max_psnr_val:25:-----cost time;40.78295397758484
+device ----------------------------------------: cuda
+2024-11-12 04:13:41
+device ----------------------------------------: cuda
+2024-11-12 04:13:41
+device ----------------------------------------: cuda
+2024-11-12 04:13:41
+device ----------------------------------------: cuda
+2024-11-12 04:13:41
+epoch:2---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.34]--------max_psnr_val:25:-----cost time;35.07369589805603
+device ----------------------------------------: cuda
+2024-11-12 04:14:16
+device ----------------------------------------: cuda
+2024-11-12 04:14:15
+device ----------------------------------------: cuda
+2024-11-12 04:14:16
+device ----------------------------------------: cuda
+2024-11-12 04:14:16
+epoch:2---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.3]--------max_psnr_val:25:-----cost time;6.785766839981079
+device ----------------------------------------: cuda
+2024-11-12 04:14:23
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.10307, weight_B:0.33333,loss3:0.20637, weight_C:2.04040,loss5:0.07489, avg_lossA:0.09732, avg_lossB:0.18895, avg_lossC:0.08737, avg_loss:0.27369],[in_PSNR_A: 22.989, out_PSNR_A: 24.446],[in_PSNR_B: 14.924, out_PSNR_B: 17.479],[in_PSNR_C: 22.800, out_PSNR_C: 21.085],time: 227.940
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.10819, weight_B:0.33333,loss3:0.16502, weight_C:2.04040,loss5:0.09602, avg_lossA:0.09733, avg_lossB:0.18886, avg_lossC:0.08726, avg_loss:0.27345],[in_PSNR_A: 19.830, out_PSNR_A: 23.273],[in_PSNR_B: 12.636, out_PSNR_B: 17.016],[in_PSNR_C: 22.009, out_PSNR_C: 21.454],time: 221.342
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.09404, weight_B:0.33333,loss3:0.20131, weight_C:2.04040,loss5:0.09426, avg_lossA:0.09725, avg_lossB:0.18883, avg_lossC:0.08735, avg_loss:0.27359],[in_PSNR_A: 23.101, out_PSNR_A: 24.878],[in_PSNR_B: 13.745, out_PSNR_B: 17.236],[in_PSNR_C: 20.337, out_PSNR_C: 19.645],time: 219.939
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.10797, weight_B:0.33333,loss3:0.17129, weight_C:2.04040,loss5:0.05481, avg_lossA:0.09726, avg_lossB:0.18885, avg_lossC:0.08733, avg_loss:0.27357],[in_PSNR_A: 21.106, out_PSNR_A: 23.628],[in_PSNR_B: 12.667, out_PSNR_B: 16.243],[in_PSNR_C: 22.422, out_PSNR_C: 20.763],time: 224.027
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.11565, weight_B:0.33333,loss3:0.19678, weight_C:2.04040,loss5:0.06824, avg_lossA:0.09727, avg_lossB:0.18879, avg_lossC:0.08730, avg_loss:0.27348],[in_PSNR_A: 22.299, out_PSNR_A: 23.990],[in_PSNR_B: 11.959, out_PSNR_B: 15.520],[in_PSNR_C: 20.407, out_PSNR_C: 20.521],time: 223.144
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.10258, weight_B:0.33333,loss3:0.18382, weight_C:2.04040,loss5:0.08799, avg_lossA:0.09725, avg_lossB:0.18885, avg_lossC:0.08727, avg_loss:0.27342],[in_PSNR_A: 21.333, out_PSNR_A: 24.247],[in_PSNR_B: 12.039, out_PSNR_B: 15.486],[in_PSNR_C: 21.022, out_PSNR_C: 20.848],time: 221.616
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.08657, weight_B:0.33333,loss3:0.20846, weight_C:2.04040,loss5:0.06127, avg_lossA:0.09728, avg_lossB:0.18886, avg_lossC:0.08726, avg_loss:0.27342],[in_PSNR_A: 23.323, out_PSNR_A: 25.830],[in_PSNR_B: 10.980, out_PSNR_B: 14.753],[in_PSNR_C: 21.521, out_PSNR_C: 20.518],time: 224.320
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.12001, weight_B:0.33333,loss3:0.20270, weight_C:2.04040,loss5:0.05045, avg_lossA:0.09732, avg_lossB:0.18887, avg_lossC:0.08724, avg_loss:0.27340],[in_PSNR_A: 19.997, out_PSNR_A: 22.620],[in_PSNR_B: 12.867, out_PSNR_B: 16.349],[in_PSNR_C: 25.832, out_PSNR_C: 22.923],time: 224.979
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.09864, weight_B:0.33333,loss3:0.19587, weight_C:2.04040,loss5:0.06633, avg_lossA:0.09737, avg_lossB:0.18886, avg_lossC:0.08728, avg_loss:0.27350],[in_PSNR_A: 21.315, out_PSNR_A: 23.950],[in_PSNR_B: 12.368, out_PSNR_B: 15.656],[in_PSNR_C: 22.832, out_PSNR_C: 21.167],time: 219.356
+[epoch:3 / EPOCH :10],[346 / 1000], [lr: 0.0000488 ],[ weight_A:0.33333,loss1:0.08271, weight_B:0.33333,loss3:0.22013, weight_C:2.04040,loss5:0.06480, avg_lossA:0.09735, avg_lossB:0.18887, avg_lossC:0.08722, avg_loss:0.27338],[in_PSNR_A: 22.783, out_PSNR_A: 24.691],[in_PSNR_B: 13.618, out_PSNR_B: 16.839],[in_PSNR_C: 20.680, out_PSNR_C: 20.241],time: 222.855
+device ----------------------------------------: cuda
+2024-11-12 04:51:38
+device ----------------------------------------: cuda
+2024-11-12 04:51:35
+device ----------------------------------------: cuda
+2024-11-12 04:51:41
+device ----------------------------------------: cuda
+2024-11-12 04:51:44
+epoch:3---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.6]--------max_psnr_val:25:-----cost time;37.77125835418701
+device ----------------------------------------: cuda
+2024-11-12 04:52:14
+device ----------------------------------------: cuda
+2024-11-12 04:52:14
+device ----------------------------------------: cuda
+2024-11-12 04:52:14
+device ----------------------------------------: cuda
+2024-11-12 04:52:14
+epoch:3---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.34]--------max_psnr_val:25:-----cost time;35.284247636795044
+device ----------------------------------------: cuda
+2024-11-12 04:52:49
+device ----------------------------------------: cuda
+2024-11-12 04:52:50
+device ----------------------------------------: cuda
+2024-11-12 04:52:50
+device ----------------------------------------: cuda
+2024-11-12 04:52:50
+epoch:3---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.31]--------max_psnr_val:25:-----cost time;7.819045782089233
+device ----------------------------------------: cuda
+2024-11-12 04:52:57
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.10770, weight_B:0.33333,loss3:0.21277, weight_C:2.04040,loss5:0.06851, avg_lossA:0.09740, avg_lossB:0.18890, avg_lossC:0.08726, avg_loss:0.27348],[in_PSNR_A: 21.880, out_PSNR_A: 24.041],[in_PSNR_B: 14.786, out_PSNR_B: 17.532],[in_PSNR_C: 23.961, out_PSNR_C: 21.109],time: 229.772
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.09869, weight_B:0.33333,loss3:0.16011, weight_C:2.04040,loss5:0.10294, avg_lossA:0.09740, avg_lossB:0.18883, avg_lossC:0.08723, avg_loss:0.27340],[in_PSNR_A: 21.805, out_PSNR_A: 24.590],[in_PSNR_B: 11.366, out_PSNR_B: 14.990],[in_PSNR_C: 22.207, out_PSNR_C: 20.972],time: 223.325
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.07697, weight_B:0.33333,loss3:0.20584, weight_C:2.04040,loss5:0.10290, avg_lossA:0.09737, avg_lossB:0.18879, avg_lossC:0.08728, avg_loss:0.27347],[in_PSNR_A: 25.226, out_PSNR_A: 26.335],[in_PSNR_B: 13.368, out_PSNR_B: 16.479],[in_PSNR_C: 20.387, out_PSNR_C: 20.085],time: 226.576
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.10674, weight_B:0.33333,loss3:0.16577, weight_C:2.04040,loss5:0.05393, avg_lossA:0.09739, avg_lossB:0.18879, avg_lossC:0.08728, avg_loss:0.27347],[in_PSNR_A: 21.271, out_PSNR_A: 24.120],[in_PSNR_B: 13.436, out_PSNR_B: 17.263],[in_PSNR_C: 23.249, out_PSNR_C: 20.327],time: 222.134
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.09501, weight_B:0.33333,loss3:0.18079, weight_C:2.04040,loss5:0.07171, avg_lossA:0.09737, avg_lossB:0.18875, avg_lossC:0.08726, avg_loss:0.27342],[in_PSNR_A: 23.752, out_PSNR_A: 25.269],[in_PSNR_B: 11.541, out_PSNR_B: 14.768],[in_PSNR_C: 20.741, out_PSNR_C: 20.233],time: 221.674
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.11734, weight_B:0.33333,loss3:0.18544, weight_C:2.04040,loss5:0.09949, avg_lossA:0.09735, avg_lossB:0.18880, avg_lossC:0.08725, avg_loss:0.27341],[in_PSNR_A: 20.997, out_PSNR_A: 24.105],[in_PSNR_B: 12.035, out_PSNR_B: 15.342],[in_PSNR_C: 20.824, out_PSNR_C: 20.110],time: 225.166
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.10033, weight_B:0.33333,loss3:0.21305, weight_C:2.04040,loss5:0.07173, avg_lossA:0.09737, avg_lossB:0.18881, avg_lossC:0.08728, avg_loss:0.27347],[in_PSNR_A: 21.855, out_PSNR_A: 24.933],[in_PSNR_B: 11.516, out_PSNR_B: 15.447],[in_PSNR_C: 19.693, out_PSNR_C: 19.769],time: 221.638
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.11741, weight_B:0.33333,loss3:0.20233, weight_C:2.04040,loss5:0.05532, avg_lossA:0.09740, avg_lossB:0.18882, avg_lossC:0.08727, avg_loss:0.27347],[in_PSNR_A: 19.860, out_PSNR_A: 22.459],[in_PSNR_B: 13.264, out_PSNR_B: 16.383],[in_PSNR_C: 26.664, out_PSNR_C: 22.851],time: 224.412
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.09016, weight_B:0.33333,loss3:0.18497, weight_C:2.04040,loss5:0.06007, avg_lossA:0.09744, avg_lossB:0.18881, avg_lossC:0.08726, avg_loss:0.27346],[in_PSNR_A: 21.706, out_PSNR_A: 24.339],[in_PSNR_B: 12.265, out_PSNR_B: 15.326],[in_PSNR_C: 23.651, out_PSNR_C: 21.855],time: 220.858
+[epoch:4 / EPOCH :10],[346 / 1000], [lr: 0.0000478 ],[ weight_A:0.33333,loss1:0.08058, weight_B:0.33333,loss3:0.21262, weight_C:2.04040,loss5:0.08161, avg_lossA:0.09742, avg_lossB:0.18882, avg_lossC:0.08724, avg_loss:0.27341],[in_PSNR_A: 23.587, out_PSNR_A: 25.530],[in_PSNR_B: 13.546, out_PSNR_B: 16.762],[in_PSNR_C: 20.495, out_PSNR_C: 19.663],time: 222.142
+device ----------------------------------------: cuda
+2024-11-12 05:30:23
+device ----------------------------------------: cuda
+2024-11-12 05:30:21
+device ----------------------------------------: cuda
+2024-11-12 05:30:18
+device ----------------------------------------: cuda
+2024-11-12 05:30:26
+epoch:4---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.59]--------max_psnr_val:25:-----cost time;37.57266688346863
+device ----------------------------------------: cuda
+2024-11-12 05:31:00
+device ----------------------------------------: cuda
+2024-11-12 05:31:00
+device ----------------------------------------: cuda
+2024-11-12 05:31:00
+device ----------------------------------------: cuda
+2024-11-12 05:31:00
+epoch:4---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.34]--------max_psnr_val:25:-----cost time;39.0084114074707
+device ----------------------------------------: cuda
+2024-11-12 05:31:35
+device ----------------------------------------: cuda
+2024-11-12 05:31:36
+device ----------------------------------------: cuda
+2024-11-12 05:31:35
+device ----------------------------------------: cuda
+2024-11-12 05:31:35
+epoch:4---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.31]--------max_psnr_val:25:-----cost time;7.307706594467163
+device ----------------------------------------: cuda
+2024-11-12 05:31:43
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.10247, weight_B:0.33333,loss3:0.20222, weight_C:2.04040,loss5:0.07220, avg_lossA:0.09746, avg_lossB:0.18888, avg_lossC:0.08725, avg_loss:0.27347],[in_PSNR_A: 22.663, out_PSNR_A: 24.753],[in_PSNR_B: 14.606, out_PSNR_B: 16.960],[in_PSNR_C: 23.618, out_PSNR_C: 21.140],time: 222.448
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.10057, weight_B:0.33333,loss3:0.15678, weight_C:2.04040,loss5:0.10245, avg_lossA:0.09749, avg_lossB:0.18883, avg_lossC:0.08724, avg_loss:0.27345],[in_PSNR_A: 21.296, out_PSNR_A: 24.052],[in_PSNR_B: 12.374, out_PSNR_B: 16.339],[in_PSNR_C: 22.226, out_PSNR_C: 21.190],time: 221.525
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.09746, weight_B:0.33333,loss3:0.19811, weight_C:2.04040,loss5:0.12320, avg_lossA:0.09745, avg_lossB:0.18881, avg_lossC:0.08730, avg_loss:0.27355],[in_PSNR_A: 23.445, out_PSNR_A: 25.162],[in_PSNR_B: 12.683, out_PSNR_B: 16.157],[in_PSNR_C: 19.094, out_PSNR_C: 20.011],time: 220.236
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.10884, weight_B:0.33333,loss3:0.18427, weight_C:2.04040,loss5:0.06313, avg_lossA:0.09745, avg_lossB:0.18880, avg_lossC:0.08732, avg_loss:0.27359],[in_PSNR_A: 21.022, out_PSNR_A: 23.970],[in_PSNR_B: 12.295, out_PSNR_B: 15.842],[in_PSNR_C: 22.950, out_PSNR_C: 20.893],time: 220.089
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.09872, weight_B:0.33333,loss3:0.17365, weight_C:2.04040,loss5:0.06638, avg_lossA:0.09742, avg_lossB:0.18875, avg_lossC:0.08732, avg_loss:0.27355],[in_PSNR_A: 22.911, out_PSNR_A: 24.548],[in_PSNR_B: 12.189, out_PSNR_B: 16.115],[in_PSNR_C: 21.354, out_PSNR_C: 20.799],time: 220.994
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.11611, weight_B:0.33333,loss3:0.18372, weight_C:2.04040,loss5:0.07782, avg_lossA:0.09742, avg_lossB:0.18878, avg_lossC:0.08730, avg_loss:0.27352],[in_PSNR_A: 20.660, out_PSNR_A: 24.004],[in_PSNR_B: 12.727, out_PSNR_B: 15.559],[in_PSNR_C: 23.663, out_PSNR_C: 20.886],time: 224.500
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.09440, weight_B:0.33333,loss3:0.20243, weight_C:2.04040,loss5:0.06996, avg_lossA:0.09742, avg_lossB:0.18880, avg_lossC:0.08732, avg_loss:0.27357],[in_PSNR_A: 22.172, out_PSNR_A: 25.257],[in_PSNR_B: 13.046, out_PSNR_B: 16.498],[in_PSNR_C: 20.867, out_PSNR_C: 20.165],time: 221.780
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.13500, weight_B:0.33333,loss3:0.22515, weight_C:2.04040,loss5:0.05805, avg_lossA:0.09745, avg_lossB:0.18881, avg_lossC:0.08733, avg_loss:0.27361],[in_PSNR_A: 18.755, out_PSNR_A: 21.641],[in_PSNR_B: 13.739, out_PSNR_B: 17.280],[in_PSNR_C: 25.900, out_PSNR_C: 22.411],time: 223.120
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.09210, weight_B:0.33333,loss3:0.19545, weight_C:2.04040,loss5:0.07049, avg_lossA:0.09750, avg_lossB:0.18880, avg_lossC:0.08733, avg_loss:0.27362],[in_PSNR_A: 21.696, out_PSNR_A: 24.165],[in_PSNR_B: 12.344, out_PSNR_B: 15.514],[in_PSNR_C: 21.644, out_PSNR_C: 20.615],time: 226.356
+[epoch:5 / EPOCH :10],[346 / 1000], [lr: 0.0000467 ],[ weight_A:0.33333,loss1:0.08937, weight_B:0.33333,loss3:0.21793, weight_C:2.04040,loss5:0.06713, avg_lossA:0.09748, avg_lossB:0.18885, avg_lossC:0.08731, avg_loss:0.27359],[in_PSNR_A: 22.792, out_PSNR_A: 24.894],[in_PSNR_B: 12.639, out_PSNR_B: 15.254],[in_PSNR_C: 21.299, out_PSNR_C: 20.458],time: 221.777
+device ----------------------------------------: cuda
+2024-11-12 06:08:48
+device ----------------------------------------: cuda
+2024-11-12 06:08:51
+device ----------------------------------------: cuda
+2024-11-12 06:08:56
+device ----------------------------------------: cuda
+2024-11-12 06:08:54
+epoch:5---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.59]--------max_psnr_val:25:-----cost time;37.617555141448975
+device ----------------------------------------: cuda
+2024-11-12 06:09:26
+device ----------------------------------------: cuda
+2024-11-12 06:09:26
+device ----------------------------------------: cuda
+2024-11-12 06:09:26
+device ----------------------------------------: cuda
+2024-11-12 06:09:26
+epoch:5---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.34]--------max_psnr_val:25:-----cost time;35.72654318809509
+device ----------------------------------------: cuda
+2024-11-12 06:10:03
+device ----------------------------------------: cuda
+2024-11-12 06:10:02
+device ----------------------------------------: cuda
+2024-11-12 06:10:03
+device ----------------------------------------: cuda
+2024-11-12 06:10:03
+epoch:5---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.29]--------max_psnr_val:25:-----cost time;7.835599422454834
+device ----------------------------------------: cuda
+2024-11-12 06:10:09
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.09590, weight_B:0.33333,loss3:0.21595, weight_C:2.04040,loss5:0.06628, avg_lossA:0.09751, avg_lossB:0.18889, avg_lossC:0.08735, avg_loss:0.27369],[in_PSNR_A: 22.796, out_PSNR_A: 24.838],[in_PSNR_B: 14.428, out_PSNR_B: 17.035],[in_PSNR_C: 24.351, out_PSNR_C: 21.403],time: 224.715
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.10072, weight_B:0.33333,loss3:0.16240, weight_C:2.04040,loss5:0.10195, avg_lossA:0.09751, avg_lossB:0.18886, avg_lossC:0.08732, avg_loss:0.27363],[in_PSNR_A: 21.130, out_PSNR_A: 24.306],[in_PSNR_B: 12.422, out_PSNR_B: 16.433],[in_PSNR_C: 22.298, out_PSNR_C: 21.192],time: 223.895
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.08527, weight_B:0.33333,loss3:0.20671, weight_C:2.04040,loss5:0.09037, avg_lossA:0.09748, avg_lossB:0.18887, avg_lossC:0.08739, avg_loss:0.27375],[in_PSNR_A: 23.267, out_PSNR_A: 24.982],[in_PSNR_B: 12.409, out_PSNR_B: 15.986],[in_PSNR_C: 20.440, out_PSNR_C: 20.423],time: 220.947
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.11360, weight_B:0.33333,loss3:0.18838, weight_C:2.04040,loss5:0.05769, avg_lossA:0.09750, avg_lossB:0.18888, avg_lossC:0.08737, avg_loss:0.27374],[in_PSNR_A: 20.196, out_PSNR_A: 23.441],[in_PSNR_B: 12.196, out_PSNR_B: 16.017],[in_PSNR_C: 23.756, out_PSNR_C: 20.918],time: 222.278
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.10307, weight_B:0.33333,loss3:0.18112, weight_C:2.04040,loss5:0.07914, avg_lossA:0.09747, avg_lossB:0.18886, avg_lossC:0.08738, avg_loss:0.27372],[in_PSNR_A: 22.824, out_PSNR_A: 24.312],[in_PSNR_B: 12.385, out_PSNR_B: 16.053],[in_PSNR_C: 20.509, out_PSNR_C: 20.644],time: 222.547
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.11957, weight_B:0.33333,loss3:0.18526, weight_C:2.04040,loss5:0.09491, avg_lossA:0.09745, avg_lossB:0.18888, avg_lossC:0.08736, avg_loss:0.27369],[in_PSNR_A: 20.932, out_PSNR_A: 23.908],[in_PSNR_B: 11.908, out_PSNR_B: 15.613],[in_PSNR_C: 21.487, out_PSNR_C: 20.138],time: 221.677
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.08527, weight_B:0.33333,loss3:0.20631, weight_C:2.04040,loss5:0.07346, avg_lossA:0.09745, avg_lossB:0.18885, avg_lossC:0.08738, avg_loss:0.27372],[in_PSNR_A: 23.198, out_PSNR_A: 26.062],[in_PSNR_B: 12.468, out_PSNR_B: 16.246],[in_PSNR_C: 19.476, out_PSNR_C: 20.640],time: 219.300
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.11633, weight_B:0.33333,loss3:0.20267, weight_C:2.04040,loss5:0.05357, avg_lossA:0.09745, avg_lossB:0.18887, avg_lossC:0.08737, avg_loss:0.27372],[in_PSNR_A: 20.097, out_PSNR_A: 22.833],[in_PSNR_B: 13.535, out_PSNR_B: 16.705],[in_PSNR_C: 26.414, out_PSNR_C: 22.663],time: 221.524
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.09031, weight_B:0.33333,loss3:0.18499, weight_C:2.04040,loss5:0.09380, avg_lossA:0.09747, avg_lossB:0.18885, avg_lossC:0.08737, avg_loss:0.27371],[in_PSNR_A: 21.699, out_PSNR_A: 24.255],[in_PSNR_B: 12.608, out_PSNR_B: 15.835],[in_PSNR_C: 20.236, out_PSNR_C: 20.413],time: 221.477
+[epoch:6 / EPOCH :10],[346 / 1000], [lr: 0.0000452 ],[ weight_A:0.33333,loss1:0.08685, weight_B:0.33333,loss3:0.19780, weight_C:2.04040,loss5:0.09086, avg_lossA:0.09745, avg_lossB:0.18887, avg_lossC:0.08735, avg_loss:0.27368],[in_PSNR_A: 22.737, out_PSNR_A: 24.695],[in_PSNR_B: 13.164, out_PSNR_B: 15.940],[in_PSNR_C: 19.661, out_PSNR_C: 19.170],time: 223.517
+device ----------------------------------------: cuda
+2024-11-12 06:47:27
+device ----------------------------------------: cuda
+2024-11-12 06:47:24
+device ----------------------------------------: cuda
+2024-11-12 06:47:19
+device ----------------------------------------: cuda
+2024-11-12 06:47:21
+epoch:6---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.58]--------max_psnr_val:25:-----cost time;40.86559724807739
+device ----------------------------------------: cuda
+2024-11-12 06:47:57
+device ----------------------------------------: cuda
+2024-11-12 06:47:57
+device ----------------------------------------: cuda
+2024-11-12 06:47:57
+device ----------------------------------------: cuda
+2024-11-12 06:47:57
+epoch:6---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.33]--------max_psnr_val:25:-----cost time;35.374436378479004
+device ----------------------------------------: cuda
+2024-11-12 06:48:32
+device ----------------------------------------: cuda
+2024-11-12 06:48:32
+device ----------------------------------------: cuda
+2024-11-12 06:48:32
+device ----------------------------------------: cuda
+2024-11-12 06:48:32
+epoch:6---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.29]--------max_psnr_val:25:-----cost time;7.11423921585083
+device ----------------------------------------: cuda
+2024-11-12 06:48:39
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.10168, weight_B:0.33333,loss3:0.20561, weight_C:2.04040,loss5:0.07136, avg_lossA:0.09746, avg_lossB:0.18892, avg_lossC:0.08735, avg_loss:0.27368],[in_PSNR_A: 22.905, out_PSNR_A: 24.708],[in_PSNR_B: 13.304, out_PSNR_B: 15.926],[in_PSNR_C: 22.914, out_PSNR_C: 21.287],time: 226.234
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.09419, weight_B:0.33333,loss3:0.14908, weight_C:2.04040,loss5:0.08117, avg_lossA:0.09747, avg_lossB:0.18888, avg_lossC:0.08732, avg_loss:0.27361],[in_PSNR_A: 21.214, out_PSNR_A: 24.326],[in_PSNR_B: 13.303, out_PSNR_B: 17.501],[in_PSNR_C: 23.579, out_PSNR_C: 21.868],time: 223.453
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.08303, weight_B:0.33333,loss3:0.20848, weight_C:2.04040,loss5:0.09374, avg_lossA:0.09745, avg_lossB:0.18887, avg_lossC:0.08734, avg_loss:0.27365],[in_PSNR_A: 24.667, out_PSNR_A: 26.180],[in_PSNR_B: 12.725, out_PSNR_B: 16.199],[in_PSNR_C: 20.687, out_PSNR_C: 20.865],time: 224.876
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.11304, weight_B:0.33333,loss3:0.17529, weight_C:2.04040,loss5:0.05737, avg_lossA:0.09745, avg_lossB:0.18887, avg_lossC:0.08733, avg_loss:0.27363],[in_PSNR_A: 21.195, out_PSNR_A: 23.861],[in_PSNR_B: 12.764, out_PSNR_B: 16.410],[in_PSNR_C: 22.872, out_PSNR_C: 21.189],time: 222.702
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.09426, weight_B:0.33333,loss3:0.17082, weight_C:2.04040,loss5:0.07188, avg_lossA:0.09742, avg_lossB:0.18886, avg_lossC:0.08731, avg_loss:0.27357],[in_PSNR_A: 23.873, out_PSNR_A: 25.370],[in_PSNR_B: 12.906, out_PSNR_B: 16.120],[in_PSNR_C: 21.972, out_PSNR_C: 20.829],time: 221.814
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.10538, weight_B:0.33333,loss3:0.19030, weight_C:2.04040,loss5:0.07729, avg_lossA:0.09741, avg_lossB:0.18886, avg_lossC:0.08729, avg_loss:0.27354],[in_PSNR_A: 21.273, out_PSNR_A: 24.384],[in_PSNR_B: 12.395, out_PSNR_B: 15.917],[in_PSNR_C: 22.189, out_PSNR_C: 20.967],time: 222.578
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.06333, weight_B:0.33333,loss3:0.19912, weight_C:2.04040,loss5:0.06325, avg_lossA:0.09741, avg_lossB:0.18888, avg_lossC:0.08730, avg_loss:0.27356],[in_PSNR_A: 25.169, out_PSNR_A: 26.767],[in_PSNR_B: 11.492, out_PSNR_B: 15.307],[in_PSNR_C: 20.758, out_PSNR_C: 20.503],time: 221.909
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.11306, weight_B:0.33333,loss3:0.20433, weight_C:2.04040,loss5:0.05426, avg_lossA:0.09743, avg_lossB:0.18890, avg_lossC:0.08729, avg_loss:0.27355],[in_PSNR_A: 20.058, out_PSNR_A: 22.396],[in_PSNR_B: 12.587, out_PSNR_B: 15.917],[in_PSNR_C: 27.262, out_PSNR_C: 22.678],time: 218.104
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.08699, weight_B:0.33333,loss3:0.17843, weight_C:2.04040,loss5:0.05972, avg_lossA:0.09745, avg_lossB:0.18889, avg_lossC:0.08728, avg_loss:0.27353],[in_PSNR_A: 21.822, out_PSNR_A: 24.363],[in_PSNR_B: 12.714, out_PSNR_B: 15.626],[in_PSNR_C: 23.328, out_PSNR_C: 21.390],time: 219.966
+[epoch:7 / EPOCH :10],[346 / 1000], [lr: 0.0000436 ],[ weight_A:0.33333,loss1:0.08162, weight_B:0.33333,loss3:0.20549, weight_C:2.04040,loss5:0.08234, avg_lossA:0.09743, avg_lossB:0.18892, avg_lossC:0.08727, avg_loss:0.27352],[in_PSNR_A: 22.789, out_PSNR_A: 24.699],[in_PSNR_B: 13.720, out_PSNR_B: 16.806],[in_PSNR_C: 20.185, out_PSNR_C: 20.187],time: 223.154
+device ----------------------------------------: cuda
+2024-11-12 07:25:54
+device ----------------------------------------: cuda
+2024-11-12 07:25:50
+device ----------------------------------------: cuda
+2024-11-12 07:26:00
+device ----------------------------------------: cuda
+2024-11-12 07:25:57
+epoch:7---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.58]--------max_psnr_val:25:-----cost time;43.65420317649841
+device ----------------------------------------: cuda
+2024-11-12 07:26:31
+device ----------------------------------------: cuda
+2024-11-12 07:26:31
+device ----------------------------------------: cuda
+2024-11-12 07:26:31
+device ----------------------------------------: cuda
+2024-11-12 07:26:31
+epoch:7---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.34]--------max_psnr_val:25:-----cost time;35.629150390625
+device ----------------------------------------: cuda
+2024-11-12 07:27:07
+device ----------------------------------------: cuda
+2024-11-12 07:27:07
+device ----------------------------------------: cuda
+2024-11-12 07:27:07
+device ----------------------------------------: cuda
+2024-11-12 07:27:07
+epoch:7---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.28]--------max_psnr_val:25:-----cost time;6.991440057754517
+device ----------------------------------------: cuda
+2024-11-12 07:27:14
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.10960, weight_B:0.33333,loss3:0.22206, weight_C:2.04040,loss5:0.06510, avg_lossA:0.09747, avg_lossB:0.18894, avg_lossC:0.08729, avg_loss:0.27359],[in_PSNR_A: 22.021, out_PSNR_A: 23.907],[in_PSNR_B: 13.807, out_PSNR_B: 16.842],[in_PSNR_C: 23.088, out_PSNR_C: 21.011],time: 227.360
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.10852, weight_B:0.33333,loss3:0.15132, weight_C:2.04040,loss5:0.09151, avg_lossA:0.09747, avg_lossB:0.18889, avg_lossC:0.08726, avg_loss:0.27350],[in_PSNR_A: 20.563, out_PSNR_A: 23.178],[in_PSNR_B: 12.791, out_PSNR_B: 16.793],[in_PSNR_C: 22.784, out_PSNR_C: 21.786],time: 221.502
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.08803, weight_B:0.33333,loss3:0.20627, weight_C:2.04040,loss5:0.11576, avg_lossA:0.09745, avg_lossB:0.18888, avg_lossC:0.08728, avg_loss:0.27353],[in_PSNR_A: 24.234, out_PSNR_A: 25.768],[in_PSNR_B: 13.483, out_PSNR_B: 16.827],[in_PSNR_C: 19.580, out_PSNR_C: 20.197],time: 224.295
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.10262, weight_B:0.33333,loss3:0.17471, weight_C:2.04040,loss5:0.06469, avg_lossA:0.09744, avg_lossB:0.18888, avg_lossC:0.08728, avg_loss:0.27353],[in_PSNR_A: 21.092, out_PSNR_A: 24.027],[in_PSNR_B: 14.056, out_PSNR_B: 17.473],[in_PSNR_C: 21.473, out_PSNR_C: 20.428],time: 223.208
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.10190, weight_B:0.33333,loss3:0.18475, weight_C:2.04040,loss5:0.07819, avg_lossA:0.09743, avg_lossB:0.18885, avg_lossC:0.08727, avg_loss:0.27350],[in_PSNR_A: 23.236, out_PSNR_A: 24.514],[in_PSNR_B: 11.677, out_PSNR_B: 15.167],[in_PSNR_C: 19.555, out_PSNR_C: 19.804],time: 221.067
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.11423, weight_B:0.33333,loss3:0.18961, weight_C:2.04040,loss5:0.10102, avg_lossA:0.09743, avg_lossB:0.18887, avg_lossC:0.08727, avg_loss:0.27351],[in_PSNR_A: 20.950, out_PSNR_A: 23.765],[in_PSNR_B: 11.769, out_PSNR_B: 15.010],[in_PSNR_C: 19.060, out_PSNR_C: 19.706],time: 225.012
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.08826, weight_B:0.33333,loss3:0.19801, weight_C:2.04040,loss5:0.06282, avg_lossA:0.09743, avg_lossB:0.18886, avg_lossC:0.08728, avg_loss:0.27351],[in_PSNR_A: 21.940, out_PSNR_A: 24.715],[in_PSNR_B: 11.486, out_PSNR_B: 15.194],[in_PSNR_C: 21.076, out_PSNR_C: 20.361],time: 223.656
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.11380, weight_B:0.33333,loss3:0.20097, weight_C:2.04040,loss5:0.06619, avg_lossA:0.09744, avg_lossB:0.18887, avg_lossC:0.08726, avg_loss:0.27348],[in_PSNR_A: 20.265, out_PSNR_A: 22.943],[in_PSNR_B: 12.946, out_PSNR_B: 16.519],[in_PSNR_C: 25.579, out_PSNR_C: 21.877],time: 221.485
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.09336, weight_B:0.33333,loss3:0.19186, weight_C:2.04040,loss5:0.07216, avg_lossA:0.09747, avg_lossB:0.18886, avg_lossC:0.08723, avg_loss:0.27344],[in_PSNR_A: 21.515, out_PSNR_A: 23.900],[in_PSNR_B: 12.375, out_PSNR_B: 15.638],[in_PSNR_C: 22.258, out_PSNR_C: 21.335],time: 223.108
+[epoch:8 / EPOCH :10],[346 / 1000], [lr: 0.0000417 ],[ weight_A:0.33333,loss1:0.09416, weight_B:0.33333,loss3:0.21212, weight_C:2.04040,loss5:0.07577, avg_lossA:0.09745, avg_lossB:0.18888, avg_lossC:0.08722, avg_loss:0.27340],[in_PSNR_A: 22.958, out_PSNR_A: 24.907],[in_PSNR_B: 13.567, out_PSNR_B: 17.023],[in_PSNR_C: 20.919, out_PSNR_C: 19.850],time: 226.061
+device ----------------------------------------: cuda
+2024-11-12 08:04:34
+device ----------------------------------------: cuda
+2024-11-12 08:04:36
+device ----------------------------------------: cuda
+2024-11-12 08:04:41
+device ----------------------------------------: cuda
+2024-11-12 08:04:44
+epoch:8---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.57]--------max_psnr_val:25:-----cost time;40.458364486694336
+device ----------------------------------------: cuda
+2024-11-12 08:05:14
+device ----------------------------------------: cuda
+2024-11-12 08:05:14
+device ----------------------------------------: cuda
+2024-11-12 08:05:14
+device ----------------------------------------: cuda
+2024-11-12 08:05:14
+epoch:8---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.33]--------max_psnr_val:25:-----cost time;35.057374715805054
+device ----------------------------------------: cuda
+2024-11-12 08:05:50
+device ----------------------------------------: cuda
+2024-11-12 08:05:50
+device ----------------------------------------: cuda
+2024-11-12 08:05:50
+device ----------------------------------------: cuda
+2024-11-12 08:05:49
+epoch:8---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.27]--------max_psnr_val:25:-----cost time;7.7675089836120605
+device ----------------------------------------: cuda
+2024-11-12 08:05:57
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.09886, weight_B:0.33333,loss3:0.20064, weight_C:2.04040,loss5:0.08133, avg_lossA:0.09749, avg_lossB:0.18893, avg_lossC:0.08724, avg_loss:0.27347],[in_PSNR_A: 22.894, out_PSNR_A: 24.818],[in_PSNR_B: 14.913, out_PSNR_B: 17.531],[in_PSNR_C: 23.351, out_PSNR_C: 20.468],time: 225.683
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.09899, weight_B:0.33333,loss3:0.14302, weight_C:2.04040,loss5:0.10147, avg_lossA:0.09748, avg_lossB:0.18889, avg_lossC:0.08725, avg_loss:0.27348],[in_PSNR_A: 21.157, out_PSNR_A: 24.562],[in_PSNR_B: 13.025, out_PSNR_B: 17.474],[in_PSNR_C: 23.299, out_PSNR_C: 21.262],time: 223.254
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.09436, weight_B:0.33333,loss3:0.20573, weight_C:2.04040,loss5:0.11117, avg_lossA:0.09747, avg_lossB:0.18887, avg_lossC:0.08727, avg_loss:0.27352],[in_PSNR_A: 23.615, out_PSNR_A: 25.452],[in_PSNR_B: 13.505, out_PSNR_B: 16.918],[in_PSNR_C: 19.802, out_PSNR_C: 19.878],time: 220.696
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.10917, weight_B:0.33333,loss3:0.18329, weight_C:2.04040,loss5:0.06740, avg_lossA:0.09747, avg_lossB:0.18889, avg_lossC:0.08727, avg_loss:0.27352],[in_PSNR_A: 20.956, out_PSNR_A: 23.833],[in_PSNR_B: 12.741, out_PSNR_B: 16.857],[in_PSNR_C: 20.815, out_PSNR_C: 20.539],time: 224.329
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.10308, weight_B:0.33333,loss3:0.19055, weight_C:2.04040,loss5:0.08509, avg_lossA:0.09745, avg_lossB:0.18885, avg_lossC:0.08728, avg_loss:0.27352],[in_PSNR_A: 22.873, out_PSNR_A: 24.640],[in_PSNR_B: 12.901, out_PSNR_B: 16.747],[in_PSNR_C: 20.266, out_PSNR_C: 20.469],time: 221.274
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.11149, weight_B:0.33333,loss3:0.18279, weight_C:2.04040,loss5:0.09181, avg_lossA:0.09745, avg_lossB:0.18887, avg_lossC:0.08729, avg_loss:0.27355],[in_PSNR_A: 21.042, out_PSNR_A: 24.274],[in_PSNR_B: 12.110, out_PSNR_B: 15.558],[in_PSNR_C: 22.528, out_PSNR_C: 20.068],time: 226.844
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.08654, weight_B:0.33333,loss3:0.20761, weight_C:2.04040,loss5:0.05959, avg_lossA:0.09745, avg_lossB:0.18885, avg_lossC:0.08730, avg_loss:0.27357],[in_PSNR_A: 22.141, out_PSNR_A: 24.949],[in_PSNR_B: 10.969, out_PSNR_B: 14.749],[in_PSNR_C: 21.253, out_PSNR_C: 20.972],time: 222.911
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.10949, weight_B:0.33333,loss3:0.20695, weight_C:2.04040,loss5:0.05256, avg_lossA:0.09747, avg_lossB:0.18887, avg_lossC:0.08730, avg_loss:0.27357],[in_PSNR_A: 20.439, out_PSNR_A: 23.415],[in_PSNR_B: 13.482, out_PSNR_B: 17.362],[in_PSNR_C: 27.054, out_PSNR_C: 22.329],time: 223.335
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.08389, weight_B:0.33333,loss3:0.17431, weight_C:2.04040,loss5:0.06613, avg_lossA:0.09748, avg_lossB:0.18885, avg_lossC:0.08729, avg_loss:0.27355],[in_PSNR_A: 21.946, out_PSNR_A: 24.388],[in_PSNR_B: 13.212, out_PSNR_B: 16.651],[in_PSNR_C: 23.095, out_PSNR_C: 21.093],time: 221.851
+[epoch:9 / EPOCH :10],[346 / 1000], [lr: 0.0000397 ],[ weight_A:0.33333,loss1:0.08490, weight_B:0.33333,loss3:0.21770, weight_C:2.04040,loss5:0.07006, avg_lossA:0.09746, avg_lossB:0.18888, avg_lossC:0.08727, avg_loss:0.27352],[in_PSNR_A: 22.960, out_PSNR_A: 25.021],[in_PSNR_B: 13.064, out_PSNR_B: 16.562],[in_PSNR_C: 21.853, out_PSNR_C: 20.546],time: 225.056
+device ----------------------------------------: cuda
+2024-11-12 08:43:15
+device ----------------------------------------: cuda
+2024-11-12 08:43:20
+device ----------------------------------------: cuda
+2024-11-12 08:43:23
+device ----------------------------------------: cuda
+2024-11-12 08:43:18
+epoch:9---------Dname:Snow-L--------------[Num_eval:500 In_PSNR:18.74  Out_PSNR:21.55]--------max_psnr_val:25:-----cost time;38.56278920173645
+device ----------------------------------------: cuda
+2024-11-12 08:43:56
+device ----------------------------------------: cuda
+2024-11-12 08:43:56
+device ----------------------------------------: cuda
+2024-11-12 08:43:56
+device ----------------------------------------: cuda
+2024-11-12 08:43:56
+epoch:9---------Dname:HRain--------------[Num_eval:500 In_PSNR:12.97  Out_PSNR:16.33]--------max_psnr_val:25:-----cost time;36.71145462989807
+device ----------------------------------------: cuda
+2024-11-12 08:44:31
+device ----------------------------------------: cuda
+2024-11-12 08:44:31
+device ----------------------------------------: cuda
+2024-11-12 08:44:31
+device ----------------------------------------: cuda
+2024-11-12 08:44:31
+epoch:9---------Dname:RD--------------[Num_eval:58 In_PSNR:23.82  Out_PSNR:22.26]--------max_psnr_val:25:-----cost time;7.33761739730835
+An error occurred: Default process group has not been initialized, please make sure to call init_process_group.

@@ -57,7 +57,7 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_tune_percent90_mask") # modify the experiments name-->modify all save path
+parser.add_argument('--experiment_name', type=str,default= "training_tune_percent95_mask_ori") # modify the experiments name-->modify all save path
 parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_2/MLT/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
@@ -234,6 +234,56 @@ def print_param_number(net):
 #     threshold = torch.quantile(flattened_grad.abs(), percentage / 100.0)
 #     mask = [torch.abs(g) < threshold for g in grad]
 #     return mask
+
+def ensure_consistent_mask(mask_list):
+    """确保 mask 列表中的每个 tensor 元素与前 3 个 tensor 的相应位置保持一致（如果前三个相同）。"""
+    for i in range(3, len(mask_list)):
+        # 获取前 3 个 mask 的相应位置的 tensor（列表中的元素为list，每个list元素为tensor）
+        prev1, prev2, prev3 = mask_list[i - 3], mask_list[i - 2], mask_list[i - 1]
+        current = mask_list[i]
+        # print(prev1[0].shape)  # Just a sample print for debugging, remove in production
+
+        # 找到前 3 个 tensor 中相同的位置，逐元素比较
+        consistent_mask_list = []
+        for t1, t2, t3 in zip(prev1, prev2, prev3):
+            # 对每对 tensor 使用 torch.eq() 进行逐元素比较
+            consistent_mask = (t1 == t2) & (t2 == t3)
+            consistent_mask_list.append(consistent_mask)
+
+        # 更新 mask_list 的当前元素
+        updated_mask_list = []
+        for idx, (consistent_mask, t1,c1) in enumerate(zip(consistent_mask_list, prev1,current)):
+            # 在 consistent_mask 对应位置为 True 时，比较 current[idx] 和 prev1[idx]
+            updated_mask = torch.where(
+                consistent_mask, 
+                torch.where(c1 == t1, current[idx], ~current[idx]),  # 如果一致则保留 current，否则取反
+                current[idx]  # 如果不一致，保留 consistent_mask 的值
+            )
+            updated_mask_list.append(updated_mask)
+
+        # 更新 mask_list 的当前元素
+        mask_list[i] = updated_mask_list
+
+    return mask_list
+
+
+def process_masks(maskAs, maskBs, maskCs):
+    """处理 mask 列表并确保它们满足一致性条件。"""
+    if len(maskAs) < 4:
+        # 如果长度小于 4，将 maskAs 的所有元素复制到 maskB_change 和 maskC_change
+        maskA_change = maskAs
+        maskB_change = maskAs
+        maskC_change = maskAs
+    else:
+        # 对 maskAs、maskBs 和 maskCs 应用一致性检查
+        maskA_change = ensure_consistent_mask(maskAs)
+        maskB_change = ensure_consistent_mask(maskBs)
+        maskC_change = ensure_consistent_mask(maskCs)
+
+    return maskA_change[-1], maskB_change[-1], maskC_change[-1]
+
+
+
 
 def calculate_mask(grad, percentage=20):
     if grad is None or len(grad) == 0:
@@ -447,6 +497,11 @@ def train(rank, world_size):
     maskAs = []
     maskBs = []
     maskCs = []
+    
+    maskAs_change = []
+    maskBs_change = []
+    maskCs_change = []   
+    
     
     parameters_A=[]
     parameters_B=[]
@@ -669,7 +724,7 @@ def train(rank, world_size):
           
             # TODO updata to traniable para
             # Create masks for each gradient set
-            percentage=90
+            percentage=95
             maskA = calculate_mask(gradA, percentage=percentage) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
             maskB = calculate_mask(gradB, percentage=percentage)
             maskC = calculate_mask(gradC, percentage=percentage)
@@ -715,12 +770,31 @@ def train(rank, world_size):
             maskCs.append(maskC)
             
             # 检查每个列表的长度，如果超过 1，就移除第一个元素
-            if len(maskAs) > 1:
+            if len(maskAs) > 5:
                 maskAs.pop(0)
-            if len(maskBs) > 1:
+            if len(maskBs) > 5:
                 maskBs.pop(0)
-            if len(maskCs) > 1:
+            if len(maskCs) > 5:
                 maskCs.pop(0)
+                
+
+                
+            maskA_change,maskB_change,maskC_change=process_masks(maskAs, maskBs, maskCs)
+            # print("******")
+            
+            maskAs_change.append(maskA_change)
+            maskBs_change.append(maskB_change)
+            maskCs_change.append(maskC_change)
+            
+            if len(maskAs_change) > 5:
+                maskAs_change.pop(0)
+            if len(maskBs_change) > 5:
+                maskBs_change.pop(0)
+            if len(maskCs_change) > 5:
+                maskCs_change.pop(0)
+                
+                
+            
             
             parameters_list = list(net.parameters())
             #遍历parameters_list与mask中的每个变量，将对应位置的参数留下，其他位置用0代替
@@ -728,11 +802,14 @@ def train(rank, world_size):
             maskA_paras=[]
             maskB_paras=[]
             maskC_paras=[]
-            if maskA is not None:
+            if maskA_change is not None:
                 # parameter_A = net.parameters()[maskA].clone().detach() # FIXME not sure detach is necessary
                   # 将参数生成器转换为列表
                 # parameter_A = parameters_list[maskA].clone().detach()  # 现在可以按索引访问
                 for param, mask in zip(parameters_list, maskA):  # Assume mask_list is the list of masks with the same structure as parameters_list
+                    # print(param.shape)
+                    # print(maskA[0].shape)
+                    # print(mask)
                     masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
                     maskA_paras.append(masked_param)
                 parameters_A.append(maskA_paras)
@@ -742,7 +819,7 @@ def train(rank, world_size):
                 parameter_A=parameters_A[-1]
                 
 
-            if maskB is not None:
+            if maskB_change is not None:
                 for param, mask in zip(parameters_list, maskB):  # Assume mask_list is the list of masks with the same structure as parameters_list
                     masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
                     maskB_paras.append(masked_param)
@@ -751,7 +828,7 @@ def train(rank, world_size):
                     parameters_B.pop(0)
                 parameters_B.append(maskB_paras)
                 parameter_B=parameters_B[-1]
-            if maskC is not None:
+            if maskC_change is not None:
                 for param, mask in zip(parameters_list, maskC):  # Assume mask_list is the list of masks with the same structure as parameters_list
                     masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
                     maskC_paras.append(masked_param)
@@ -864,6 +941,7 @@ def train(rank, world_size):
         # Save accumulated masks to local directory at the end of the epoch
         #TODO mask visual
         save_masks_to_local(maskAs, maskBs, maskCs, epoch)
+        save_masks_to_local(maskAs_change, maskBs_change, maskCs_change, epoch)
         #TODO save three different models
         # save_model_A = save_masked_model(net, maskA, original_parameters, epoch, 'snow')
         # save_model_B = save_masked_model(net, maskB, original_parameters, epoch, 'rain')

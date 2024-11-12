@@ -12,10 +12,10 @@ export WORLD_SIZE=1 # 设置进程数, 最好是GPU数量
 python train_mult.py \
     --lam 0.008 \
     --VGG_lamda 0.2 \
-    --learning_rate 0.0001 \
+    --learning_rate 0.00005 \
     --fix_sample 9000 \
     --Crop_patches 224 \
-    --BATCH_SIZE 6 \
+    --BATCH_SIZE 9 \
     --EPOCH 10 \
     --T_period 30 \
     --flag S1 \
