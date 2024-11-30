@@ -1,0 +1,50 @@
+device ----------------------------------------: cuda
+2024-11-13 02:18:26
+device ----------------------------------------: cuda
+2024-11-13 02:18:32
+Parameter containing:
+tensor(0.0100, requires_grad=True)
+device ----------------------------------------: cuda
+2024-11-13 02:19:12
+An error occurred: 
+
+-- Process 0 terminated with the following error:
+Traceback (most recent call last):
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/multiprocessing/spawn.py", line 69, in _wrap
+    fn(i, *args)
+  File "/home/4paradigm/WGWS-Net/train_mult.py", line 683, in train
+    train_output_B = net(inputs_B)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 1040, in forward
+    output = self._run_ddp_forward(*inputs, **kwargs)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 1000, in _run_ddp_forward
+    return module_to_run(*inputs[0], **kwargs[0])
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/4paradigm/WGWS-Net/networks/Network_Stage1.py", line 239, in forward
+    z = self.Encoder[2](z)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/4paradigm/WGWS-Net/networks/Network_Stage1.py", line 101, in forward
+    out = self.layer5(out)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/4paradigm/WGWS-Net/networks/Network_Stage1.py", line 81, in forward
+    out = self.conv2(out)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/4paradigm/WGWS-Net/networks/Network_Stage1.py", line 62, in forward
+    out = self.conv(x)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/4paradigm/WGWS-Net/networks/Network_Stage1.py", line 47, in forward
+    return self.act(self.layer(x))
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 463, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/mnt/pipeline_1/mmcv2/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 459, in _conv_forward
+    return F.conv2d(input, weight, bias, self.stride,
+RuntimeError: Unable to find a valid cuDNN algorithm to run convolution
+

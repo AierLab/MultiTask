@@ -56,8 +56,8 @@ def plot_changes(num_epochs, changes_from_previous, save_path='mask_diff_changes
     plt.show()
 
 # Parameters
-num_epochs = 10  # Set the number of epochs to analyze
-folder_path = '/home/4paradigm/Weather/masks'
+num_epochs = 19  # Set the number of epochs to analyze
+folder_path = '/home/4paradigm/Weather/masks_change/ori_85'
 
 # Calculate changes and plot
 changes_from_prev = calculate_changes(num_epochs, folder_path)

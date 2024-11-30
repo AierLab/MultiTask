@@ -57,7 +57,7 @@ print('device ----------------------------------------:',device)
 
 parser = argparse.ArgumentParser()
 # path setting
-parser.add_argument('--experiment_name', type=str,default= "training_tune_percent95_mask_ori") # modify the experiments name-->modify all save path
+parser.add_argument('--experiment_name', type=str,default= "training_tune_percent60_mask_completed") # modify the experiments name-->modify all save path
 parser.add_argument('--unified_path', type=str,default=  '/mnt/pipeline_2/MLT/')
 #parser.add_argument('--model_save_dir', type=str, default= )#required=True
 parser.add_argument('--training_in_path', type=str,default= '/mnt/pipeline_1/set1/snow/all/synthetic/')
@@ -105,7 +105,7 @@ parser.add_argument('--num_block', type=int, default= 6)
 parser.add_argument('--world_size', default=4, type=int, help='number of distributed processes')
 parser.add_argument('--rank', type=int, help='rank of distributed processes')
 args = parser.parse_args()
-
+model_ori ='/home/4paradigm/Weather/training_stage1/net_epoch_89.pth'
 
 if args.debug == True:
     fix_sample = 200
@@ -158,6 +158,31 @@ def save_masked_model(net, mask, original_parameters, epoch, suffix):
     torch.save(net.state_dict(), save_model)
     return save_model
 
+def load_combined_model(net, model_path1, model_path2, mask):
+    # 加载两个预训练模型的 state_dict
+    state_dict1 = torch.load(model_path1)
+    state_dict2 = torch.load(model_path2)
+    
+    # 初始化组合后的 state_dict
+    combined_state_dict = {}
+    
+    # 遍历 state_dict1，将参数根据 mask 进行组合
+    with torch.no_grad():
+        for name, param1 in state_dict1.items():
+            # 如果 state_dict2 中没有该参数，则使用 state_dict1 的参数
+            if name not in state_dict2:
+                combined_state_dict[name] = param1
+            else:
+                param2 = state_dict2[name]
+                # 根据 mask 的值选择来自 param1 或 param2 的参数
+                if name in mask:
+                    combined_state_dict[name] = torch.where(mask[name].bool(), param1, param2)
+                else:
+                    combined_state_dict[name] = param1  # 如果 mask 中没有该参数，则直接选择 param1
+    
+    # 将组合后的参数加载到模型中
+    net.load_state_dict(combined_state_dict, strict=False)
+    return net
 
 
 
@@ -165,7 +190,7 @@ def test(net,eval_loader, save_model ,epoch =1,max_psnr_val=26 ,Dname = 'S',flag
     net.to('cuda:0')
     net.eval()
     torch.distributed.barrier() 
-    net.load_state_dict(torch.load(save_model), strict=True)
+    # net.load_state_dict(torch.load(save_model), strict=True)
 
     st = time.time()
     with torch.no_grad():
@@ -235,36 +260,47 @@ def print_param_number(net):
 #     mask = [torch.abs(g) < threshold for g in grad]
 #     return mask
 
+# A=[a,b,c,d]
+# As=[a,b,c1,d1]
+
+
+
 def ensure_consistent_mask(mask_list):
     """确保 mask 列表中的每个 tensor 元素与前 3 个 tensor 的相应位置保持一致（如果前三个相同）。"""
-    for i in range(3, len(mask_list)):
-        # 获取前 3 个 mask 的相应位置的 tensor（列表中的元素为list，每个list元素为tensor）
-        prev1, prev2, prev3 = mask_list[i - 3], mask_list[i - 2], mask_list[i - 1]
-        current = mask_list[i]
-        # print(prev1[0].shape)  # Just a sample print for debugging, remove in production
+    mask_list_copy=[]
+    for i in range(0, len(mask_list)):
+        if i<3:
+            current = mask_list[i]
+            mask_list_copy.append(current)
+        else:    
+            # 获取前 3 个 mask 的相应位置的 tensor（列表中的元素为list，每个list元素为tensor）
+            prev1, prev2, prev3 = mask_list[i - 3], mask_list[i - 2], mask_list[i - 1]
+            current = mask_list[i]
+            # print(prev1[0].shape)  # Just a sample print for debugging, remove in production
 
-        # 找到前 3 个 tensor 中相同的位置，逐元素比较
-        consistent_mask_list = []
-        for t1, t2, t3 in zip(prev1, prev2, prev3):
-            # 对每对 tensor 使用 torch.eq() 进行逐元素比较
-            consistent_mask = (t1 == t2) & (t2 == t3)
-            consistent_mask_list.append(consistent_mask)
+            # 找到前 3 个 tensor 中相同的位置，逐元素比较
+            consistent_mask_list = []
+            for t1, t2, t3 in zip(prev1, prev2, prev3):
+                # 对每对 tensor 使用 torch.eq() 进行逐元素比较
+                consistent_mask = (t1 == t2) & (t2 == t3)
+                consistent_mask_list.append(consistent_mask)
 
-        # 更新 mask_list 的当前元素
-        updated_mask_list = []
-        for idx, (consistent_mask, t1,c1) in enumerate(zip(consistent_mask_list, prev1,current)):
-            # 在 consistent_mask 对应位置为 True 时，比较 current[idx] 和 prev1[idx]
-            updated_mask = torch.where(
-                consistent_mask, 
-                torch.where(c1 == t1, current[idx], ~current[idx]),  # 如果一致则保留 current，否则取反
-                current[idx]  # 如果不一致，保留 consistent_mask 的值
-            )
-            updated_mask_list.append(updated_mask)
+            # 更新 mask_list 的当前元素
+            updated_mask_list = []
+            
+            for idx, (consistent_mask, t1,c1) in enumerate(zip(consistent_mask_list, prev1,current)):
+                # 在 consistent_mask 对应位置为 True 时，比较 current[idx] 和 prev1[idx]
+                updated_mask = torch.where(
+                    consistent_mask, 
+                    torch.where(c1 == t1, current[idx], ~current[idx]),  # 如果一致则保留 current，否则取反
+                    current[idx]  # 如果不一致，保留 consistent_mask 的值
+                )
+                updated_mask_list.append(updated_mask)
 
-        # 更新 mask_list 的当前元素
-        mask_list[i] = updated_mask_list
+            # 更新 mask_list 的当前元素
+            mask_list_copy.append(updated_mask_list)
 
-    return mask_list
+    return mask_list_copy
 
 
 def process_masks(maskAs, maskBs, maskCs):
@@ -385,7 +421,7 @@ folder = f"/mnt/pipeline_1/mask_log/run{time_flag}"
 #     np.save(os.path.join(folder, f"maskBs_epoch{epoch}.npy"), maskB.cpu().numpy())
 #     np.save(os.path.join(folder, f"maskCs_epoch{epoch}.npy"), maskC.cpu().numpy())
     
-def save_masks_to_local(maskA, maskB, maskC, epoch, folder='/home/4paradigm/Weather/masks'):
+def save_masks_to_local(maskA, maskB, maskC, epoch, folder='/home/4paradigm/Weather/masks_change'):
 
     # 保存 maskAs
     os.makedirs(folder, exist_ok=True)
@@ -724,7 +760,7 @@ def train(rank, world_size):
           
             # TODO updata to traniable para
             # Create masks for each gradient set
-            percentage=95
+            percentage=60
             maskA = calculate_mask(gradA, percentage=percentage) # TODO experiment need change percentage, regarding to the difficulty of the task, check the mask_log
             maskB = calculate_mask(gradB, percentage=percentage)
             maskC = calculate_mask(gradC, percentage=percentage)
@@ -779,19 +815,19 @@ def train(rank, world_size):
                 
 
                 
-            maskA_change,maskB_change,maskC_change=process_masks(maskAs, maskBs, maskCs)
-            # print("******")
+            # maskA_change,maskB_change,maskC_change=process_masks(maskAs, maskBs, maskCs)
+            # # print("******")
             
-            maskAs_change.append(maskA_change)
-            maskBs_change.append(maskB_change)
-            maskCs_change.append(maskC_change)
+            # maskAs_change.append(maskA_change)
+            # maskBs_change.append(maskB_change)
+            # maskCs_change.append(maskC_change)
             
-            if len(maskAs_change) > 5:
-                maskAs_change.pop(0)
-            if len(maskBs_change) > 5:
-                maskBs_change.pop(0)
-            if len(maskCs_change) > 5:
-                maskCs_change.pop(0)
+            # if len(maskAs_change) > 5:
+            #     maskAs_change.pop(0)
+            # if len(maskBs_change) > 5:
+            #     maskBs_change.pop(0)
+            # if len(maskCs_change) > 5:
+            #     maskCs_change.pop(0)
                 
                 
             
@@ -802,7 +838,7 @@ def train(rank, world_size):
             maskA_paras=[]
             maskB_paras=[]
             maskC_paras=[]
-            if maskA_change is not None:
+            if maskA is not None:
                 # parameter_A = net.parameters()[maskA].clone().detach() # FIXME not sure detach is necessary
                   # 将参数生成器转换为列表
                 # parameter_A = parameters_list[maskA].clone().detach()  # 现在可以按索引访问
@@ -819,7 +855,7 @@ def train(rank, world_size):
                 parameter_A=parameters_A[-1]
                 
 
-            if maskB_change is not None:
+            if maskB is not None:
                 for param, mask in zip(parameters_list, maskB):  # Assume mask_list is the list of masks with the same structure as parameters_list
                     masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
                     maskB_paras.append(masked_param)
@@ -828,7 +864,8 @@ def train(rank, world_size):
                     parameters_B.pop(0)
                 parameters_B.append(maskB_paras)
                 parameter_B=parameters_B[-1]
-            if maskC_change is not None:
+                
+            if maskC is not None:
                 for param, mask in zip(parameters_list, maskC):  # Assume mask_list is the list of masks with the same structure as parameters_list
                     masked_param = param * mask  # Element-wise multiplication, keeping only masked positions
                     maskC_paras.append(masked_param)
@@ -940,8 +977,8 @@ def train(rank, world_size):
         
         # Save accumulated masks to local directory at the end of the epoch
         #TODO mask visual
-        save_masks_to_local(maskAs, maskBs, maskCs, epoch)
-        save_masks_to_local(maskAs_change, maskBs_change, maskCs_change, epoch)
+        save_masks_to_local(maskAs, maskBs, maskCs, epoch,folder=f'/home/4paradigm/Weather/masks_ori/ori_{percentage}')
+        # save_masks_to_local(maskAs_change, maskBs_change, maskCs_change, epoch,folder='/home/4paradigm/Weather/masks_change/{percentage}')
         #TODO save three different models
         # save_model_A = save_masked_model(net, maskA, original_parameters, epoch, 'snow')
         # save_model_B = save_masked_model(net, maskB, original_parameters, epoch, 'rain')
@@ -952,10 +989,14 @@ def train(rank, world_size):
         save_model = SAVE_PATH  + 'net_epoch_{}.pth'.format(epoch)
         torch.save(net.module.state_dict(),save_model)
         
+        net_A = load_combined_model(net,save_model,model_ori,maskA)
+        net_B = load_combined_model(net,save_model,model_ori,maskA)
+        net_C = load_combined_model(net,save_model,model_ori,maskA)
         
-        max_psnr_val_L = test(net= net_eval, save_model = save_model,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])
-        max_psnr_val_Rain = test(net=net_eval, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
-        max_psnr_val_RD = test(net=net_eval, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
+        
+        max_psnr_val_L = test(net= net_A, save_model = save_model,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])
+        max_psnr_val_Rain = test(net= net_B, save_model = save_model, eval_loader = eval_loader_Rain, epoch=epoch, max_psnr_val=max_psnr_val_Rain, Dname= 'HRain',flag = [0,1,0])
+        max_psnr_val_RD = test(net=net_C, save_model  = save_model, eval_loader = eval_loader_RD, epoch=epoch, max_psnr_val=max_psnr_val_RD, Dname= 'RD',flag = [0,0,1] )
     
 
         # max_psnr_val_L = test(net= net_eval, save_model = save_model_A,  eval_loader = eval_loader_L,epoch=epoch,max_psnr_val = max_psnr_val_L, Dname = 'Snow-L',flag = [1,0,0])

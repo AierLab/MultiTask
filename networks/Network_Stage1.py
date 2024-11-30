@@ -266,7 +266,7 @@ class UNet(nn.Module):
 
 
 if __name__ == "__main__":
-    model = UNet(base_channel=21, num_res=6)
+    model = UNet(base_channel=24, num_res=6)
     count = 0
     for name,module in model.named_modules():
         print(count,'-------------',name)

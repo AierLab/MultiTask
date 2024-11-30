@@ -48,14 +48,14 @@ parser.add_argument('--flag', type=str, default= 'O')
 parser.add_argument('--base_channel', type = int, default= 18)
 parser.add_argument('--num_block', type=int, default= 6)
 args = parser.parse_args()
-mask_A_dir = '/home/4paradigm/Weather/masks/maskA_epoch0.pth'
-mask_B_dir = '/home/4paradigm/Weather/masks/maskB_epoch0.pth'
-mask_C_dir = '/home/4paradigm/Weather/masks/maskC_epoch0.pth'
+mask_A_dir = '/home/4paradigm/Weather/masks_ori/ori_90/maskA_epoch14.pth'
+mask_B_dir = '/home/4paradigm/Weather/masks_ori/ori_90/maskB_epoch14.pth'
+mask_C_dir = '/home/4paradigm/Weather/masks_ori/ori_90/maskC_epoch14.pth'
 maskA = torch.load(mask_A_dir)
 maskB = torch.load(mask_B_dir)
 maskC = torch.load(mask_C_dir)
 model_ori ='/home/4paradigm/Weather/stage1/net_epoch_99.pth'
-model_mask='/mnt/pipeline_2/MLT/training_tune_percent90_mask/net_epoch_8.pth'
+model_mask='/mnt/pipeline_2/MLT/training_tune_percent90_mask_completed/net_epoch_14.pth'
 
 
 def load_combined_model(net, model_path1, model_path2, mask):

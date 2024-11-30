@@ -34,3 +34,27 @@ tensorboard --logdir="/mnt/pipeline_1/MLT/writer_logs/training_try_stage2_share/
 
 mkdir -p ./mnt/pipeline_1/MLT/Weather/training_try_stage2_share/
 
+### Training, Testing, and Inference
+Training
+To train the model, run the training script:
+
+```bash
+bash train_mult.sh
+```
+
+Testing
+After training, you can test the model by running the following script:
+
+```bash
+bash test.sh
+```
+
+Inference
+For inference on new data, use the following Python script:
+
+```bash
+python inference.py --model_path <path_to_pretrained_model> --save_path <path_to_save_visualization_results>
+```
+
+`--model_path`: The path to the pretrained model. This should point to the model file you wish to use for inference.
+`--save_path`: The directory where the visualization results (e.g., output images or analysis results) will be saved.

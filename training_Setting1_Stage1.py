@@ -186,6 +186,8 @@ def print_param_number(net):
 
 if __name__ == '__main__':
     net =UNet(base_channel=base_channel, num_res=num_res)
+    # net.load_state_dict(combined_state_dict, strict=False)
+    net.load_state_dict(torch.load('/home/4paradigm/Weather/training_stage_expend_finnal/net_epoch_3.pth'), strict=False)
     net.to(device)
     print_param_number(net)
 
