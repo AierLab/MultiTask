@@ -57,4 +57,4 @@ python inference.py --model_path <path_to_pretrained_model> --save_path <path_to
 ```
 
 `--model_path`: The path to the pretrained model. This should point to the model file you wish to use for inference.
-`--save_path`: The directory where the visualization results (e.g., output images or analysis results) will be saved.
+`--save_path`: The directory where the visualization results will be saved.
